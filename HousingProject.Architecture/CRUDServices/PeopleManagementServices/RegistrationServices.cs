@@ -39,11 +39,11 @@ namespace HousingProject.Architecture.PeopleManagementServices
                                UserManager<RegistrationModel> usermanager,
                                SignInManager<RegistrationModel> signinmanager,
                                IHttpContextAccessor httpContextAccesssor,
-                               IEmailServices  iemailservices,
+                               IEmailServices iemailservices,
                                IverificationGenerator iverificationGenerator
 
                                )
-                               
+
 
         {
 
@@ -57,7 +57,7 @@ namespace HousingProject.Architecture.PeopleManagementServices
             _iverificationGenerator = iverificationGenerator;
             // this.signnmanager = signnmanager;
         }
-       
+
 
 
         // getloggedin user
@@ -86,7 +86,7 @@ namespace HousingProject.Architecture.PeopleManagementServices
 
                 }
                 var getuser = await _context.RegistrationModel.Where(x => x.VerificationToken == verificationtoken).FirstOrDefaultAsync();
-                
+
                 if (getuser == null)
                 {
                     return new BaseResponse { Code = "940", ErrorMessage = "User does not exist" };
@@ -120,11 +120,11 @@ namespace HousingProject.Architecture.PeopleManagementServices
 
         public async Task<BaseResponse> UserRegistration(RegisterViewModel registervm)
         {
-           // pycivaz @mailinator.com
+            // pycivaz @mailinator.com
 
-           
 
-             var verificationtoken = await _iverificationGenerator.GenerateToken();
+
+            var verificationtoken = await _iverificationGenerator.GenerateToken();
             byte[] EmailInbytes = Encoding.ASCII.GetBytes(registervm.Email);
             ASCIIEncoding encoding = new ASCIIEncoding();
             var key = "hjgbaZZpAdzIWZvdypghyy6bvvWDh2GvHpTJPuA=";
@@ -144,16 +144,17 @@ namespace HousingProject.Architecture.PeopleManagementServices
                 FirstName = registervm.FirstName,
                 LasstName = registervm.LasstName,
                 BirthDate = registervm.BirthDate,
-                Salutation=registervm.Salutation,
-                Gender=registervm.Gender,
+                Salutation = registervm.Salutation,
+                Gender = registervm.Gender,
                 Email = registervm.Email,
                 IdNumber = registervm.IdNumber,
                 PhoneNumber = registervm.PhoneNumber,
                 UserName = registervm.Email,
                 PasswordHash = registervm.Password,
-                TenantId= registervm.TenantId,
-                VerificationToken= convertedtoken,
-                Is_Tenant=registervm.Is_Tenant
+                TenantId = registervm.TenantId,
+                VerificationToken = convertedtoken,
+                Is_Tenant = registervm.Is_Tenant,
+                IsHouseUsers= registervm.IsHouseUsers
 
 
 
@@ -163,7 +164,7 @@ namespace HousingProject.Architecture.PeopleManagementServices
 
             if (createduser.Succeeded)
             {
-                
+
                 await signinmanager.SignInAsync(newuser, isPersistent: false);
 
                 var sendbody = new UserEmailOptions
@@ -175,7 +176,7 @@ namespace HousingProject.Architecture.PeopleManagementServices
                     ToEmail = newuser.Email,
                 };
 
-               await  _iemailservices.EmailOnNewUserRegistrations(sendbody);
+                await _iemailservices.EmailOnNewUserRegistrations(sendbody);
 
                 return new BaseResponse { Code = "200", SuccessMessage = "User Created successfully" };
 
@@ -223,18 +224,19 @@ namespace HousingProject.Architecture.PeopleManagementServices
 
         public async Task<BaseResponse> AsigRole(AsignRoleviewModel vm)
         {
-            if (vm.UserEmail == "" )
+            if (vm.UserEmail == "")
             {
 
                 return new BaseResponse { Code = "103", ErrorMessage = "Email cannot be empty" };
             }
 
-            if (vm.userRole == ""){
+            if (vm.userRole == "")
+            {
                 return new BaseResponse { Code = "104", ErrorMessage = "user role cannot be empty" };
-                    }
+            }
 
             var relateduser = await _context.RegistrationModel.Where(x => x.Email == vm.UserEmail).FirstOrDefaultAsync();
-
+           
             if (vm.userRole == "Agent" && relateduser.Is_Agent)
             {
 
@@ -268,6 +270,12 @@ namespace HousingProject.Architecture.PeopleManagementServices
                 return new BaseResponse { Code = "106", ErrorMessage = "User does not exist" };
             }
 
+            if (vm.userRole == "Admin" && relateduser.Is_Admin)
+            {
+
+                return new BaseResponse { Code = "120", ErrorMessage = "user admin role already exist" };
+            }
+
             try
             {
 
@@ -289,8 +297,27 @@ namespace HousingProject.Architecture.PeopleManagementServices
 
                     }
 
+                    if (vm.userRole == "Admin")
+                    {
+                        relateduser.Is_Admin = true;
+                        relateduser.Is_Agent = true;
+                        relateduser.Is_Tenant = false;
+                        relateduser.Is_Landlord = true;
+                        relateduser.IsHouseUsers = false;
+                        relateduser.Is_CareTaker= true;
+                        _context.Update(relateduser);
+                        await _context.SaveChangesAsync();
+                        return new BaseResponse { Code = "200", SuccessMessage = "User role update to Admin" };
+
+                    }
+
                     if (vm.userRole == "Landlord")
                     {
+                        relateduser.Is_Admin = false;
+                        relateduser.Is_Agent = false;
+                        relateduser.Is_Tenant = false;                       
+                        relateduser.IsHouseUsers = false;
+                        relateduser.Is_CareTaker = false;
                         relateduser.Is_Landlord = true;
                         _context.Update(relateduser);
                         await _context.SaveChangesAsync();
@@ -299,6 +326,11 @@ namespace HousingProject.Architecture.PeopleManagementServices
                     }
                     if (vm.userRole == "CareTaker")
                     {
+                        relateduser.Is_Admin = false;
+                        relateduser.Is_Agent = false;
+                        relateduser.Is_Tenant = false;
+                        relateduser.IsHouseUsers = false;
+
                         relateduser.Is_CareTaker = true;
                         _context.Update(relateduser);
                         await _context.SaveChangesAsync();
@@ -308,6 +340,11 @@ namespace HousingProject.Architecture.PeopleManagementServices
 
                     if (vm.userRole == "Tenant")
                     {
+                        relateduser.Is_Admin = false;
+                        relateduser.Is_Agent = false;
+                    
+                        relateduser.IsHouseUsers = false;
+                        relateduser.Is_CareTaker = false;
                         relateduser.Is_Tenant = true;
                         _context.Update(relateduser);
                         await _context.SaveChangesAsync();
@@ -326,8 +363,8 @@ namespace HousingProject.Architecture.PeopleManagementServices
             catch (Exception e)
             {
 
-                    return new BaseResponse { Code = "101", ErrorMessage = e.Message };
-              
+                return new BaseResponse { Code = "101", ErrorMessage = e.Message };
+
             }
 
             return new BaseResponse { };
@@ -369,6 +406,24 @@ namespace HousingProject.Architecture.PeopleManagementServices
 
                 if (relateduser != null)
                 {
+                    if (vm.userRole == "Admin" && relateduser.Is_Admin)
+                    {
+
+
+                        relateduser.Is_Agent = false;
+                        relateduser.Is_Admin = false;
+                        relateduser.Is_CareTaker=false;
+                        relateduser.Is_Landlord= false;
+                        relateduser.IsHouseUsers = false;
+                        relateduser.Is_Tenant=false;
+
+
+                        _context.Update(relateduser);
+                        await _context.SaveChangesAsync();
+                        return new BaseResponse { Code = "200", SuccessMessage = "agent role remove" };
+
+
+                    }
 
                     if (vm.userRole == "Agent" && relateduser.Is_Agent)
                     {

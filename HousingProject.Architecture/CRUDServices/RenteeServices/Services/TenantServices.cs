@@ -9,11 +9,13 @@ using HousingProject.Core.Models.General;
 using HousingProject.Core.Models.People;
 using HousingProject.Core.Models.People.General;
 using HousingProject.Core.Models.RentPayment;
+using HousingProject.Core.ViewModel;
 using HousingProject.Core.ViewModel.Rentee;
 using HousingProject.Core.ViewModel.Rentpayment;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,7 +30,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
         private readonly IEmailServices _iemailservvices;
 
         private readonly ILoggedIn _loggedIn;
-
+        private readonly IServiceScopeFactory _scopeFactory;
         public readonly IRegistrationServices _registrationServices;
         private readonly IHttpContextAccessor _httpContextAccessor;
         
@@ -37,7 +39,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
           IHttpContextAccessor httpContextAccessor,
           IEmailServices iemailservvices,
           IRegistrationServices registrationServices,
-           ILoggedIn loggedIn
+           ILoggedIn loggedIn,
+           IServiceScopeFactory scopeFactory
 
 
         )
@@ -47,6 +50,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             _iemailservvices = iemailservvices;
             _registrationServices = registrationServices;
             _loggedIn = loggedIn;
+            _scopeFactory = scopeFactory;
         }
 
         // get loggin user
@@ -546,12 +550,6 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 return new BaseResponse { Code = "108", ErrorMessage = "something foreign happened" };
             }
 
-
-
-
-
-
-
         }
 
         public async Task<BaseResponse> GetLoggedInTenant()
@@ -632,6 +630,105 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             return new BaseResponse { Code = "000", ErrorMessage = "Something foreighn happened" };
         }
 
-       
+        public async Task<BaseResponse> SpecificTenantReminderonRentPayment(int tenantid)
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    var tenantExists = await scopedcontext.TenantClass.Where(x => x.RenteeId == tenantid).FirstOrDefaultAsync();
+
+                    if (tenantExists == null)
+                    {
+
+                        return new BaseResponse { Code = "180", ErrorMessage = "Tenant does not exist" };
+                    }
+
+                    var emailbody = new TenantReminderEmail { 
+                        
+                        ToEmail=tenantExists.Email,
+                        UserName= tenantExists.FirstName + tenantExists.LastName,
+                        Message= $"Dear {tenantExists.FirstName}, your rent pay day is {tenantExists.RentPayDay}" 
+                     
+                    };
+
+                    var response = await _iemailservvices.SendTenantEmailReminderOnRentPayment(emailbody);
+
+                    
+                    if (response.Code == "200")
+                    {
+
+                        return new BaseResponse { Code = "200", SuccessMessage = "Reminder sent to tenant successfully " };
+                    }
+
+                    else
+                    {
+                        return new BaseResponse { Code = "480", ErrorMessage = "Reminder not sent please try again" };
+
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse { Code = "150", ErrorMessage = ex.Message };
+            }
+
+
+        }
+
+        public async Task<BaseResponse> NotificationonRentPaymentDay()
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    var alltentnats = await scopedcontext.TenantClass.ToListAsync();
+
+                    foreach (var tenant in alltentnats)
+                    {
+
+                        var emailbody = new EmailNotificationOnRentPayment
+                        {
+
+                            ToEmail = tenant.Email,
+                            UserName = tenant.FirstName + tenant.LastName,
+                            PaymentDate = tenant.RentPayDay,
+                            sentDate = DateTime.Now,
+                            RenTAmount = tenant.House_Rent,
+                            Message= $"Hi Kindly be reminded that your rent  amount of {tenant.House_Rent} is payable on or before {tenant.RentPayDay}, reach out on {tenant.BuildingCareTaker_PhoneNumber} for any further enquiry, or request of extension"
+
+
+
+                        };
+
+
+
+                        if(DateTime.Now== tenant.RentPayDay)
+                        {
+
+
+                        }
+
+                    }
+                    return new BaseResponse();
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
+
+            }
+
+        }
+
+
+
     }
 }

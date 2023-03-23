@@ -22,6 +22,8 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task<IEnumerable> rentpaymentList(int tenantId);
         Task<BaseResponse> GetLoggedInTenant();
         Task<BaseResponse> GetLogeedInTenantHouse();
+        Task<BaseResponse> SpecificTenantReminderonRentPayment(int tenantid);
+
 
 
     }

@@ -143,7 +143,18 @@ namespace HousingProject.API.Controllers.Rentee
         }
 
 
+        [Authorize]
+        [Route("Tenantreminderonrentpayment")]
+        [HttpPost]
+        public async Task<BaseResponse> SpecificTenantReminderonRentPayment(int tenantid)
+        {
 
-       
+           return  await _irenteeServices.SpecificTenantReminderonRentPayment(tenantid);
+        }
+
+
+
+
+
     }
 }

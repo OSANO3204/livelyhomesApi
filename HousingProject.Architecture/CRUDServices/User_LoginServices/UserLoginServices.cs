@@ -25,9 +25,7 @@ namespace HousingProject.Architecture.Services.User_Login
     public class UserLoginServices : IloggedInServices
     {
         private readonly HousingProjectContext _context;
-
         private readonly UserManager<RegistrationModel> usermanager;
-
         private readonly SignInManager<RegistrationModel> signinmanager;
         private readonly IEmailServices _iemailservvices;
         private readonly IHttpContextAccessor _httpcontextaccessor;
@@ -49,7 +47,7 @@ namespace HousingProject.Architecture.Services.User_Login
             _iemailservvices = iemailServices;
         }
 
-        public  async Task<RegistrationModel>
+        public async Task<RegistrationModel>
         ValidateUser(UserLogin credentials)
         {
             var identityUser =
@@ -71,10 +69,8 @@ namespace HousingProject.Architecture.Services.User_Login
             return null;
         }
 
-        public async Task<authenticationResponses>
-        Authenticate(UserLogin loggedinuser)
+        public async Task<authenticationResponses>   Authenticate(UserLogin loggedinuser)
         {
-
             try
             {
                 //general auths
@@ -98,23 +94,15 @@ namespace HousingProject.Architecture.Services.User_Login
                     }
                     );
                 }
+                var identityUser = await usermanager.FindByEmailAsync(loggedinuser.UserName);
 
-                //
-                var identityUser =
-                    await usermanager.FindByEmailAsync(loggedinuser.UserName);
-
-
-
-                if(identityUser == null)
+                if (identityUser == null)
                 {
-
-                    return new authenticationResponses { Code ="105"  ,ErrorMessage="The user doesnt exist" };
-
+                    return new authenticationResponses { Code = "105", ErrorMessage = "The user doesnt exist" };
                 }
 
                 if (!identityUser.EmailConfirmed)
                 {
-
                     return new authenticationResponses { Code = "123", ErrorMessage = "Kindly  check   your email  to validate your account first" };
                 }
                 if (identityUser != null)
@@ -149,7 +137,7 @@ namespace HousingProject.Architecture.Services.User_Login
                             Code = "103",
                             ErrorMessage = "User does not  exist"
                         };
-                        
+
                     }
 
                     var tokenexpirytimestamp =
@@ -185,7 +173,6 @@ namespace HousingProject.Architecture.Services.User_Login
                     var token = jwtsecuritytokenhandler.WriteToken(securitytoken);
                     return new authenticationResponses
                     {
-                        
                         Code = "200",
                         SuccessMessage = "Logged in successfully",
                         FirstName = userexists.FirstName,
@@ -196,36 +183,23 @@ namespace HousingProject.Architecture.Services.User_Login
                         Is_Agent = userexists.Is_Agent,
                         Is_CareTaker = userexists.Is_CareTaker,
                         Is_Landlord = userexists.Is_Landlord,
-                        ExpiryTime =
-                            (int)
-                            tokenexpirytimestamp.Subtract(DateTime.Now).TotalSeconds
+                        ExpiryTime = (int)tokenexpirytimestamp.Subtract(DateTime.Now).TotalSeconds
                     };
                 }
 
             }
 
-            catch  (Exception  e)
+            catch (Exception e)
             {
-
-
-              
-
-
-                    _ilogger.LogInformation("Error message on login : ", e.Message);
-                    return new authenticationResponses
-                    {
-                        Code = "880",
-                        ErrorMessage = e.Message
-
-                        
-                    };
-
-                  
-
-
+                _ilogger.LogInformation("Error message on login : ", e.Message);
+                return new authenticationResponses
+                {
+                    Code = "880",
+                    ErrorMessage = e.Message
+                };
 
             }
-          
+
             return new authenticationResponses { };
 
         }
@@ -242,18 +216,18 @@ namespace HousingProject.Architecture.Services.User_Login
                     return new BaseResponse { Code = "110", ErrorMessage = "Email cannot be empty" };
                 }
 
-                
                 if (vm.UserMessage == null)
                 {
 
                     return new BaseResponse { Code = "111", ErrorMessage = "Message cannot be empty" };
                 }
 
-                var contactbody = new ContactUs() { 
-                    
-                    Useremail=vm.Useremail,
-                    UserMessage=vm.UserMessage
-                
+                var contactbody = new ContactUs()
+                {
+
+                    Useremail = vm.Useremail,
+                    UserMessage = vm.UserMessage
+
                 };
 
                 await _context.AddAsync(contactbody);
@@ -262,13 +236,12 @@ namespace HousingProject.Architecture.Services.User_Login
 
                 var sendbody = new UserEmailOptions
                 {
-
                     UserName = loggedinuser.FirstName,
                     PayLoad = "sent mail test",
                     ToEmail = vm.Useremail
                 };
 
-               var resp= await _iemailservvices.OnContusMessageSubmission(sendbody);
+                var resp = await _iemailservvices.OnContusMessageSubmission(sendbody);
 
                 if (resp.Code == "200")
                 {
@@ -286,22 +259,14 @@ namespace HousingProject.Architecture.Services.User_Login
                     };
 
                 }
-
-
-
             }
             catch (Exception ex)
             {
                 return new BaseResponse { Code = "120", ErrorMessage = ex.Message };
 
             }
-
         }
-
-        //end
-
-
-     
+        //end   
         public async Task<BaseResponse> ResetPassword(UserLogin logedinuser)
         {
             var getuserbyusername =
@@ -371,17 +336,23 @@ namespace HousingProject.Architecture.Services.User_Login
 
             return loggedinuser;
         }
-
+        
         public async Task<BaseResponse> GetUserroles()
         {
 
 
-            var loggedinuser =   LoggedInUser().Result;
+            var loggedinuser = LoggedInUser().Result;
+
+            if (loggedinuser.Is_Admin)
+            {
+
+                return new BaseResponse { Code = "200", SuccessMessage = "Administrator " };
+            }
 
             if (loggedinuser.Is_Landlord && loggedinuser.Is_CareTaker && loggedinuser.Is_Agent)
             {
 
-                return new BaseResponse { Code = "200", SuccessMessage = "Super admin" };
+                return new BaseResponse { Code = "200", SuccessMessage = "Supervisor" };
             }
 
             else if (loggedinuser.Is_Landlord && loggedinuser.Is_Agent)
@@ -392,15 +363,12 @@ namespace HousingProject.Architecture.Services.User_Login
             {
                 return new BaseResponse { Code = "200", SuccessMessage = "Landlord and Caretaker" };
             }
-
             else if (loggedinuser.Is_CareTaker && loggedinuser.Is_Agent)
             {
                 return new BaseResponse { Code = "200", SuccessMessage = "Caretaker and Agent" };
             }
-
             else if (loggedinuser.Is_CareTaker && loggedinuser.Is_Tenant)
             {
-
                 return new BaseResponse { Code = "200", SuccessMessage = "Tenant and Caretaker" };
             }
 
@@ -413,12 +381,8 @@ namespace HousingProject.Architecture.Services.User_Login
             {
                 return new BaseResponse { Code = "200", SuccessMessage = "Agent and Tenant" };
             }
-
-
-
             else if (loggedinuser.Is_CareTaker)
             {
-
                 return new BaseResponse { Code = "200", SuccessMessage = "Caretaker" };
             }
 
@@ -428,6 +392,11 @@ namespace HousingProject.Architecture.Services.User_Login
                 return new BaseResponse { Code = "200", SuccessMessage = "Landlord" };
             }
 
+            else if (loggedinuser.Is_Admin)
+            {
+
+                return new BaseResponse { Code = "200", SuccessMessage = "Admin" };
+            }
 
 
 
@@ -541,6 +510,6 @@ namespace HousingProject.Architecture.Services.User_Login
             }
         }
 
-       
+
     }
 }

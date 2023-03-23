@@ -551,6 +551,12 @@ namespace HousingProject.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsHouseUsers")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Is_Admin")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("Is_Agent")
                         .HasColumnType("bit");
 
@@ -601,9 +607,6 @@ namespace HousingProject.Infrastructure.Migrations
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)

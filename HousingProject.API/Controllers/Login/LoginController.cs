@@ -5,9 +5,6 @@ using HousingProject.Core.Models.People.General;
 using HousingProject.Core.ViewModel.People.GeneralRegistration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HousingProject.API.Controllers.Login
@@ -48,18 +45,12 @@ namespace HousingProject.API.Controllers.Login
             return await _iloggedInServices.GetUserroles();
         }
 
-
-
-
-
         [Authorize]
         [Route("ContactUs")]
         [HttpPost]
         public async Task<BaseResponse> ContactUs(ContactUsViewModel vm)
 
         {
-
-
         return   await   _iloggedInServices.ContactUs(vm);
         }
 

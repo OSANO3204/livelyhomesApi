@@ -1,6 +1,7 @@
 ﻿using HousingProject.Architecture.Interfaces.IEmail;
 using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.Models.Email;
+using HousingProject.Core.ViewModel;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
@@ -170,9 +171,39 @@ namespace HousingProject.Architecture.CRUDServices.Email
 
 
         }
+        public async Task<BaseResponse> SendTenantEmailReminderOnRentPayment(TenantReminderEmail options)
+        {
+
+            var file = @"Templates/Email/email_sent_to_remind_Tenant_of_rent_payment.html";
+            StreamReader str = new StreamReader(file);
+            string MailText = await str.ReadToEndAsync();
+            str.Close();
+            MailText = MailText.Replace("User", options.UserName).Replace("Body", options.PayLoad).Replace("Message", options.Message);
+            var result = await SendEmail(MailText, "Dear Sir/Madam", options.ToEmail);
+
+            if (result.Code == "200")
+            {
+
+                return new BaseResponse { Code = "200" };
+            }
+            else
+            {
+                return new BaseResponse { Code = "350" };
+            }
+
+        }
+        public async Task AutomatedNotificationonRentpayday(EmailNotificationOnRentPayment options)
+        {
 
 
+            var file = @"Templates/Email/email_sent_to_remind_Tenant_of_rent_payment.html";
+            StreamReader str = new StreamReader(file);
+            string MailText = await str.ReadToEndAsync();
+            str.Close();
+            MailText = MailText.Replace("User", options.UserName).Replace("Body", options.PayLoad).Replace("Message", options.Message).Replace("sentDate", Convert.ToString(options.sentDate)).Replace("Names", options.UserName);
+            await SendEmail(MailText, "Dear Sir/Madam", options.ToEmail);
 
 
+        }
     }
 }

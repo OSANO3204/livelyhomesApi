@@ -30,6 +30,12 @@ namespace HousingProject.Architecture.ViewModel.People
         [DisplayName("Date Of Birth")]
         public string BirthDate { get; set; }
 
+
+        [Required]
+        [DisplayName("IsHouseUsers")]
+        public bool IsHouseUsers { get; set; }
+
+
         [DisplayName("Email"), DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 

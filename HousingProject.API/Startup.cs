@@ -18,6 +18,7 @@ using HousingProject.Core.Models.People;
 using HousingProject.Infrastructure.CRUDServices.HouseRegistration_Services.HouseUnitsServices;
 using HousingProject.Infrastructure.CRUDServices.Payments.Rent;
 using HousingProject.Infrastructure.CRUDServices.ProfessionalsServices;
+using HousingProject.Infrastructure.CRUDServices.UsersExtra;
 using HousingProject.Infrastructure.ExtraFunctions;
 using HousingProject.Infrastructure.ExtraFunctions.Checkroles;
 using HousingProject.Infrastructure.ExtraFunctions.Checkroles.ChcekRoles;
@@ -30,7 +31,9 @@ using HousingProject.Infrastructure.ExtraFunctions.RolesDescription;
 using HousingProject.Infrastructure.Interfaces.IHouseRegistration_Services;
 using HousingProject.Infrastructure.Interfaces.IProfessionalsServices;
 using HousingProject.Infrastructure.Interfaces.ITenantStatementServices;
+using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
 using HousingProject.Infrastructure.JobServices;
+using HousingProject.Infrastructure.SuperServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,6 +45,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MySql.Data.MySqlClient;
 using Quartz;
 using System.Security.Claims;
 using System.Text;
@@ -95,6 +99,7 @@ namespace HousingProject.API
             services.AddDbContext<HousingProjectContext>(
                 x => x.UseSqlServer(Configuration.GetConnectionString("DevConnectiions"))
             );
+            //services.AddTransient<MySqlConnection>(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
             services.AddControllers();
         
             services.AddSwaggerGen(c =>
@@ -160,7 +165,6 @@ namespace HousingProject.API
             );
            
             services.AddHttpContextAccessor();
-
             services.AddScoped<IRegistrationServices, RegistrationServices>();
             services.AddScoped<IHouse_RegistrationServices, House_RegistrationServices>();
             services.AddScoped<IEmailServices, EmailServices>();
@@ -175,10 +179,11 @@ namespace HousingProject.API
             services.AddScoped<ITenantStatementServices, TenantStatementServices>();
             services.AddScoped<IHouseUnits, HouseUnitsServices>();
             services.AddScoped<IProfessionalsServices,ProfessionalServices>();
-            services.AddScoped<IGenerateIdService, GenerateIdService>();
-           
-
+            services.AddScoped<IGenerateIdService, GenerateIdService>();         
             services.AddScoped<ICheckroles, CheckRoles>();
+            services.AddScoped<IAdminServices, AdminService>();
+            services.AddScoped<IUserExtraServices, UserExtraServices>();
+             
             services.AddCors();
            
         }
