@@ -1,11 +1,11 @@
-﻿using HousingProject.Architecture.CRUDServices.Email;
-using HousingProject.Architecture.Data;
+﻿using HousingProject.Architecture.Data;
 using HousingProject.Architecture.Interfaces.IEmail;
 using HousingProject.Architecture.Interfaces.IlogginServices;
 using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.Models.Email;
 using HousingProject.Core.Models.People;
 using HousingProject.Core.Models.People.General;
+using HousingProject.Core.ViewModel.Passwords;
 using HousingProject.Core.ViewModel.People.GeneralRegistration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -267,12 +267,19 @@ namespace HousingProject.Architecture.Services.User_Login
             }
         }
         //end   
-        public async Task<BaseResponse> ResetPassword(UserLogin logedinuser)
+        public async Task<BaseResponse> ResetPassword(ResetPassword resetpasswordvm)
         {
+
+            if (resetpasswordvm.Password != resetpasswordvm.RetypePassword)
+            {
+
+                return new BaseResponse { Code = "140", ErrorMessage = "Passwords should always be the same" };
+            }
+        ;
             var getuserbyusername =
                 await _context
                     .RegistrationModel
-                    .Where(x => x.UserName == logedinuser.UserName)
+                    .Where(x => x.Email == resetpasswordvm.Email)
                     .FirstOrDefaultAsync();
 
             if (getuserbyusername == null)
@@ -283,9 +290,9 @@ namespace HousingProject.Architecture.Services.User_Login
                     ErrorMessage = "Username does not exist"
                 };
             }
-            if (logedinuser.UserName != "")
+            if (resetpasswordvm.Email != "")
             {
-                if (logedinuser.Password == getuserbyusername.PasswordHash)
+                if (resetpasswordvm.Password == getuserbyusername.PasswordHash)
                 {
                     return new BaseResponse
                     {
@@ -297,13 +304,13 @@ namespace HousingProject.Architecture.Services.User_Login
 
                 if (getuserbyusername != null)
                 {
-                    getuserbyusername.PasswordHash = logedinuser.Password;
+                    getuserbyusername.PasswordHash = resetpasswordvm.Password;
 
                     getuserbyusername.PasswordHash =
                         usermanager
                             .PasswordHasher
                             .HashPassword(getuserbyusername,
-                            logedinuser.Password);
+                            resetpasswordvm.Password);
 
                     await usermanager.UpdateAsync(getuserbyusername);
 

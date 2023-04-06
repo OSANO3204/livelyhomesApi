@@ -42,11 +42,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MySql.Data.MySqlClient;
 using Quartz;
+using System.IO;
 using System.Security.Claims;
 using System.Text;
 
@@ -209,7 +211,7 @@ namespace HousingProject.API
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             });
-
+            app.UseStaticFiles();       
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseStaticFiles();

@@ -33,7 +33,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
         private readonly IServiceScopeFactory _scopeFactory;
         public readonly IRegistrationServices _registrationServices;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        
+
         public TenantServices(
           HousingProjectContext context,
           IHttpContextAccessor httpContextAccessor,
@@ -81,17 +81,17 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             if (_loggedIn.LoggedInUser().Result.Is_Tenant)
             {
 
-                return new BaseResponse {Code="124", ErrorMessage="You do not have permision to do this" };
+                return new BaseResponse { Code = "124", ErrorMessage = "You do not have permision to do this" };
             }
 
 
             try
             {
-                if(!(loggeinuserr.Is_Agent || loggeinuserr.Is_Landlord))
+                if (!(loggeinuserr.Is_Agent || loggeinuserr.Is_Landlord))
 
                 {
 
-                    return new BaseResponse { Code = "129" , ErrorMessage="You do not have permission to do this"};
+                    return new BaseResponse { Code = "129", ErrorMessage = "You do not have permission to do this" };
                 }
 
 
@@ -119,7 +119,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     LasstName = RenteeVm.LastName,
                     Email = RenteeVm.Email,
                     IdNumber = RenteeVm.FirstName,
-                   
+
                     PhoneNumber = RenteeVm.Agent_PhoneNumber,
                     Password = "Password@1234",
                     RetypePassword = "Password@1234",
@@ -128,9 +128,9 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
 
                 };
-               
 
-             
+
+
 
 
                 var resp = await _registrationServices.UserRegistration(usermodel);
@@ -437,7 +437,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
         {
 
 
-            var houselist = await  _context.TenantClass.Where(x => x.HouseiD == houseid).OrderByDescending(x => x.DateCreated).ToListAsync();
+            var houselist = await _context.TenantClass.Where(x => x.HouseiD == houseid).OrderByDescending(x => x.DateCreated).ToListAsync();
 
             return houselist;
 
@@ -520,7 +520,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
             try
             {
-               var tenant = await _context.TenantClass.Where(x => x.RenteeId == tenantId).FirstOrDefaultAsync();
+                var tenant = await _context.TenantClass.Where(x => x.RenteeId == tenantId).FirstOrDefaultAsync();
 
                 var sentbody = new Rentpayment
                 {
@@ -566,7 +566,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
                 var loggedinTenant = await _context.TenantClass.Where(x => x.Email == user.Email).FirstOrDefaultAsync();
 
-                
+
                 if (loggedinTenant == null)
                 {
 
@@ -617,11 +617,11 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
 
                 return new BaseResponse { Code = "200", Body = houseoftenant };
-             }
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
 
-                foreach(var error in ex.Message)
+                foreach (var error in ex.Message)
                 {
                     return new BaseResponse { Code = "234", ErrorMessage = error.ToString() };
                 }
@@ -646,17 +646,18 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         return new BaseResponse { Code = "180", ErrorMessage = "Tenant does not exist" };
                     }
 
-                    var emailbody = new TenantReminderEmail { 
-                        
-                        ToEmail=tenantExists.Email,
-                        UserName= tenantExists.FirstName + tenantExists.LastName,
-                        Message= $"Dear {tenantExists.FirstName}, your rent pay day is {tenantExists.RentPayDay}" 
-                     
+                    var emailbody = new TenantReminderEmail
+                    {
+
+                        ToEmail = tenantExists.Email,
+                        UserName = tenantExists.FirstName + tenantExists.LastName,
+                        Message = $"Dear {tenantExists.FirstName}, your rent pay day is {tenantExists.RentPayDay}"
+
                     };
 
                     var response = await _iemailservvices.SendTenantEmailReminderOnRentPayment(emailbody);
 
-                    
+
                     if (response.Code == "200")
                     {
 
@@ -702,7 +703,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             PaymentDate = tenant.RentPayDay,
                             sentDate = DateTime.Now,
                             RenTAmount = tenant.House_Rent,
-                            Message= $"Hi Kindly be reminded that your rent  amount of {tenant.House_Rent} is payable on or before {tenant.RentPayDay}, reach out on {tenant.BuildingCareTaker_PhoneNumber} for any further enquiry, or request of extension"
+                            Message = $"Hi Kindly be reminded that your rent  amount of {tenant.House_Rent} is payable on or before {tenant.RentPayDay}, reach out on {tenant.BuildingCareTaker_PhoneNumber} for any further enquiry, or request of extension"
 
 
 
@@ -710,7 +711,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
 
 
-                        if(DateTime.Now== tenant.RentPayDay)
+                        if (DateTime.Now == tenant.RentPayDay)
                         {
 
 
@@ -727,8 +728,43 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             }
 
         }
+        public async Task<BaseResponse> UpdateRentPayday(DateTime rentpaydate, string email)
+        {
+
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+
+                    var tenantexists = await scopedcontext.TenantClass
+                        .Where(t => t.Email == email).FirstOrDefaultAsync();
+
+                    if (tenantexists == null)
+                    {
+
+                        return new BaseResponse { Code = "190", ErrorMessage = "Tenant does not exist" };
+                    }
+
+                    tenantexists.RentPayDay = rentpaydate;
+                    scopedcontext.UpdateRange(tenantexists);
+                    await scopedcontext.SaveChangesAsync();
+                    return new BaseResponse { Code = "200", ErrorMessage = "Successfully updated tenant rent" };
+                }
+                return new BaseResponse();
+
+            }
+            catch (Exception ex)
+            {
+
+
+                return new BaseResponse { Code = "170", ErrorMessage = ex.Message };
 
 
 
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ using HousingProject.Core.ViewModel.Rentpayment;
 using HousingProject.Infrastructure.Interfaces.ITenantStatementServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections;
 using System.Threading.Tasks;
 
@@ -150,6 +151,15 @@ namespace HousingProject.API.Controllers.Rentee
         {
 
            return  await _irenteeServices.SpecificTenantReminderonRentPayment(tenantid);
+        }
+
+        [Authorize]
+        [Route("UpdateTenantrentpayday")]
+        [HttpPost]
+        public async Task<BaseResponse> UpdateRentPayday(DateTime rentpaydate, string email)
+        {
+
+            return await _irenteeServices.UpdateRentPayday(rentpaydate, email);
         }
 
 

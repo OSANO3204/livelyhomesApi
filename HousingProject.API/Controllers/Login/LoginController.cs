@@ -2,6 +2,7 @@
 using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.Models.People;
 using HousingProject.Core.Models.People.General;
+using HousingProject.Core.ViewModel.Passwords;
 using HousingProject.Core.ViewModel.People.GeneralRegistration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,12 +64,12 @@ namespace HousingProject.API.Controllers.Login
             return  await _iloggedInServices.ChangeUserEmail(emailaddress);
         }
 
-        [Authorize]
+      
         [Route("Reset_Password")]
         [HttpPost]
-        public async Task<BaseResponse> ResetPassword(UserLogin logedinuser)
+        public async Task<BaseResponse> ResetPassword(ResetPassword resetpasswordvm)
         {
-            return await _iloggedInServices.ResetPassword(logedinuser);
+            return await _iloggedInServices.ResetPassword(resetpasswordvm);
         }
 
         [Authorize]

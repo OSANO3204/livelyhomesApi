@@ -345,7 +345,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 var response = await _registrationServices.UserRegistration(createnewnusr);
                 var specifichouse = await _context.House_Registration.Where(x => x.HouseiD == vm.HouseID).FirstOrDefaultAsync();
 
-                if (response.Code == "200")
+                if (response.Code == "200" || response.Code=="100" )
                 {
                     var newhouseUser = new HouseUsers()
                     {
@@ -365,6 +365,13 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         AccountActivated = false,                      
                     };
 
+                    var check_house_user_exist = await _context.HouseUsers.Where(x => x.Email == vm.Email).FirstOrDefaultAsync();
+
+                    if (check_house_user_exist != null)
+                    {
+
+                        return new BaseResponse { Code = "150", ErrorMessage = "The house user already exists" };
+                    }
                     await _context.AddAsync(newhouseUser);
                     await _context.SaveChangesAsync();
 
