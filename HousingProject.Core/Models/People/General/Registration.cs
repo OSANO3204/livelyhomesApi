@@ -14,9 +14,7 @@ namespace HousingProject.Core.Models.People
     public class RegistrationModel: IdentityUser
     {
        // [Key]
-      //  public int Userid { get; set; }
-      [Key]
-        public int UserId { get; set; }
+      //  public int Us
 
         [Required]
         [DisplayName("First Name")]
@@ -25,6 +23,11 @@ namespace HousingProject.Core.Models.People
         [Required]
         [DisplayName("Last Name")]
         public string LasstName { get; set; }
+
+        [Required]
+        [DisplayName("IsHouseUsers")]
+        public bool IsHouseUsers { get; set; }
+
 
         [Required]
         [DisplayName("ID Number")]
@@ -47,8 +50,9 @@ namespace HousingProject.Core.Models.People
         public string VerificationToken { get; set; }
         public bool Is_Agent { get; set; }
         public bool Is_Tenant { get; set; }
-
+        public bool Is_Admin { get; set; }
         public int TenantId { get; set; }
+    
         public List<House_Registration> Houses_Registered { get; set; }
 
 

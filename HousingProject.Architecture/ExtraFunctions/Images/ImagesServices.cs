@@ -121,7 +121,8 @@ namespace HousingProject.Infrastructure.ExtraFunctions.Images
                 }
 
 
-                return new BaseResponse { Code = "200", SuccessMessage =imageuploaded.ImagePath };
+                var ImagePath=_environment.WebRootPath + Path.DirectorySeparatorChar.ToString() + "Images" + Path.DirectorySeparatorChar.ToString() + imageuploaded.ImagePath;
+                return new BaseResponse { Code = "200", SuccessMessage = ImagePath };
 
             }
             catch (Exception ex)

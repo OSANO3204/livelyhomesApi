@@ -17,6 +17,8 @@ using HousingProject.Infrastructure.ExtraFunctions.RolesDescription;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,13 +29,15 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 {
     public class House_RegistrationServices : IHouse_RegistrationServices
     {
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ICheckroles _checkroles;
         private readonly HousingProjectContext _context;
         private readonly IEmailServices _iemailservices;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public static    IHostingEnvironment _environment;
-        private readonly IRoles  _iroles;
-        public readonly  IRegistrationServices _registrationServices;
+        public static IHostingEnvironment _environment;
+        private readonly IRoles _iroles;
+        public readonly IRegistrationServices _registrationServices;
+        private readonly ILogger<House_RegistrationServices> _logger;
 
         public House_RegistrationServices(
             HousingProjectContext context,
@@ -42,7 +46,10 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             IHttpContextAccessor httpContextAccessor,
             IHostingEnvironment environment,
             IRoles iroles,
-            IRegistrationServices registrationServices
+            IRegistrationServices registrationServices,
+            IServiceScopeFactory serviceScopeFactory,
+            ILogger<House_RegistrationServices> logger
+
         )
         {
             _context = context;
@@ -52,6 +59,8 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             _iroles = iroles;
             _checkroles = checkroles;
             _registrationServices = registrationServices;
+            _serviceScopeFactory = serviceScopeFactory;
+            _logger = logger;
         }
 
         public async Task<RegistrationModel> LoggedInUser()
@@ -66,31 +75,29 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
             return loggedinuser;
         }
-            
 
-         public  async Task<BaseResponse> TotalHusesManaged(string email)
+
+        public async Task<BaseResponse> TotalHusesManaged(string email)
         {
-            
-
             var gettotals = await _context.House_Registration.Where(x => x.CreatorEmail == email).ToListAsync();
             var totals = gettotals.Count;
             return new BaseResponse { Code = "200", Totals = totals };
         }
 
-            //end
+        //end
         public async Task<BaseResponse> Register_House(HouseRegistrationViewModel newvm)
         {
             var currentuser = LoggedInUser().Result;
-       
 
-            if (currentuser.Is_CareTaker && currentuser.Is_Tenant  && !currentuser.Is_Landlord && !currentuser.Is_Agent)
+
+            if (currentuser.Is_CareTaker && currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent)
             {
                 return new BaseResponse { Code = "159", ErrorMessage = "You cannot register a house, your role is a caretaker and a tenant" };
 
             }
 
-            if(currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_CareTaker )
-                      {
+            if (currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_CareTaker)
+            {
                 return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a tenant" };
 
             }
@@ -101,7 +108,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             }
 
             //var currentuser = LoggedInUser().Result;
-            if (!currentuser.Is_Agent  && !currentuser.Is_Landlord)
+            if (!currentuser.Is_Agent && !currentuser.Is_Landlord)
             {
 
                 return new BaseResponse { Code = "129", ErrorMessage = "You don't  have access to do this" };
@@ -122,22 +129,14 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 CreatorNames = currentuser.FirstName + " " + currentuser.LasstName,
                 UserId = currentuser.Id,
 
-           };
-
-
+            };
 
             await _context.House_Registration.AddAsync(housereg);
-
             await _context.SaveChangesAsync();
-
-
-
             var emails = housereg.CreatorEmail;
             var creatorusername = LoggedInUser().Result;
             var sendbody = new UserEmailOptions
             {
-
-
                 UserName = creatorusername.FirstName,
                 PayLoad = "sent mail test",
                 ToEmail = emails
@@ -164,68 +163,68 @@ namespace HousingProject.Architecture.HouseRegistration_Services
         public async Task<BaseResponse> Registered_Houses()
         {
            
-            
-          
             var user = LoggedInUser().Result;
+            
 
-
-            if (user.Is_Tenant )
+            if (user.Is_Tenant)
             {
 
-                return new BaseResponse { Code = "123", ErrorMessage = "You dont have permission to vie this" };
+                return new BaseResponse { Code = "123", ErrorMessage = "You dont have permission to view this" };
+            }
+            if (user.IsHouseUsers)
+            {
+
+              var   usershouselist =  Get_HouseUsers_Houses().Result.Body;
+                return new BaseResponse { Code = "200", SuccessMessage = "Successful", Body = usershouselist };
+
             }
 
-            var houselists = await _context.House_Registration.Where(x => x.CreatorEmail == user.Email).OrderByDescending(x => x.DateCreated).ToListAsync();
+           var   houselists = await _context.House_Registration.Where(x => x.CreatorEmail == user.Email).OrderByDescending(x => x.DateCreated).ToListAsync();
+          
+            List<HouseListsViewModel> houses = new List<HouseListsViewModel>();
+            foreach (var houseitem in houselists)
+            {
 
-                List<HouseListsViewModel> houses = new List<HouseListsViewModel>();
-                foreach (var houseitem in houselists)
+                var houselistvm = new HouseListsViewModel
                 {
 
-                    var houselistvm = new HouseListsViewModel
-                    {
+                    House_Location = houseitem.House_Location,
+                    HouseiD = houseitem.HouseiD,
+                    Total_Units = houseitem.Total_Units,
+                    Owner_Firstname = houseitem.Owner_LastName,
+                    Owner_LastName = houseitem.Owner_LastName,
+                    Owner_id_Number = houseitem.Owner_id_Number,
+                    House_Name = houseitem.House_Name,
+                    CreatedBy = houseitem.CreatedBy,
+                    DateCreated = houseitem.DateCreated,
+                    Country = houseitem.Country,
+                    Area = houseitem.Area,
+                    CreatorEmail = houseitem.CreatorEmail,
+                    CreatorNames = houseitem.CreatorNames,
+                };
 
+                houses.Add(houselistvm);
+            }
 
-                        House_Location = houseitem.House_Location,
-                        HouseiD = houseitem.HouseiD,
-                        Total_Units = houseitem.Total_Units,
-                        Owner_Firstname = houseitem.Owner_LastName,
-                        Owner_LastName = houseitem.Owner_LastName,
-                        Owner_id_Number = houseitem.Owner_id_Number,
-                        House_Name = houseitem.House_Name,
-                        CreatedBy = houseitem.CreatedBy,
-                        DateCreated = houseitem.DateCreated,
-                        Country = houseitem.Country,
-                        Area = houseitem.Area,
-                        CreatorEmail = houseitem.CreatorEmail,
-                        CreatorNames = houseitem.CreatorNames,
+            if (user.Is_Admin)
+            {
+                var response = AdminHouseList().Result.Body;
 
+                return new BaseResponse { Code = "200", SuccessMessage = "Successful", Body = response };
+            }
 
-                    };
+            else
+            {
+                return new BaseResponse { Code = "200", SuccessMessage = "Successful", Body = houses };
 
-
-                    houses.Add(houselistvm);
-
-                }
-
-
-
-            return new BaseResponse { Code = "200", SuccessMessage = "Successful", Body = houses };
-                
-                
-
+            }
         }
-
-
-
 
 
         public async Task<BaseResponse> AddAdminContacts(AdminContctsViewModel vm)
         {
 
             var user = LoggedInUser().Result;
-
-           
-
             if (user.Is_Agent)
             {
 
@@ -235,21 +234,17 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                     {
                         Code = "120",
                         ErrorMessage = "Admin email cannot be empty"
-
                     };
-                    }
+                }
 
                 if (vm.Creator == "")
                 {
                     return new BaseResponse { Code = "120", ErrorMessage = "Email address cannot be empty" };
-
                 }
 
                 if (vm.AdminPhoneNumber == "")
                 {
-
                     return new BaseResponse { Code = "122", ErrorMessage = "Phone Number cannot be empty" };
-
                 }
 
                 if (user.Is_Agent)
@@ -257,30 +252,22 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
                     var admincontactsmodel = new AdminContacts
                     {
-
-                        AdminEmail=vm.AdminEmail,
+                        AdminEmail = vm.AdminEmail,
                         Creator = user.Email,
                         AdminPhoneNumber = vm.AdminPhoneNumber,
-                     
+
                     };
                     await _context.AddAsync(admincontactsmodel);
                     await _context.SaveChangesAsync();
-
-
                     return new BaseResponse { Code = "200", SuccessMessage = "Contact Details Added successfully" };
                 }
             }
             else
             {
-
-
                 return new BaseResponse { Code = "124", ErrorMessage = "you dont have the permision to do This" };
             }
             return new BaseResponse { };
         }
-
-
-
 
 
         public async Task<BaseResponse> GetHoousesByLocation(string GetHoousesByLocation)
@@ -332,49 +319,36 @@ namespace HousingProject.Architecture.HouseRegistration_Services
         }
 
 
-
         public async Task<BaseResponse> CreateHouseUser(HouseUsersViewModel vm)
         {
             var user = LoggedInUser().Result;
+            var house = await _context.House_Registration.Where(h => h.HouseiD == vm.HouseID).FirstOrDefaultAsync();
 
             try
             {
-
-
-
                 var createnewnusr = new RegisterViewModel()
                 {
-
-
                     FirstName = vm.FirstName,
                     LasstName = vm.LasstName,
                     BirthDate = "00/00/00",
                     PhoneNumber = vm.PhoneNumber,
                     Email = vm.Email,
-                    Salutation = vm.PhoneNumber,           
+                    Salutation = vm.PhoneNumber,
                     IdNumber = vm.IdNumber,
-               
                     Password = "Password@1234",
                     RetypePassword = "Password@1234",
-                    Gender="Other",
-                    
-                    
-
-
-
-
-
+                    Gender = "N/A",
+                   IsHouseUsers = true,
+                   
                 };
 
                 var response = await _registrationServices.UserRegistration(createnewnusr);
-                var house = await _context.House_Registration.Where(x => x.HouseiD == vm.HouseID).FirstOrDefaultAsync();
+                var specifichouse = await _context.House_Registration.Where(x => x.HouseiD == vm.HouseID).FirstOrDefaultAsync();
 
-                if (response.Code == "200")
+                if (response.Code == "200" || response.Code=="100" )
                 {
-
                     var newhouseUser = new HouseUsers()
                     {
-
                         FirstName = vm.FirstName,
                         LasstName = vm.LasstName,
                         BirthDate = vm.BirthDate,
@@ -382,49 +356,38 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         Email = vm.Email,
                         Salutation = vm.Salutation,
                         IdNumber = vm.IdNumber,
-                        HouseID=vm.HouseID,
+                        HouseID = vm.HouseID,
                         Password = "Password@1234",
                         RetypePassword = "Password@1234",
                         //CreatorId = Convert.ToInt32(user.Id),
-                        Creatormail=user.Email,
-                        HouseName=house.House_Name,
-                        AccountActivated=false
-
-
-
-
+                        Creatormail = user.Email,
+                        HouseName = house.House_Name,
+                        AccountActivated = false,                      
                     };
 
+                    var check_house_user_exist = await _context.HouseUsers.Where(x => x.Email == vm.Email).FirstOrDefaultAsync();
+
+                    if (check_house_user_exist != null)
+                    {
+
+                        return new BaseResponse { Code = "150", ErrorMessage = "The house user already exists" };
+                    }
                     await _context.AddAsync(newhouseUser);
                     await _context.SaveChangesAsync();
 
-
                     return new BaseResponse { Code = "200", SuccessMessage = "House user created successfully " };
-
                 }
                 else
                 {
-
-
                     return new BaseResponse { Code = "380", ErrorMessage = "House User could not be created" };
                 }
-
-
-
-
-
             }
 
             catch (Exception ex)
             {
-
-               
-
-                    return new BaseResponse { Code = "245", ErrorMessage = ex.Message };
+                return new BaseResponse { Code = "245", ErrorMessage = ex.Message };
 
             }
-
-
         }
 
         public async Task<BaseResponse> gethouseById(int houseid)
@@ -434,9 +397,6 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
             return new BaseResponse { Code = "200", SuccessMessage = houses.House_Name };
         }
-
-
-
 
         public async Task<BaseResponse> GetHouseUser(int houseid)
         {
@@ -463,7 +423,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         {
 
                             FirstName = houseUser.FirstName,
-                            LasstName = houseUser.LasstName,     
+                            LasstName = houseUser.LasstName,
                             Email = houseUser.Email,
                             HouseName = houses.House_Name,
                             PhoneNumber = houseUser.PhoneNumber,
@@ -471,18 +431,11 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
                         };
 
-                   
-
-   
-
-                    houseusersresponse.Add(house_user);
+                        houseusersresponse.Add(house_user);
 
                     }
 
-                  
-
                     return new BaseResponse { Code = "200", Body = houseusersresponse };
-
 
                 }
 
@@ -493,11 +446,99 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
                 return new BaseResponse { Code = "130", ErrorMessage = ex.Message };
             }
+        }
 
-          
+        public async Task<BaseResponse> Get_HouseUsers_Houses()
+        {
+            try
+            {
+                using(var scope = _serviceScopeFactory.CreateScope())
+                {
+
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+
+                    var user =  LoggedInUser().Result;
+
+                    if (user.IsHouseUsers)
+                    {
+
+                        var houseuser =  await scopedcontext.HouseUsers.Where(t => t.Email == user.Email).FirstOrDefaultAsync();
+
+                        if (houseuser == null)
+                        {
+                            return new BaseResponse { Code = "150", ErrorMessage = "Tenant does not exist" };
+
+                        }
+
+                        var house =await  scopedcontext.House_Registration.Where(h => h.HouseiD == houseuser.HouseID).ToListAsync();
+
+                        if (houseuser == null)
+                        {
+
+                            return new BaseResponse { Code = "170", ErrorMessage = "House does not exist" };
+                        }
+
+                        if (user.Is_Agent || user.Is_Landlord || user.Is_CareTaker)
+                        {
+
+                            _logger.LogInformation($"houses reached :{house}  {DateTime.Now}");
+                            return new BaseResponse { Code = "200", SuccessMessage = "Queried successfully", Body = house };
+
+                        }
+                        else
+                        {
+
+                            return new BaseResponse { Code = "180", ErrorMessage = "Incomplete setup! Contact the admin for a complete set up " };
+                        }
+
+
+                    }
+                    return new BaseResponse();
+                }
+
+            }
+            catch(Exception ex)
+            {
+
+                return new BaseResponse { Code = "130",ErrorMessage= ex.Message };
+            }
 
 
 
+        }
+
+        public async Task<BaseResponse> AdminHouseList()
+        {
+
+            var Adminhouselists = await _context.House_Registration.OrderByDescending(x => x.DateCreated).ToListAsync();
+
+            List<HouseListsViewModel> Adminhouses = new List<HouseListsViewModel>();
+            foreach (var houseitem in Adminhouselists)
+            {
+
+                var houselistvm = new HouseListsViewModel
+                {
+
+                    House_Location = houseitem.House_Location,
+                    HouseiD = houseitem.HouseiD,
+                    Total_Units = houseitem.Total_Units,
+                    Owner_Firstname = houseitem.Owner_LastName,
+                    Owner_LastName = houseitem.Owner_LastName,
+                    Owner_id_Number = houseitem.Owner_id_Number,
+                    House_Name = houseitem.House_Name,
+                    CreatedBy = houseitem.CreatedBy,
+                    DateCreated = houseitem.DateCreated,
+                    Country = houseitem.Country,
+                    Area = houseitem.Area,
+                    CreatorEmail = houseitem.CreatorEmail,
+                    CreatorNames = houseitem.CreatorNames,
+                };
+
+                Adminhouses.Add(houselistvm);
+            }
+
+            return new BaseResponse { Code = "200", Body = Adminhouses };
         }
     }
 

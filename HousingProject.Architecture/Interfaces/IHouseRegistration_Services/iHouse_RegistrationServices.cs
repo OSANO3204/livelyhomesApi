@@ -19,6 +19,7 @@ namespace HousingProject.Architecture.IHouseRegistration_Services
         Task<BaseResponse> CreateHouseUser(HouseUsersViewModel vm);
         Task<BaseResponse> gethouseById(int houseid);
 
+         Task<BaseResponse> Get_HouseUsers_Houses();
         //Task<string> uploadimage(IFormFile objfiles);
 
         //Task<AddImages> Create(IFormFile file);

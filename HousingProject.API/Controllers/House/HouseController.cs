@@ -80,8 +80,6 @@ namespace HousingProject.API.Controllers.House
         [HttpGet]
         public async Task<BaseResponse> GetHoousesByLocation(string House_Location)
         {
-
-
             return await _house_registrationservices.GetHoousesByLocation(House_Location);
         }
 
@@ -140,6 +138,15 @@ namespace HousingProject.API.Controllers.House
         {
 
             return await _houseUnits.RegisterHouseUnit(vm);
+        }
+
+        [Authorize]
+        [Route("Get_House_Users_Houses")]
+        [HttpGet]
+        public async Task<BaseResponse> Get_HouseUsers_Houses()
+        {
+
+            return await  _house_registrationservices.Get_HouseUsers_Houses();
         }
 
     }
