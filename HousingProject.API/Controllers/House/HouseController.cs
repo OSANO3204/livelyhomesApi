@@ -1,11 +1,14 @@
 ﻿using HousingProject.Architecture.IHouseRegistration_Services;
 using HousingProject.Architecture.Interfaces.IlogginServices;
 using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.Houses.HouseAggrement;
+using HousingProject.Core.ViewModel.Aggreement;
 using HousingProject.Core.ViewModel.House;
 using HousingProject.Core.ViewModel.House.HouseUsersvm;
 using HousingProject.Core.ViewModel.HouseUnitRegistrationvm;
 using HousingProject.Core.ViewModels;
 using HousingProject.Infrastructure.Interfaces.IHouseRegistration_Services;
+using HousingProject.Infrastructure.Response.BaseResponses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -149,5 +152,73 @@ namespace HousingProject.API.Controllers.House
             return await  _house_registrationservices.Get_HouseUsers_Houses();
         }
 
+        [Authorize]
+        [Route("CreateAggreement")]
+        [HttpPost]
+        public Task<AggreementResponse> CreateAggreement(aggreementvm vm)
+        {
+            return _house_registrationservices.CreateAggreement(vm);
+        }
+
+
+        [Authorize]
+        [Route("CreateAggeementSection")]
+        [HttpPost]
+        public  Task AggreementSections(AggrementSections aggreementsection)
+        {
+            return  _house_registrationservices.AggreementSections(aggreementsection);
+
+        }
+
+        [Authorize]
+        [Route("NewSection")]
+        [HttpPost]
+        public async Task<AggreementResponse> AddSection(Sectionsvm vm)
+        {
+            return await _house_registrationservices.AddSection(vm);
+
+        }
+
+
+        [Authorize]
+        [Route("GetAllSection")]
+        [HttpGet]
+        public async Task<AggreementResponse> GetAllAggreementSections()
+        {
+
+            return await _house_registrationservices.GetAllAggreementSections();
+        }
+
+
+        [Authorize]
+        [Route("AddAggreementScetionToAggreement")]
+        [HttpPost]
+        public async Task<AggreementResponse> SelectAggeementSections(int aggreementID, int aggreeementSectionID)
+        {
+
+
+            return await _house_registrationservices.SelectAggeementSections(aggreementID, aggreeementSectionID);
+        }
+
+
+
+        [Authorize]
+        [Route("GetAggrementsection")]
+        [HttpPost]
+        public async Task<classicaggreementresponse> GetAggementSections(int aggreemeniD)
+        {
+
+            return await _house_registrationservices.GetAggementSections(aggreemeniD);
+
+        }
+
+        [Authorize]
+        [Route("GetAggrementsectionByHouseID")]
+        [HttpPost]
+        public async Task<classicaggreementresponse> GetAggementSectionsByHouseID(int HouseID)
+        {
+
+            return await _house_registrationservices.GetAggementSectionsByHouseID(HouseID);
+        }
     }
 }
