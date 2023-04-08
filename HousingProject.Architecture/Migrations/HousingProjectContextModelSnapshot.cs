@@ -213,6 +213,198 @@ namespace HousingProject.Infrastructure.Migrations
                     b.ToTable("UploadImage");
                 });
 
+            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.Aggrement", b =>
+                {
+                    b.Property<int>("AggreementID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("Agent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("AggreeToAggreement")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("EnforceAggreement")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("HouseID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LandlordName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AggreementID");
+
+                    b.ToTable("Aggrement");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.AggrementSections", b =>
+                {
+                    b.Property<int>("AggreementfieldsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("AgentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HouseLocation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HouseName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Increase_flat_rate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Increasepercentage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LandlordName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Maintainance_and_Repairs")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Other_Aggreements")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Rent_Increased_After_in_years")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecurityDeposit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ServiceFee")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantNmae")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("show_AgentName")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_HouseLocation")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_HouseName")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_Increase_flat_rate")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_Increasepercentage")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_LandlordName")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_Maintainance_and_Repairs")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_Other_Aggreement")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_Rent_Increased_After_in_years")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_SecurityDeposit")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_ServiceFee")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("show_TenantNmae")
+                        .HasColumnType("bit");
+
+                    b.HasKey("AggreementfieldsId");
+
+                    b.ToTable("AggrementSections");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.HouseAggrementMapper", b =>
+                {
+                    b.Property<int>("Aggreement_sections_mapperID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("AggrementID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Aggrement_sections_fields")
+                        .HasColumnType("int");
+
+                    b.HasKey("Aggreement_sections_mapperID");
+
+                    b.ToTable("HouseAggrementMapper");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.MapperofAggreement", b =>
+                {
+                    b.Property<int>("Aggreement_sections_mapperID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("AggrementID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Aggrement_sections_fields")
+                        .HasColumnType("int");
+
+                    b.HasKey("Aggreement_sections_mapperID");
+
+                    b.ToTable("MapperofAggreement");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.SectionMapper", b =>
+                {
+                    b.Property<int>("SectionMapperID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("AggreemenID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AggreementSectionID")
+                        .HasColumnType("int");
+
+                    b.HasKey("SectionMapperID");
+
+                    b.ToTable("SectionMapper");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.Sections", b =>
+                {
+                    b.Property<int>("AggreementSectiondID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsTrue")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SectionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AggreementSectiondID");
+
+                    b.ToTable("Sections");
+                });
+
             modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseUnitRegistration.GeneratedIdHolder", b =>
                 {
                     b.Property<int>("GeneratorId")

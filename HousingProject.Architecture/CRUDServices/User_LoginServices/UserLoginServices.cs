@@ -68,7 +68,6 @@ namespace HousingProject.Architecture.Services.User_Login
 
             return null;
         }
-
         public async Task<authenticationResponses>   Authenticate(UserLogin loggedinuser)
         {
             try

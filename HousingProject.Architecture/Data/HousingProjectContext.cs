@@ -1,8 +1,10 @@
 ﻿using HousingProject.Core.Models.CountiesModel;
 using HousingProject.Core.Models.General;
+using HousingProject.Core.Models.Houses;
 using HousingProject.Core.Models.Houses.Flats.AdminContacts;
 using HousingProject.Core.Models.Houses.Flats.House_Registration;
 using HousingProject.Core.Models.Houses.Flats.uploadImage;
+using HousingProject.Core.Models.Houses.HouseAggrement;
 using HousingProject.Core.Models.Houses.HouseUnitRegistration;
 using HousingProject.Core.Models.Houses.HouseUsers;
 using HousingProject.Core.Models.ImagesModelsUsed;
@@ -62,14 +64,16 @@ namespace HousingProject.Architecture.Data
         public DbSet<ImaageUploadClass> ImaageUploadClass { get; set; }
 
         public DbSet<RentDebit> RentDebit { get; set; }
-
         public DbSet<RegisterProfessional> RegisterProfessional { get; set; }
         public DbSet<HouseUnit> HouseUnit { get; set; }
-
         public DbSet<GeneratedIdHolder> GeneratedIdHolder { get; set; }
-
         public DbSet<WorkIdModel> WorkIdModel { get; set; }
-
+        public DbSet<Aggrement> Aggrement { get; set; }
+        public DbSet<AggrementSections> AggrementSections { get; set; }
+        public DbSet<HouseAggrementMapper> HouseAggrementMapper { get; set; }
+        public DbSet<MapperofAggreement> MapperofAggreement { get; set; }
+        public DbSet<Sections> Sections { get; set; }
+        public DbSet<SectionMapper> SectionMapper { get; set; }
 
 
     }

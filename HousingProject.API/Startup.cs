@@ -203,7 +203,7 @@ namespace HousingProject.API
             }
 
             //app.UseHttpsRedirection();
-
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseCors(builder =>
             {
