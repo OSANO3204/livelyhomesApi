@@ -218,7 +218,7 @@ namespace HousingProject.API.Controllers.House
         public async Task<classicaggreementresponse> GetAggementSectionsByHouseID(int HouseID)
         {
 
-            return await _house_registrationservices.GetAggementSectionsByHouseID(HouseID);
+            return  await _house_registrationservices.GetAggementSectionsByHouseID(HouseID);
         }
     }
 }
