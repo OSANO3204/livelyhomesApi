@@ -16,6 +16,11 @@ C:\Users\brian.otieno.SLAFRICA\source\repos\HousingProject\HousingProject.Archit
 C:\Users\brian.otieno.SLAFRICA\source\repos\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.pdb
 C:\Users\brian.otieno.SLAFRICA\source\repos\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.genruntimeconfig.cache
 C:\Users\brian.otieno.SLAFRICA\source\repos\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\ref\HousingProject.Infrastructure.dll
+D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.csproj.AssemblyReference.cache
+D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.AssemblyInfoInputs.cache
+D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.AssemblyInfo.cs
+D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.csproj.CoreCompileInputs.cache
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Infrastructure.deps.json
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Infrastructure.runtimeconfig.json
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Infrastructure.runtimeconfig.dev.json
@@ -23,14 +28,9 @@ D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Infrastructure.pdb
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Core.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Core.pdb
-D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.csproj.AssemblyReference.cache
-D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
-D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.AssemblyInfoInputs.cache
-D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.AssemblyInfo.cs
-D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.csproj.CoreCompileInputs.cache
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.csproj.CopyComplete
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\ref\HousingProject.Infrastructure.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.pdb
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.genruntimeconfig.cache
-D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\refint\HousingProject.Infrastructure.dll
+D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\ref\HousingProject.Infrastructure.dll

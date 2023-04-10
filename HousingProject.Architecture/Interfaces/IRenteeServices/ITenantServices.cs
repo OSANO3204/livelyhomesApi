@@ -2,6 +2,7 @@
 using HousingProject.Core.Models.People.General;
 using HousingProject.Core.ViewModel.Rentee;
 using HousingProject.Core.ViewModel.Rentpayment;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,6 +23,9 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task<IEnumerable> rentpaymentList(int tenantId);
         Task<BaseResponse> GetLoggedInTenant();
         Task<BaseResponse> GetLogeedInTenantHouse();
+        Task<BaseResponse> SpecificTenantReminderonRentPayment(int tenantid);
+         Task<BaseResponse> UpdateRentPayday(DateTime rentpaydate, string email);
+
 
 
     }

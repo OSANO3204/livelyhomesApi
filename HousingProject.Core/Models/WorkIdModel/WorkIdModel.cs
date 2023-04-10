@@ -12,7 +12,6 @@ namespace HousingProject.Core.Models.WorkIdModel
         [Key]
 
         public int WorkIdKey { get; set; }
-
         public int WorkIdSaved { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.Now;
     }

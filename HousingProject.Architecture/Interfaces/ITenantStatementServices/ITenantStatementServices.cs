@@ -12,5 +12,6 @@ namespace HousingProject.Infrastructure.Interfaces.ITenantStatementServices
     {
         Task<BaseResponse> Rentpayments(TenntDebitvm vm);
 
+
     }
 }
