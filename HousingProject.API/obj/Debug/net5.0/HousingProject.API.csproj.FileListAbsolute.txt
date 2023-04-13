@@ -202,3 +202,8 @@ D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\runti
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\runtimes\win-x64\native\krbcc64.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\ref\HousingProject.API.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\staticwebassets\HousingProject.API.StaticWebAssets.xml
+D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\Microsoft.Extensions.DependencyInjection.dll
+D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\Microsoft.Extensions.Http.dll
+D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\Microsoft.Extensions.Logging.dll
+D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\Microsoft.Extensions.Logging.Abstractions.dll
+D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\System.Diagnostics.DiagnosticSource.dll

@@ -18,6 +18,7 @@ namespace HousingProject.Architecture.Interfaces.IlogginServices
         Task<BaseResponse> ChangeLastName(string LastName);
         Task<BaseResponse> ContactUs(ContactUsViewModel vm);
         Task<BaseResponse> GetUserroles();
+    
 
 
         }

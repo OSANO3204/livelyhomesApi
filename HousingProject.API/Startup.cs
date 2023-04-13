@@ -16,6 +16,7 @@ using HousingProject.Core.Models.Email;
 using HousingProject.Core.Models.Houses.HouseUnitRegistration;
 using HousingProject.Core.Models.People;
 using HousingProject.Infrastructure.CRUDServices.HouseRegistration_Services.HouseUnitsServices;
+using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
 using HousingProject.Infrastructure.CRUDServices.Payments.Rent;
 using HousingProject.Infrastructure.CRUDServices.ProfessionalsServices;
 using HousingProject.Infrastructure.CRUDServices.UsersExtra;
@@ -84,11 +85,12 @@ namespace HousingProject.API
                 .WithIdentity("Emailjob-trigger")
                 .WithCronSchedule("0/2 * * * * ?")); 
 
-
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-
-
+            services.AddHttpClient("mpesa", m => { m.BaseAddress =
+                new System.Uri("https://sandbox.safaricom.co.ke"
+                
+                );});
 
             services.Configure<FormOptions>(o =>
             {
@@ -185,7 +187,7 @@ namespace HousingProject.API
             services.AddScoped<ICheckroles, CheckRoles>();
             services.AddScoped<IAdminServices, AdminService>();
             services.AddScoped<IUserExtraServices, UserExtraServices>();
-             
+            services.AddScoped<IpaymentServices, PaymentServices>();
             services.AddCors();
            
         }

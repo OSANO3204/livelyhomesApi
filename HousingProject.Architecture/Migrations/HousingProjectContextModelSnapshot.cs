@@ -582,8 +582,14 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<bool>("ClosedMessages")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Message_title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserMessage")
                         .HasColumnType("nvarchar(max)");
@@ -971,6 +977,33 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("RentpaidId");
 
                     b.ToTable("Rentpayment");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.Reply.replyModel", b =>
+                {
+                    b.Property<int>("ReplyID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<bool>("Closed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MessageID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reply")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponseAgent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReplyID");
+
+                    b.ToTable("replyModel");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.WorkIdModel.WorkIdModel", b =>

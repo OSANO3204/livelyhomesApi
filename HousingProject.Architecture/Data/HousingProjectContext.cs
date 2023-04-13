@@ -13,6 +13,7 @@ using HousingProject.Core.Models.People.General;
 using HousingProject.Core.Models.People.Landlord;
 using HousingProject.Core.Models.Professionals;
 using HousingProject.Core.Models.RentPayment;
+using HousingProject.Core.Models.Reply;
 using HousingProject.Core.Models.WorkIdModel;
 using HousingProject.Infrastructure.ExtraFunctions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -74,6 +75,8 @@ namespace HousingProject.Architecture.Data
         public DbSet<MapperofAggreement> MapperofAggreement { get; set; }
         public DbSet<Sections> Sections { get; set; }
         public DbSet<SectionMapper> SectionMapper { get; set; }
+
+        public DbSet<replyModel> replyModel { get; set; }
 
 
     }
