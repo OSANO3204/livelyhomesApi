@@ -8,9 +8,6 @@
     <Folder Include="Models\Houses\Flats\HouseOwner%28s%29\" />
     <Folder Include="Models\Transactions\" />
     <Folder Include="Models\Stata\" />
-    <Folder Include="ViewModel\NewFolder1\" />
-    <Folder Include="ViewModel\NewFolder2\" />
-    <Folder Include="ViewModel\NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>

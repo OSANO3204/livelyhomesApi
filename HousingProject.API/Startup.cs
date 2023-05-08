@@ -78,14 +78,19 @@ namespace HousingProject.API
                 q.UseMicrosoftDependencyInjectionJobFactory();
 
                 var jobkey = new JobKey("Emailjob");
-
                 q.AddJob<Emailjob>(z => z.WithIdentity(jobkey));
-
                 q.AddTrigger(y => y.ForJob(jobkey)
                 .WithIdentity("Emailjob-trigger")
-                .WithCronSchedule("0/2 * * * * ?")); 
+                .WithCronSchedule("0/58 * * * * ?"));
 
-            });
+                //automated rent payday
+                var automatedrentpaymentkey = new JobKey("automatedMail");
+                q.AddJob<automatedMail>(z => z.WithIdentity(automatedrentpaymentkey));
+                q.AddTrigger(y => y.ForJob(automatedrentpaymentkey)
+                .WithIdentity("automatedMail-trigger")
+                .WithCronSchedule("0 0 12 5 1/1 ? *"));
+                //.WithCronSchedule("0 0/5 * 1/1 * ? *"));
+        });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             services.AddHttpClient("mpesa", m => { m.BaseAddress =
                 new System.Uri("https://sandbox.safaricom.co.ke"

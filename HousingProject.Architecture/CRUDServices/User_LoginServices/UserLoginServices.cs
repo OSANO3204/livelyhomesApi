@@ -61,6 +61,7 @@ namespace HousingProject.Architecture.Services.User_Login
         public async Task<RegistrationModel>
         ValidateUser(UserLogin credentials)
         {
+
             var identityUser =
                 await usermanager.FindByEmailAsync(credentials.UserName);
             if (identityUser != null)

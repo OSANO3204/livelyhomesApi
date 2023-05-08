@@ -16,6 +16,7 @@ using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
     {
         private readonly HousingProjectContext _context;
         private readonly IEmailServices _iemailservvices;
-
+        private readonly ILogger<ITenantServices> _logger;
         private readonly ILoggedIn _loggedIn;
         private readonly IServiceScopeFactory _scopeFactory;
         public readonly IRegistrationServices _registrationServices;
@@ -40,7 +41,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
           IEmailServices iemailservvices,
           IRegistrationServices registrationServices,
            ILoggedIn loggedIn,
-           IServiceScopeFactory scopeFactory
+           IServiceScopeFactory scopeFactory,
+            ILogger<ITenantServices> logger
 
 
         )
@@ -51,6 +53,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             _registrationServices = registrationServices;
             _loggedIn = loggedIn;
             _scopeFactory = scopeFactory;
+            _logger = logger;
         }
 
         // get loggin user
@@ -705,18 +708,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             RenTAmount = tenant.House_Rent,
                             Message = $"Hi Kindly be reminded that your rent  amount of {tenant.House_Rent} is payable on or before {tenant.RentPayDay}, reach out on {tenant.BuildingCareTaker_PhoneNumber} for any further enquiry, or request of extension"
 
-
-
                         };
-
-
-
-                        if (DateTime.Now == tenant.RentPayDay)
-                        {
-
-
-                        }
-
                     }
                     return new BaseResponse();
                 }
@@ -753,18 +745,84 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     await scopedcontext.SaveChangesAsync();
                     return new BaseResponse { Code = "200", ErrorMessage = "Successfully updated tenant rent" };
                 }
-                return new BaseResponse();
-
             }
             catch (Exception ex)
             {
-
-
                 return new BaseResponse { Code = "170", ErrorMessage = ex.Message };
-
-
-
             }
         }
+
+
+        public async Task AutomtedRentNotiication()
+        {
+            try
+            {
+                _logger.LogInformation("_______________________starting______________ rent __________________emailing ________________________");
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var alltenants = await scopedcontext.TenantClass.ToListAsync();
+                    if (alltenants == null)
+                    {
+                        _logger.LogInformation("Tenants do not exist");
+                    }
+                    foreach (var singletenant in alltenants)
+                    {
+                        if (singletenant.ReminderSent==false )
+                        {
+                        //    var sendmail = new AutomaticMessaging
+                        //    {
+                        //        TenantNmes = singletenant.FirstName + " " + singletenant.LastName,
+                        //        ToEmail = singletenant.Email,
+                        //        SentDate = singletenant.RentPayDay,
+                        //        Meessage = $"Hi {singletenant.FirstName}  {singletenant.LastName} ,just a kind reminder," +
+                        //        $"Kindly be reminded that your rent paydate is {string.Format("{0:dd/MM/yyyy}", singletenant.RentPayDay)}"
+                        //    };
+                            var sendmail = new AutomaticMessaging
+                            {
+                                TenantNmes = "Brian Otieno",
+                                ToEmail = "osano3204@gmail.com",
+                                // RentDate = singletenant.RentPayDay,
+                                SentDate = DateTime.Now,
+                                Meessage = $"Hi juds iscariot ,just a kind reminder," +
+                                    $"Kindly be reminded that your rent paydate is {string.Format("{0:dd/MM/yyyy}", DateTime.Now)}"
+                            };
+                           // var resp = await _iemailservvices.notificationOnRentPaymeentDay(sendmail);
+
+                            //if (resp.Code == "200")
+                            //{
+                            //    singletenant.ReminderSent = true;
+                            //    var sendcount = await scopedcontext.TenantClass.Where(t => t.RenteeId == singletenant.RenteeId).FirstOrDefaultAsync();
+                            //    sendcount.RemindersentCount = +1;
+                            //    singletenant.RemindersentCount = sendcount.RemindersentCount;
+                            //        scopedcontext.Update(singletenant);
+                            //    await scopedcontext.SaveChangesAsync();                               
+                            //    _logger.LogInformation($" Email sent to ___ {sendmail.TenantNmes}, " +
+                            //    $"{sendmail.ToEmail} ___ at ____ {string.Format("{0:dd/MM/yyyy}", DateTime.Now)}________");
+                            //}
+                            //else
+                            //{
+                            //   _logger.LogInformation("Email not sent to tenant");                               
+                            //}
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Email already sent ");
+                        }
+                    }
+                }
+               
+            }
+                
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed with error _______________{ex.Message} ____");
+
+            }
+
+
+        }
+
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.ViewModel.Professionalsvm;
 using HousingProject.Infrastructure.Interfaces.IProfessionalsServices;
+using HousingProject.Infrastructure.Response.VotesResponse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -63,6 +64,32 @@ namespace HousingProject.API.Controllers
         {
 
             return await _professionalsServices.GetProfessionalByEmail();
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("Update_Upvotes")]
+        public async Task<VotesResponse> Update_UpVotes(int userid)
+                {
+                    return await _professionalsServices.Update_UpVotes(userid);
+                }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Update_Downvotes")]
+        public async Task<VotesResponse> Update_DownVotes(int userid)
+                {
+               return await _professionalsServices.Update_DownVotes(userid);
+                }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get_User_rating")]
+        public async Task<VotesResponse> Userrating(int userid)
+        {
+            return await _professionalsServices.Userrating(userid);
+
         }
 
 

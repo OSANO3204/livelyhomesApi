@@ -24,12 +24,10 @@ namespace HousingProject.Architecture.Data
     public class HousingProjectContext : IdentityDbContext<RegistrationModel>
     {
 
-
         public HousingProjectContext(DbContextOptions<HousingProjectContext> options) : base(options)
         {
 
         }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -77,6 +75,8 @@ namespace HousingProject.Architecture.Data
         public DbSet<SectionMapper> SectionMapper { get; set; }
 
         public DbSet<replyModel> replyModel { get; set; }
+
+        public DbSet<AddCountyArea> AddCountyArea { get; set; }
 
 
     }

@@ -1,5 +1,6 @@
 ﻿using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.Models.People.General;
+using HousingProject.Core.ViewModel;
 using HousingProject.Core.ViewModel.Rentee;
 using HousingProject.Core.ViewModel.Rentpayment;
 using System;
@@ -24,9 +25,7 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task<BaseResponse> GetLoggedInTenant();
         Task<BaseResponse> GetLogeedInTenantHouse();
         Task<BaseResponse> SpecificTenantReminderonRentPayment(int tenantid);
-         Task<BaseResponse> UpdateRentPayday(DateTime rentpaydate, string email);
-
-
-
+        Task<BaseResponse> UpdateRentPayday(DateTime rentpaydate, string email);
+        Task AutomtedRentNotiication();
     }
 }

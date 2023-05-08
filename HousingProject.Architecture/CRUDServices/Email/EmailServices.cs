@@ -4,6 +4,7 @@ using HousingProject.Core.Models.Email;
 using HousingProject.Core.ViewModel;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using System;
@@ -14,13 +15,15 @@ namespace HousingProject.Architecture.CRUDServices.Email
 {
     public class EmailServices : IEmailServices
     {
-
+        private readonly ILogger<IEmailServices>  _logger;
         //private readonly IConfiguration configuration;
         private readonly EmailConfiguration _emailconfig;
 
-        public EmailServices(IOptions<EmailConfiguration> emailconfig)
+        public EmailServices(IOptions<EmailConfiguration> emailconfig,
+            ILogger<IEmailServices> logger)
         {
             _emailconfig = emailconfig.Value;
+            _logger = logger;
 
         }
 
@@ -28,20 +31,20 @@ namespace HousingProject.Architecture.CRUDServices.Email
         {
             try
             {
-               var email = new MimeMessage { Sender = MailboxAddress.Parse(_emailconfig.SmtpUser) };
-                email.To.Add(MailboxAddress.Parse(recipient));
-                email.Subject = subject;
+                var email = new MimeMessage { Sender = MailboxAddress.Parse(_emailconfig.SmtpUser) };
                 var builder = new BodyBuilder { HtmlBody = mailText };
                 email.Body = builder.ToMessageBody();
-                var smtp = new SmtpClient();
-                await smtp.ConnectAsync(_emailconfig.SmtpHost, Convert.ToInt32(_emailconfig.SmtpPort), SecureSocketOptions.StartTls);
+                email.To.Add(MailboxAddress.Parse(recipient));
+                email.Subject= subject;
+                using var smtp = new SmtpClient();
+                await  smtp.ConnectAsync(_emailconfig.SmtpHost, Convert.ToInt32(_emailconfig.SmtpPort), MailKit.Security.SecureSocketOptions.StartTls);
                 await smtp.AuthenticateAsync(_emailconfig.EmailFrom, _emailconfig.SmtpPass);
-                var response = await smtp.SendAsync(email);
+                _logger.LogInformation("_____________________ 3 email sender links ________________________________");      
+                var resped= await smtp.SendAsync(email);
                 await smtp.DisconnectAsync(true);
-
+                _logger.LogInformation("logging reponse : ", resped);
                 return new BaseResponse { Code = "200", SuccessMessage = "Email sent successfully" };
             }
-
             catch (Exception ex)
             {
                 return new BaseResponse { Code = "001", ErrorMessage = ex.Message };
@@ -147,16 +150,13 @@ namespace HousingProject.Architecture.CRUDServices.Email
             str.Close();
             MailText = MailText.Replace("User", options.UserName).Replace("user", options.PayLoad);
             var result = await SendEmail(MailText, "Dear Sir/Madam", options.ToEmail);
-
             if (result.Code == "200")
             {
-
                 return new BaseResponse { Code = "200" };
             }
             return new BaseResponse { Code = "350" };
-
-
         }
+
         public async Task<BaseResponse> SendTenantEmailReminderOnRentPayment(TenantReminderEmail options)
         {
             var file = @"Templates/Email/email_sent_to_remind_Tenant_of_rent_payment.html";
@@ -168,7 +168,6 @@ namespace HousingProject.Architecture.CRUDServices.Email
 
             if (result.Code == "200")
             {
-
                 return new BaseResponse { Code = "200" };
             }
             else
@@ -177,6 +176,7 @@ namespace HousingProject.Architecture.CRUDServices.Email
             }
 
         }
+
         public async Task AutomatedNotificationonRentpayday(EmailNotificationOnRentPayment options)
         {
             var file = @"Templates/Email/email_sent_to_remind_Tenant_of_rent_payment.html";
@@ -185,8 +185,6 @@ namespace HousingProject.Architecture.CRUDServices.Email
             str.Close();
             MailText = MailText.Replace("User", options.UserName).Replace("Body", options.PayLoad).Replace("Message", options.Message).Replace("sentDate", Convert.ToString(options.sentDate)).Replace("Names", options.UserName);
             await SendEmail(MailText, "Dear Sir/Madam", options.ToEmail);
-
-
         }
 
          public async Task SendMessageReply(message_replybody options)
@@ -202,8 +200,31 @@ namespace HousingProject.Architecture.CRUDServices.Email
                 .Replace("agentname", options.AgentName)
                 .Replace("companyphone", options.CompanyPhone);
             await SendEmail(MailText,  $"Dear {options.Receivername}", options.sendermail);
+        }
 
+        public async Task<BaseResponse> notificationOnRentPaymeentDay(AutomaticMessaging options)
+        {
+            var file = @"Templates/Email/automated_rent_payment_Date.html";
+            StreamReader str = new StreamReader(file);
+            string MailText = await str.ReadToEndAsync();
+            str.Close();
+            MailText = MailText
+                 .Replace("User", options.TenantNmes)
+                 .Replace("SentDate", options.SentDate.ToString())
+                 .Replace("Message", options.Meessage)
+                 .Replace("Names", options.ToEmail);
+            var response=    await SendEmail(MailText, "Dear Sir/Madam", options.ToEmail);
+            if (response.Code == "200")
+            {       
+                _logger.LogInformation("sent mailsuccessfully");
+                return new BaseResponse { Code = "200", SuccessMessage = "Email successfully sent" };
+            }
+            else
+            {
 
+               _logger.LogInformation(response.ErrorMessage);
+                return new BaseResponse { Code = "250", SuccessMessage = "Email not sent" };
+            }
         }
     }
 }

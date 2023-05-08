@@ -67,19 +67,9 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
           
 
         }
-        //public async Task<object> mpesa_validationUrl()
-        //{
-        //    try
-        //    {
-        //        using (var scope = _serviceScopeFactory.CreateScope())
-        //        {
-        //            var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return new { ex.Message };
-        //    }
-        //}
+      //public async Task<object> C2BTransaction()
+      //  {
+         
+      //  }
     }
 }
