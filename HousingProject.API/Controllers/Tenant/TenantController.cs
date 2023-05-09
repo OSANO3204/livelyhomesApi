@@ -162,6 +162,19 @@ namespace HousingProject.API.Controllers.Rentee
             return await _irenteeServices.UpdateRentPayday(rentpaydate, email);
         }
 
+        [Authorize]
+        [Route("allsentreminders")]
+        [HttpPost]
+        public async Task<BaseResponse> AllRemindersSent(int houseid)
+        {
+            return await _irenteeServices.AllRemindersSent(houseid);
+
+        }
+
+      
+
+
+
 
 
 

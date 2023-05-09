@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230509071051_Add reminder sent table")]
+    partial class Addremindersenttable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -957,9 +959,6 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("DoorNumber")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HouseId")
                         .HasColumnType("int");
 
                     b.Property<string>("HouseName")

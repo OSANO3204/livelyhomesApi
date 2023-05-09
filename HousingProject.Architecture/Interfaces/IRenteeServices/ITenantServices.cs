@@ -27,5 +27,7 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task<BaseResponse> SpecificTenantReminderonRentPayment(int tenantid);
         Task<BaseResponse> UpdateRentPayday(DateTime rentpaydate, string email);
         Task AutomtedRentNotiication();
+        Task<BaseResponse> ReminderSentEntry(int tenantid);
+        Task<BaseResponse> AllRemindersSent(int houseid);
     }
 }
