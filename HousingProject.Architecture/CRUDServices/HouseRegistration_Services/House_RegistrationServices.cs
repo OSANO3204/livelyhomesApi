@@ -120,6 +120,40 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
                 return new BaseResponse { Code = "129", ErrorMessage = "You don't  have access to do this" };
             }
+
+            if (newvm.House_Location=="")
+            {
+                return new BaseResponse { Code = "110", ErrorMessage = "House location cannot be null" }; 
+            }
+            if (newvm.Total_Units<=0)
+            {
+                return new BaseResponse { Code = "110", ErrorMessage = "House units cannot be less than or equal to zero" };
+            }
+            if (newvm.Owner_Firstname == "")
+            {
+                return new BaseResponse { Code = "110", ErrorMessage = "owner first name cannot be empty" };
+            }
+
+            if (newvm.Owner_LastName == "")
+            {
+                return new BaseResponse { Code = "110", ErrorMessage = "owner last name cannot be empty" };
+            }
+            if (newvm.Country == "")
+            {
+                return new BaseResponse { Code = "110", ErrorMessage = "County field cannot be empty" };
+            }
+            if (newvm.Estimated_Maximum_Capacity<=0)
+            {
+                return new BaseResponse { Code = "110", ErrorMessage = "Estimated capacity must me higher than zero" };
+            }
+            if (newvm.Owner_id_Number<=0)
+            {
+
+                return new BaseResponse { Code = "110", ErrorMessage = "House owner id cannot be null" };
+            }
+            {
+                return new BaseResponse { Code = "110", ErrorMessage = "Hpuse location cannot be null" };
+            }
             var housereg = new House_Registration
             {
                 Owner_Firstname = newvm.Owner_Firstname,
@@ -297,6 +331,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
         public async Task<BaseResponse> GetHousesBy_OwnerIdNumber(int OwnerId)
         {
+
             var gethouses = await _context.House_Registration
                 .Where(x => x.Owner_id_Number == OwnerId)
                 .ToListAsync();
