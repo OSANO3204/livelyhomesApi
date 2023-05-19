@@ -25,5 +25,6 @@
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgMicrosoft_Extensions_ApiDescription_Server Condition=" '$(PkgMicrosoft_Extensions_ApiDescription_Server)' == '' ">C:\Users\brian.otieno.SLAFRICA\.nuget\packages\microsoft.extensions.apidescription.server\3.0.0</PkgMicrosoft_Extensions_ApiDescription_Server>
     <PkgMicrosoft_VisualStudio_Azure_Containers_Tools_Targets Condition=" '$(PkgMicrosoft_VisualStudio_Azure_Containers_Tools_Targets)' == '' ">C:\Users\brian.otieno.SLAFRICA\.nuget\packages\microsoft.visualstudio.azure.containers.tools.targets\1.11.1</PkgMicrosoft_VisualStudio_Azure_Containers_Tools_Targets>
+    <PkgjQuery Condition=" '$(PkgjQuery)' == '' ">C:\Users\brian.otieno.SLAFRICA\.nuget\packages\jquery\3.0.0</PkgjQuery>
   </PropertyGroup>
 </Project>

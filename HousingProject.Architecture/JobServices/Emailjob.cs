@@ -3,11 +3,8 @@ using HousingProject.Architecture.Data;
 using HousingProject.Architecture.Interfaces.IEmail;
 using HousingProject.Architecture.Interfaces.IRenteeServices;
 using HousingProject.Core.Models.Email;
-using Microsoft.EntityFrameworkCore;
 using Quartz;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HousingProject.Infrastructure.JobServices
@@ -31,7 +28,6 @@ namespace HousingProject.Infrastructure.JobServices
 
         public async Task<IEnumerable> getalltenants()
         {
-
             return await _tenantServices.GetAllRenteess();
         }
 
@@ -40,18 +36,11 @@ namespace HousingProject.Infrastructure.JobServices
 
             var sendbody = new UserEmailOptions
             {
-
                 UserName = "A reminder",
                 PayLoad = "To remind you to pay your rent ",
                 ToEmail = "osano3204@gmail.com"
-            };
-
-
-
-            
+            };           
             //_iemailservices.sendEmailOnHouseRegistration(sendbody);
-
-
                 return Task.CompletedTask;
 
             }

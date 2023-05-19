@@ -14,7 +14,7 @@ namespace HousingProject.Core.Models.CountiesModel
         public int CountyId { get; set; }
         public string CountyName { get; set; }
         public string AddedBy { get; set; }
-        public int CreatorID { get; set; }
+        public string CreatorID { get; set; }
         public DateTime MyProperty { get; set; } = DateTime.Now;
     }
 }

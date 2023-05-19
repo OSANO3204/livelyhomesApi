@@ -66,5 +66,8 @@ namespace HousingProject.Core.Models.People.General
         [DisplayName("CurrentMonthrent"), DataType(DataType.Password)]
         
         public Double currentMonthRent { get; set; }
+
+        public bool ReminderSent { get; set; } = false;
+        public int RemindersentCount { get; set; }
     }
 }

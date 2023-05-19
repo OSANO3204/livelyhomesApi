@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Folder Include="Models\Houses\Flats\HouseOwner%28s%29\" />
+    <Folder Include="Models\Transactions\" />
     <Folder Include="Models\Stata\" />
   </ItemGroup>
 

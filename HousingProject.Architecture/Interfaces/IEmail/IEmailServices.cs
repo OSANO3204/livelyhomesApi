@@ -1,5 +1,6 @@
 ﻿using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.Models.Email;
+using HousingProject.Core.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,7 @@ namespace HousingProject.Architecture.Interfaces.IEmail
         Task<BaseResponse> SentdirectlytonewTenant(UserEmailOptions options);
         Task<BaseResponse> EmailingAutomatically(UserEmailOptions options);
         Task<BaseResponse> SendTenantEmailReminderOnRentPayment(TenantReminderEmail options);
+        Task SendMessageReply(message_replybody options);
+        Task<BaseResponse> notificationOnRentPaymeentDay(AutomaticMessaging options);
     }
 }

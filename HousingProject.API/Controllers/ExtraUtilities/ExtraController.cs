@@ -1,4 +1,5 @@
 ﻿using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.ViewModel.Professionalsvm;
 using HousingProject.Infrastructure.ExtraFunctions.IExtraFunctions;
 using HousingProject.Infrastructure.ExtraFunctions.vm;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +13,7 @@ namespace HousingProject.API.Controllers.ExtraUtilities
     [Route("api/[controller]", Name = "Building_Apartment")]
     [ApiController]
 
-    public class ExtraController: IextraFunctions
+    public class ExtraController : IextraFunctions
     {
         public readonly IextraFunctions _iextraFunctions;
         public ExtraController(IextraFunctions iextraFunctions)
@@ -33,7 +34,28 @@ namespace HousingProject.API.Controllers.ExtraUtilities
         [HttpGet]
         public async Task<IEnumerable> GetCounties()
         {
-            return await  _iextraFunctions.GetCounties();
+            return await _iextraFunctions.GetCounties();
         }
+
+        [Authorize]
+        [Route("GetOperationalareabyCountyid")]
+        [HttpPost]
+        public async Task<BaseResponse> GetOperationalareaBycountyid(int countyid)
+        {
+            return await _iextraFunctions.GetOperationalareaBycountyid(countyid);
+
+        }
+
+        [Authorize]
+        [Route("AddCountyoperationalareas")]
+        [HttpPost]
+        public async Task<BaseResponse> AddCountyAreas(AddCountyAreavm vm)
+        {
+            return await _iextraFunctions.AddCountyAreas(vm);
+        }
+        
+
+
+        
     }
 }

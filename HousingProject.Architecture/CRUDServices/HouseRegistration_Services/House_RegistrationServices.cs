@@ -94,76 +94,117 @@ namespace HousingProject.Architecture.HouseRegistration_Services
         //end
         public async Task<BaseResponse> Register_House(HouseRegistrationViewModel newvm)
         {
-            var currentuser = LoggedInUser().Result;
 
-
-            if (currentuser.Is_CareTaker && currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent)
+            try
             {
-                return new BaseResponse { Code = "159", ErrorMessage = "You cannot register a house, your role is a caretaker and a tenant" };
+                var currentuser = LoggedInUser().Result;
 
-            }
 
-            if (currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_CareTaker)
-            {
-                return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a tenant" };
-
-            }
-            if (currentuser.Is_CareTaker && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_Tenant)
-            {
-                return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a caretaker" };
-
-            }
-
-            //var currentuser = LoggedInUser().Result;
-            if (!currentuser.Is_Agent && !currentuser.Is_Landlord)
-            {
-
-                return new BaseResponse { Code = "129", ErrorMessage = "You don't  have access to do this" };
-            }
-            var housereg = new House_Registration
-            {
-                Owner_Firstname = newvm.Owner_Firstname,
-                Owner_LastName = newvm.Owner_LastName,
-                Owner_id_Number = newvm.Owner_id_Number,
-                House_Name = newvm.House_Name,
-                Total_Units = newvm.Total_Units,
-                Area = newvm.Area,
-                Country = newvm.Country,
-                House_Location = newvm.House_Location,
-                Estimated_Maximum_Capacity = newvm.Estimated_Maximum_Capacity,
-                EmailSent = false,
-                CreatorEmail = currentuser.Email,
-                CreatorNames = currentuser.FirstName + " " + currentuser.LasstName,
-                UserId = currentuser.Id,
-
-            };
-
-            await _context.House_Registration.AddAsync(housereg);
-            await _context.SaveChangesAsync();
-            var emails = housereg.CreatorEmail;
-            var creatorusername = LoggedInUser().Result;
-            var sendbody = new UserEmailOptions
-            {
-                UserName = creatorusername.FirstName,
-                PayLoad = "sent mail test",
-                ToEmail = emails
-            };
-
-            var result = await _iemailservices.sendEmailOnHouseRegistration(sendbody);
-
-            if (result.Code == "200")
-            {
-                housereg.EmailSent = true;
-
-                _context.House_Registration.Update(housereg);
-                await _context.SaveChangesAsync();
-                return new BaseResponse
+                if (currentuser.Is_CareTaker && currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent)
                 {
-                    Code = "200",
-                    SuccessMessage = "House  registered successfully and email sent  "
+                    return new BaseResponse { Code = "159", ErrorMessage = "You cannot register a house, your role is a caretaker and a tenant" };
+
+                }
+
+                if (currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_CareTaker)
+                {
+                    return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a tenant" };
+
+                }
+                if (currentuser.Is_CareTaker && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_Tenant)
+                {
+                    return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a caretaker" };
+
+                }
+
+                //var currentuser = LoggedInUser().Result;
+                if (!currentuser.Is_Agent && !currentuser.Is_Landlord)
+                {
+
+                    return new BaseResponse { Code = "129", ErrorMessage = "You don't  have access to do this" };
+                }
+
+                if (newvm.House_Location == "")
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "House location cannot be null" };
+                }
+                if (newvm.Total_Units <= 0)
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "House units cannot be less than or equal to zero" };
+                }
+                if (newvm.Owner_Firstname == "")
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "owner first name cannot be empty" };
+                }
+
+                if (newvm.Owner_LastName == "")
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "owner last name cannot be empty" };
+                }
+                if (newvm.Country == "")
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "County field cannot be empty" };
+                }
+                if (newvm.Estimated_Maximum_Capacity <= 0)
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "Estimated capacity must me higher than zero" };
+                }
+                if (newvm.Owner_id_Number <= 0)
+                {
+
+                    return new BaseResponse { Code = "110", ErrorMessage = "House owner id cannot be null" };
+                }
+
+                var housereg = new House_Registration
+                {
+                    Owner_Firstname = newvm.Owner_Firstname,
+                    Owner_LastName = newvm.Owner_LastName,
+                    Owner_id_Number = newvm.Owner_id_Number,
+                    House_Name = newvm.House_Name,
+                    Total_Units = newvm.Total_Units,
+                    Area = newvm.Area,
+                    Country = newvm.Country,
+                    House_Location = newvm.House_Location,
+                    Estimated_Maximum_Capacity = newvm.Estimated_Maximum_Capacity,
+                    EmailSent = false,
+                    CreatorEmail = currentuser.Email,
+                    CreatorNames = currentuser.FirstName + " " + currentuser.LasstName,
+                    UserId = currentuser.Id,
+
                 };
+
+                await _context.House_Registration.AddAsync(housereg);
+                await _context.SaveChangesAsync();
+                var emails = housereg.CreatorEmail;
+                var creatorusername = LoggedInUser().Result;
+                var sendbody = new UserEmailOptions
+                {
+                    UserName = creatorusername.FirstName,
+                    PayLoad = "sent mail test",
+                    ToEmail = emails
+                };
+
+                var result = await _iemailservices.sendEmailOnHouseRegistration(sendbody);
+
+                if (result.Code == "200")
+                {
+                    housereg.EmailSent = true;
+
+                    _context.House_Registration.Update(housereg);
+                    await _context.SaveChangesAsync();
+                    return new BaseResponse
+                    {
+                        Code = "200",
+                        SuccessMessage = "House  registered successfully and email sent  "
+                    };
+                }
+                return (new BaseResponse { SuccessMessage = "Failed to send ", });
             }
-            return (new BaseResponse { SuccessMessage = "Failed to send ", });
+            catch (Exception ex)
+            {
+
+                return new BaseResponse {ErrorMessage=ex.Message };
+            }
         }
 
 
@@ -297,6 +338,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
         public async Task<BaseResponse> GetHousesBy_OwnerIdNumber(int OwnerId)
         {
+
             var gethouses = await _context.House_Registration
                 .Where(x => x.Owner_id_Number == OwnerId)
                 .ToListAsync();

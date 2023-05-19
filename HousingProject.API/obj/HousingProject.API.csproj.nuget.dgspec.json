@@ -124,6 +124,10 @@
             "System.AppContext": {
               "target": "Package",
               "version": "[4.3.0, )"
+            },
+            "bootstrap": {
+              "target": "Package",
+              "version": "[4.0.0, )"
             }
           },
           "imports": [
@@ -243,6 +247,10 @@
               "version": "[5.0.0, )"
             },
             "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.Extensions.Http": {
               "target": "Package",
               "version": "[7.0.0, )"
             },

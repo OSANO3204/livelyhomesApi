@@ -5,11 +5,16 @@ using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.Models.Email;
 using HousingProject.Core.Models.People;
 using HousingProject.Core.Models.People.General;
+using HousingProject.Core.Models.Reply;
 using HousingProject.Core.ViewModel.Passwords;
 using HousingProject.Core.ViewModel.People.GeneralRegistration;
+using HousingProject.Core.ViewModel.Resplyvm;
+using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
+using HousingProject.Infrastructure.Response.ReplyResponse;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -30,13 +35,17 @@ namespace HousingProject.Architecture.Services.User_Login
         private readonly IEmailServices _iemailservvices;
         private readonly IHttpContextAccessor _httpcontextaccessor;
         private readonly ILogger<UserLoginServices> _ilogger;
+        private readonly IServiceScopeFactory _servicefactory;
+        private readonly ILoggedIn _loggedinuser;
         public UserLoginServices(
             HousingProjectContext context,
             SignInManager<RegistrationModel> signinmanager,
             UserManager<RegistrationModel> usermanager,
             ILogger<UserLoginServices> ilogger,
             IHttpContextAccessor httpcontextaccessor,
-            IEmailServices iemailServices
+            IEmailServices iemailServices,
+            IServiceScopeFactory servicefactory,
+            ILoggedIn loggedinuser
         )
         {
             _context = context;
@@ -45,11 +54,14 @@ namespace HousingProject.Architecture.Services.User_Login
             _httpcontextaccessor = httpcontextaccessor;
             _ilogger = ilogger;
             _iemailservvices = iemailServices;
+            _servicefactory = servicefactory;
+            _loggedinuser = loggedinuser;
         }
 
         public async Task<RegistrationModel>
         ValidateUser(UserLogin credentials)
         {
+
             var identityUser =
                 await usermanager.FindByEmailAsync(credentials.UserName);
             if (identityUser != null)
@@ -209,12 +221,7 @@ namespace HousingProject.Architecture.Services.User_Login
         {
             try
             {
-                if (vm.Useremail == null)
-                {
-
-                    return new BaseResponse { Code = "110", ErrorMessage = "Email cannot be empty" };
-                }
-
+                var loggedinuser = LoggedInUser().Result;
                 if (vm.UserMessage == null)
                 {
 
@@ -223,21 +230,21 @@ namespace HousingProject.Architecture.Services.User_Login
 
                 var contactbody = new ContactUs()
                 {
-
-                    Useremail = vm.Useremail,
+                   Message_title =vm.Message_title,
+                    Useremail = loggedinuser.Email,
                     UserMessage = vm.UserMessage
 
                 };
 
                 await _context.AddAsync(contactbody);
                 await _context.SaveChangesAsync();
-                var loggedinuser = LoggedInUser().Result;
+             
 
                 var sendbody = new UserEmailOptions
                 {
                     UserName = loggedinuser.FirstName,
                     PayLoad = "sent mail test",
-                    ToEmail = vm.Useremail
+                    ToEmail = loggedinuser.Email
                 };
 
                 var resp = await _iemailservvices.OnContusMessageSubmission(sendbody);
@@ -245,7 +252,9 @@ namespace HousingProject.Architecture.Services.User_Login
                 if (resp.Code == "200")
                 {
 
-                    return new BaseResponse { Code = "200", SuccessMessage = "Message sent successfully we will contact you " };
+                    return new BaseResponse { Code = "200", SuccessMessage = "Received sucessfully, " +
+                        "  Lively home" +
+                        $"  will contact you shortly  through your email {loggedinuser.Email} " };
                 }
 
                 else
@@ -516,6 +525,6 @@ namespace HousingProject.Architecture.Services.User_Login
             }
         }
 
-
+      
     }
 }

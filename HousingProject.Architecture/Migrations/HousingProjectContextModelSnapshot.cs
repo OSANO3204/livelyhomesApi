@@ -32,8 +32,8 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<string>("CountyName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CreatorID")
-                        .HasColumnType("int");
+                    b.Property<string>("CreatorID")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("MyProperty")
                         .HasColumnType("datetime2");
@@ -41,6 +41,24 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("CountyId");
 
                     b.ToTable("AddCounty");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.CountiesModel.AddCountyArea", b =>
+                {
+                    b.Property<int>("CountyAreaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("CountyArea")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CountyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CountyAreaId");
+
+                    b.ToTable("AddCountyArea");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.General.TenantSummary", b =>
@@ -582,8 +600,14 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<bool>("ClosedMessages")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Message_title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserMessage")
                         .HasColumnType("nvarchar(max)");
@@ -649,6 +673,12 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Number0f_Occupants")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ReminderSent")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RemindersentCount")
                         .HasColumnType("int");
 
                     b.Property<float>("RentArrears")
@@ -869,6 +899,9 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("Downvotes")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -899,12 +932,60 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<bool>("TermsandConditions")
                         .HasColumnType("bit");
 
+                    b.Property<decimal>("TotalVotes")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Upvotes")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("WorkDescription")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProfessionalId");
 
                     b.ToTable("RegisterProfessional");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.ReminderonRentpayment.ReminderSentDate", b =>
+                {
+                    b.Property<int>("ReminderTableId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("DateSent")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DoorNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HouseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HouseName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReminderSent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SendByNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SentByEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TenantEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenantNames")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReminderTableId");
+
+                    b.ToTable("ReminderTable");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.RentPayment.RentDebit", b =>
@@ -971,6 +1052,33 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("RentpaidId");
 
                     b.ToTable("Rentpayment");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.Reply.replyModel", b =>
+                {
+                    b.Property<int>("ReplyID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<bool>("Closed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MessageID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reply")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponseAgent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReplyID");
+
+                    b.ToTable("replyModel");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.WorkIdModel.WorkIdModel", b =>

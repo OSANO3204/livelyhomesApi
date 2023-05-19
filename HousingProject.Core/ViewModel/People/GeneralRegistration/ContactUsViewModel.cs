@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace HousingProject.Core.ViewModel.People.GeneralRegistration
 {
    public  class ContactUsViewModel
-    { 
+    {
+        public string Message_title { get; set; }
         public string Useremail { get; set; }
         public string UserMessage { get; set; }
 

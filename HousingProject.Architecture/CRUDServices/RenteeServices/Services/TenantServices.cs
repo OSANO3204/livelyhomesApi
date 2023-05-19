@@ -8,14 +8,17 @@ using HousingProject.Core.Models.Email;
 using HousingProject.Core.Models.General;
 using HousingProject.Core.Models.People;
 using HousingProject.Core.Models.People.General;
+using HousingProject.Core.Models.ReminderonRentpayment;
 using HousingProject.Core.Models.RentPayment;
 using HousingProject.Core.ViewModel;
+using HousingProject.Core.ViewModel.Remindersenttablevm;
 using HousingProject.Core.ViewModel.Rentee;
 using HousingProject.Core.ViewModel.Rentpayment;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,7 +31,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
     {
         private readonly HousingProjectContext _context;
         private readonly IEmailServices _iemailservvices;
-
+        private readonly ILogger<ITenantServices> _logger;
         private readonly ILoggedIn _loggedIn;
         private readonly IServiceScopeFactory _scopeFactory;
         public readonly IRegistrationServices _registrationServices;
@@ -40,7 +43,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
           IEmailServices iemailservvices,
           IRegistrationServices registrationServices,
            ILoggedIn loggedIn,
-           IServiceScopeFactory scopeFactory
+           IServiceScopeFactory scopeFactory,
+            ILogger<ITenantServices> logger
 
 
         )
@@ -51,6 +55,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             _registrationServices = registrationServices;
             _loggedIn = loggedIn;
             _scopeFactory = scopeFactory;
+            _logger = logger;
         }
 
         // get loggin user
@@ -651,7 +656,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
                         ToEmail = tenantExists.Email,
                         UserName = tenantExists.FirstName + tenantExists.LastName,
-                        Message = $"Dear {tenantExists.FirstName}, your rent pay day is {tenantExists.RentPayDay}"
+                        Message = $"Dear {tenantExists.FirstName},Kindly be reminded that  your rent pay day is {tenantExists.RentPayDay}"
 
                     };
 
@@ -660,7 +665,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
                     if (response.Code == "200")
                     {
-
+                        await ReminderSentEntry(tenantExists.RenteeId);
                         return new BaseResponse { Code = "200", SuccessMessage = "Reminder sent to tenant successfully " };
                     }
 
@@ -705,18 +710,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             RenTAmount = tenant.House_Rent,
                             Message = $"Hi Kindly be reminded that your rent  amount of {tenant.House_Rent} is payable on or before {tenant.RentPayDay}, reach out on {tenant.BuildingCareTaker_PhoneNumber} for any further enquiry, or request of extension"
 
-
-
                         };
-
-
-
-                        if (DateTime.Now == tenant.RentPayDay)
-                        {
-
-
-                        }
-
                     }
                     return new BaseResponse();
                 }
@@ -753,17 +747,167 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     await scopedcontext.SaveChangesAsync();
                     return new BaseResponse { Code = "200", ErrorMessage = "Successfully updated tenant rent" };
                 }
-                return new BaseResponse();
-
             }
             catch (Exception ex)
             {
-
-
                 return new BaseResponse { Code = "170", ErrorMessage = ex.Message };
+            }
+        }
 
 
+        public async Task AutomtedRentNotiication()
+        {
+            try
+            {
+                _logger.LogInformation("_______________________starting______________ rent __________________emailing ________________________");
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var alltenants = await scopedcontext.TenantClass.ToListAsync();
+                    if (alltenants == null)
+                    {
+                        _logger.LogInformation("Tenants do not exist");
+                    }
+                    foreach (var singletenant in alltenants)
+                    {
+                        if (singletenant.ReminderSent == false)
+                        {
+                            var sendmail = new AutomaticMessaging
+                            {
+                                TenantNmes = singletenant.FirstName + " " + singletenant.LastName,
+                                ToEmail = singletenant.Email,
+                                SentDate = singletenant.RentPayDay,
+                                Meessage = $"Hi {singletenant.FirstName}  {singletenant.LastName} ,just a kind reminder," +
+                                $"Kindly be reminded that your rent paydate is {string.Format("{0:dd/MM/yyyy}", singletenant.RentPayDay)}"
+                            };
+                            //var sendmail = new AutomaticMessaging
+                            //{
+                            //    TenantNmes = "Brian Otieno",
+                            //    ToEmail = "osano3204@gmail.com",
+                            //    // RentDate = singletenant.RentPayDay,
+                            //    SentDate = DateTime.Now,
+                            //    Meessage = $"Hi Judas Iscariot ,just a kind reminder," +
+                            //        $"Kindly be reminded that your rent paydate is {string.Format("{0:dd/MM/yyyy}", DateTime.Now)}"
+                            //};
+                            var resp = await _iemailservvices.notificationOnRentPaymeentDay(sendmail);
 
+                            if (resp.Code == "200")
+                            {
+                                singletenant.ReminderSent = true;
+                                var sendcount = await scopedcontext.TenantClass.Where(t => t.RenteeId == singletenant.RenteeId).FirstOrDefaultAsync();
+                                sendcount.RemindersentCount = +1;
+                                singletenant.RemindersentCount = sendcount.RemindersentCount;
+                                scopedcontext.Update(singletenant);
+                                await scopedcontext.SaveChangesAsync();
+                                _logger.LogInformation($" Email sent to ___ {sendmail.TenantNmes}, " +
+                                $"{sendmail.ToEmail} ___ at ____ {string.Format("{0:dd/MM/yyyy}", DateTime.Now)}________");
+                            }
+                            else
+                            {
+                                _logger.LogInformation("Email not sent to tenant");
+                            }
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Email already sent ");
+                        }
+                    }
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Failed with error _______________{ex.Message} ____");
+
+            }
+
+
+        }
+
+        //update reminder sent table 
+
+
+        public async Task<BaseResponse> ReminderSentEntry(int tenantid)
+         {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    //scope context
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    //currently logged in user
+                    var currenuser = _loggedIn.LoggedInUser().Result;
+
+                    //gettenant receiving mail sent
+                    var tenantexists = await scopedcontext.TenantClass.Where(t => t.RenteeId == tenantid).FirstOrDefaultAsync();
+
+                    if (tenantexists == null)
+                    {
+                        return new BaseResponse { Code = "160", ErrorMessage = "Tenant does not exist" };
+                    }
+                    //find related house
+                    var houseexists = await scopedcontext.House_Registration.Where(h => h.HouseiD == tenantexists.HouseiD).FirstOrDefaultAsync();
+                    if (houseexists == null)
+                    {
+                        return new BaseResponse { Code = "140", ErrorMessage = "House does not exist" };
+                    }
+                    var remindertable = new ReminderSentDate
+                    {
+                        TenantId = tenantexists.RenteeId,
+                        TenantNames = tenantexists.FirstName + " " + tenantexists.LastName,
+                        TenantEmail = tenantexists.Email,
+                        HouseName = houseexists.House_Name,
+                        ReminderSent = "Yes",
+                        DoorNumber = tenantexists.Appartment_DoorNumber,
+                        SendByNames = currenuser.FirstName + "  " + currenuser.LasstName,
+                        SentByEmail = currenuser.Email,
+                        HouseId=houseexists.HouseiD
+                    };
+
+                    //save to database
+                    await scopedcontext.AddAsync(remindertable);
+                    await scopedcontext.SaveChangesAsync();
+                    return new BaseResponse { Code = "200", SuccessMessage = "Reminder sent table updated succesfully" };
+                }
+             }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
+            }
+
+
+        }
+
+        //get all reminder sent  
+        public async Task<BaseResponse> AllRemindersSent(int houseid)
+        {
+
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    //currently logged in user
+
+                    var currentuser =  _loggedIn.LoggedInUser().Result;
+  
+                    //all reminders sent on rent payment
+
+                    var allremindersent = await scopedcontext.ReminderTable.Where(h=>h.HouseId==houseid).OrderByDescending(d=>d.DateSent).ToListAsync();
+                    if (allremindersent == null)
+                    {
+                        return new BaseResponse { Code = "160", SuccessMessage = "There are no reminders sent to show"};
+
+                    }
+                    return new BaseResponse { Code = "200", SuccessMessage = "Successfully queried", Body = allremindersent };
+                }
+
+            }
+            catch(Exception ex)
+            {
+                return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
             }
         }
     }
