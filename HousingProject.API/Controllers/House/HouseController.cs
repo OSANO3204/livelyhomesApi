@@ -237,5 +237,26 @@ namespace HousingProject.API.Controllers.House
 
             return await _house_registrationservices.GethouseById(houseid);
         }
+
+        [Authorize]
+        [Route("GetAggreementByTenantId")]
+        [HttpPost]
+        public async  Task<BaseResponse> GetAggreementByTenantId(int tenantid)
+        {
+
+            return await _house_registrationservices.GetAggreementByTenantId(tenantid);
+        }
+
+
+        [Authorize]
+        [Route("Get_Unoccupied_house_uints")]
+        [HttpPost]
+
+        public async Task<BaseResponse> GetUnoccupiedhouseunits(string housename)
+        {
+
+            return await _house_registrationservices.GetUnoccupiedhouseunits(housename);
+        }
+
     }
 }

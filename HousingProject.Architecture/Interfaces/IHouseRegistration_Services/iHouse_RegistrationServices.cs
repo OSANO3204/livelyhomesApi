@@ -36,5 +36,7 @@ namespace HousingProject.Architecture.IHouseRegistration_Services
         //Task<string> uploadimage(IFormFile objfiles);
 
         //Task<AddImages> Create(IFormFile file);
+        Task<BaseResponse> GetAggreementByTenantId(int tenantid);
+        Task<BaseResponse> GetUnoccupiedhouseunits(string housename);
     }
 }

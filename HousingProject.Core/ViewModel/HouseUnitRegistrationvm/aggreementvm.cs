@@ -35,5 +35,8 @@ namespace HousingProject.Core.ViewModel.HouseUnitRegistrationvm
 
         public string AnyOtherTerms { get; set; }
         public bool AggreeToAggreement { get; set; }
+        public string TenantName { get; set; }
+        public string TenantEmail { get; set; }
+        public bool AggreementStatus { get; set; }
     }
 }

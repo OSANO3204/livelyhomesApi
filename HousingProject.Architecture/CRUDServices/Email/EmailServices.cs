@@ -221,8 +221,32 @@ namespace HousingProject.Architecture.CRUDServices.Email
             }
             else
             {
-
                _logger.LogInformation(response.ErrorMessage);
+                return new BaseResponse { Code = "250", SuccessMessage = "Email not sent" };
+            }
+        }
+
+        public async Task<BaseResponse>  EmailOnSuccessfulLogin(UserEmailOptions  emailbody)
+        {
+            var file = @"Templates/Email/emailOnSuccessfulLogin.html";
+            StreamReader str = new StreamReader(file);
+            string MailText = await str.ReadToEndAsync();
+            str.Close();
+            var currentyear = DateTime.Now.Year;
+            MailText = MailText
+                 .Replace("body", emailbody.PayLoad)
+                 .Replace("names", emailbody.UserName)
+                 .Replace("sentOn", Convert.ToString(DateTime.Now))
+                 .Replace("currentyear",Convert.ToString(currentyear));
+            var response = await SendEmail(MailText, "Dear Sir/Madam", emailbody.ToEmail);
+            if (response.Code == "200")
+            {
+                _logger.LogInformation("sent mailsuccessfully");
+                return new BaseResponse { Code = "200", SuccessMessage = "Email successfully sent" };
+            }
+            else
+            {
+                _logger.LogInformation(response.ErrorMessage);
                 return new BaseResponse { Code = "250", SuccessMessage = "Email not sent" };
             }
         }

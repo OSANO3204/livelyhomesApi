@@ -10,7 +10,7 @@ namespace HousingProject.Infrastructure.Interfaces.ITenantStatementServices
 {
     public interface ITenantStatementServices
     {
-        Task<BaseResponse> Rentpayments(TenntDebitvm vm);
+       // Task<BaseResponse> Rentpayments(TenntDebitvm vm);
 
 
     }

@@ -29,5 +29,8 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task AutomtedRentNotiication();
         Task<BaseResponse> ReminderSentEntry(int tenantid);
         Task<BaseResponse> AllRemindersSent(int houseid);
+        Task<BaseResponse> PayingRent(int tenantid, decimal rentamount);
+        Task<BaseResponse> GetAllTenantPayments(int tenantid);
+        Task<BaseResponse> GetHouseUnitBodyById(int houseuintid);
     }
 }

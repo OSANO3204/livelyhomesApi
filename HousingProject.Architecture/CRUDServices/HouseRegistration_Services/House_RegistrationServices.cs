@@ -9,6 +9,7 @@ using HousingProject.Core.Models.Email;
 using HousingProject.Core.Models.Houses.Flats.AdminContacts;
 using HousingProject.Core.Models.Houses.Flats.House_Registration;
 using HousingProject.Core.Models.Houses.HouseAggrement;
+using HousingProject.Core.Models.Houses.HouseUnitRegistration;
 using HousingProject.Core.Models.Houses.HouseUsers;
 using HousingProject.Core.Models.People;
 using HousingProject.Core.ViewModel.Aggreement;
@@ -188,6 +189,23 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
                 if (result.Code == "200")
                 {
+                    int fromzero = 0;
+                    while (newvm.Total_Units > fromzero )
+                    {
+                        fromzero++;
+
+                        var saveunit = new HouseUnitsStatus();
+
+                        saveunit.DoorNumber = fromzero;
+                        saveunit.HouseName = newvm.House_Name;
+                        saveunit.Occupied = false;
+
+                        await _context.AddAsync(saveunit);
+                        await _context.SaveChangesAsync();
+
+                    }
+
+                   
                     housereg.EmailSent = true;
 
                     _context.House_Registration.Update(housereg);
@@ -203,28 +221,23 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             catch (Exception ex)
             {
 
-                return new BaseResponse {ErrorMessage=ex.Message };
+                return new BaseResponse { ErrorMessage = ex.Message };
             }
         }
 
 
         public async Task<BaseResponse> Registered_Houses()
         {
-
             var user = LoggedInUser().Result;
-
 
             if (user.Is_Tenant)
             {
-
                 return new BaseResponse { Code = "123", ErrorMessage = "You dont have permission to view this" };
             }
             if (user.IsHouseUsers)
             {
-
                 var usershouselist = Get_HouseUsers_Houses().Result.Body;
                 return new BaseResponse { Code = "200", SuccessMessage = "Successful", Body = usershouselist };
-
             }
 
             var houselists = await _context.House_Registration.Where(x => x.CreatorEmail == user.Email).OrderByDescending(x => x.DateCreated).ToListAsync();
@@ -235,7 +248,6 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
                 var houselistvm = new HouseListsViewModel
                 {
-
                     House_Location = houseitem.House_Location,
                     HouseiD = houseitem.HouseiD,
                     Total_Units = houseitem.Total_Units,
@@ -338,7 +350,6 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
         public async Task<BaseResponse> GetHousesBy_OwnerIdNumber(int OwnerId)
         {
-
             var gethouses = await _context.House_Registration
                 .Where(x => x.Owner_id_Number == OwnerId)
                 .ToListAsync();
@@ -454,45 +465,31 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 //var user = LoggedInUser().Result;
                 if (houseid == 0)
                 {
-
                     return new BaseResponse { Code = "129", ErrorMessage = "Kindly choose a house " };
-
                 }
                 else
                 {
                     var houseUsers = await _context.HouseUsers.Where(u => u.HouseID == houseid).OrderByDescending(t => t.DateCreated).ToListAsync();
                     var houses = await _context.House_Registration.Where(x => x.HouseiD == houseid).FirstOrDefaultAsync();
-
                     List<houseUserresponsevm> houseusersresponse = new List<houseUserresponsevm>();
-
                     foreach (var houseUser in houseUsers)
                     {
-
                         var house_user = new houseUserresponsevm
                         {
-
                             FirstName = houseUser.FirstName,
                             LasstName = houseUser.LasstName,
                             Email = houseUser.Email,
                             HouseName = houses.House_Name,
                             PhoneNumber = houseUser.PhoneNumber,
                             DateCreated = houseUser.DateCreated
-
                         };
-
                         houseusersresponse.Add(house_user);
-
                     }
-
                     return new BaseResponse { Code = "200", Body = houseusersresponse };
-
                 }
-
             }
-
             catch (Exception ex)
             {
-
                 return new BaseResponse { Code = "130", ErrorMessage = ex.Message };
             }
         }
@@ -503,45 +500,30 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
-
                     var user = LoggedInUser().Result;
 
                     if (user.IsHouseUsers)
                     {
-
                         var houseuser = await scopedcontext.HouseUsers.Where(t => t.Email == user.Email).FirstOrDefaultAsync();
-
                         if (houseuser == null)
                         {
                             return new BaseResponse { Code = "150", ErrorMessage = "Tenant does not exist" };
-
                         }
-
                         var house = await scopedcontext.House_Registration.Where(h => h.HouseiD == houseuser.HouseID).ToListAsync();
-
                         if (houseuser == null)
                         {
-
                             return new BaseResponse { Code = "170", ErrorMessage = "House does not exist" };
                         }
-
                         if (user.Is_Agent || user.Is_Landlord || user.Is_CareTaker)
                         {
-
                             _logger.LogInformation($"houses reached :{house}  {DateTime.Now}");
                             return new BaseResponse { Code = "200", SuccessMessage = "Queried successfully", Body = house };
-
                         }
                         else
                         {
-
                             return new BaseResponse { Code = "180", ErrorMessage = "Incomplete setup! Contact the admin for a complete set up " };
                         }
-
-
                     }
                     return new BaseResponse();
                 }
@@ -599,53 +581,68 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
 
-                    var checkagreemenntexist = await scopedcontext.Aggrement.Where(a => a.HouseID == vm.HouseID).FirstOrDefaultAsync();
 
-                    if (checkagreemenntexist != null)
+                    var tenantexist = await scopedcontext.TenantClass.Where(a => a.Email == vm.TenantEmail).FirstOrDefaultAsync();
+                    
+                    if (tenantexist == null)
                     {
-                        return new AggreementResponse("140",  "The house's Tenancy aggreement is already created", null);
+                        return new AggreementResponse("190", "tenant does not exist", null);
+                    }
 
+                    var houseexist=   await scopedcontext.House_Registration.Where(a => a.HouseiD == tenantexist.HouseiD).FirstOrDefaultAsync();
+                    
+                    if (houseexist == null)
+                    {
+                        return new AggreementResponse("160", "house does not exist", null);
                     }
                     var loggeininuser = _iloggedInServices.LoggedInUser().Result;
-
                     var newaggrrement = new Aggrement
                     {
                         CreatedBy = loggeininuser.Email,
-                        HouseID = vm.HouseID,                      
+                        HouseID = vm.HouseID,
                         LandlordName = vm.LandlordName,
                         Agent = vm.Agent,
                         AggreeToAggreement = vm.AggreeToAggreement,
-                        LeastStartDate=vm.LeastStartDate,
-                        LeastEndDateDate=vm.LeastEndDateDate,
-                        RentAmount=vm.RentAmount,
-                        MaintainceAndRepairDeposit=vm.MaintainceAndRepairDeposit,
-                        RentIncreasePeriod=vm.RentIncreasePeriod,
-                        RentDepositAmount= vm.RentDepositAmount,
-                        Rentincreasepercentage= vm.Rentincreasepercentage,
-                        Renincreaseflatrate=vm.Renincreaseflatrate,
-                        Serviceffeedeposit=vm.Serviceffeedeposit,
-                        AnyOtherTerms=vm.AnyOtherTerms,
-                        HouseLocation=vm.HouseLocation
-                        
+                        LeastStartDate = vm.LeastStartDate,
+                        LeastEndDateDate = vm.LeastEndDateDate,
+                        RentAmount = vm.RentAmount,
+                        MaintainceAndRepairDeposit = vm.MaintainceAndRepairDeposit,
+                        RentIncreasePeriod = vm.RentIncreasePeriod,
+                        RentDepositAmount = vm.RentDepositAmount,
+                        Rentincreasepercentage = vm.Rentincreasepercentage,
+                        Renincreaseflatrate = vm.Renincreaseflatrate,
+                        Serviceffeedeposit = vm.Serviceffeedeposit,
+                        AnyOtherTerms = vm.AnyOtherTerms,
+                        HouseLocation = vm.HouseLocation,
+                        TenantName = tenantexist.FirstName + " " + tenantexist.LastName,
+                        TenantEmail = tenantexist.Email,
+                        AggreementStatus = false,
+                        TenantId = tenantexist.RenteeId,
+                        HouseAddress= "House Name: "+ houseexist.House_Name +", House Location: "+houseexist.House_Location+  ",Door Number "+tenantexist.Appartment_DoorNumber,
+                        Landlordphone=tenantexist.Agent_PhoneNumber,
+                        Tenantphone=tenantexist.Rentee_PhoneNumber
                     };
 
-                    if(vm.AggreeToAggreement)
+                    //check tenant already has aggrement
+
+                    var aggreementexists = await scopedcontext.Aggrement.Where(y => y.TenantEmail == vm.TenantEmail).FirstOrDefaultAsync();
+
+                    if (aggreementexists != null)
+                    {
+                        return new AggreementResponse("120", $" {tenantexist.FirstName} {tenantexist.LastName}  already has a tenancy aggreement ", null);
+                    }
+                    if (vm.AggreeToAggreement)
                     {
                         newaggrrement.AggreeToAggreement = true;
                         newaggrrement.EnforceAggreement = true;
                     }
-                   
-
                     await scopedcontext.AddAsync(newaggrrement);
-
                     var res = await scopedcontext.SaveChangesAsync();
-
                     return new AggreementResponse("200", "Aggreement created successfully ", null);
                 }
             }
             catch (Exception ex)
             {
-
                 return new AggreementResponse("140", ex.Message, null);
             }
         }
@@ -657,10 +654,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 IsTrue = vm.IsTrue,
                 SectionName = vm.SectionName
             };
-
-
-             await   _context.AddAsync(newsection);
-
+            await _context.AddAsync(newsection);
             await _context.SaveChangesAsync();
             return new AggreementResponse("200", "successfully updated section", null);
 
@@ -668,11 +662,8 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
         public async Task AggreementSections(AggrementSections aggreementsection)
         {
-
-
             var addaggreementsection = new AggrementSections
             {
-
                 show_LandlordName = aggreementsection.show_LandlordName,
                 LandlordName = aggreementsection.LandlordName,
                 show_TenantNmae = aggreementsection.show_TenantNmae,
@@ -698,11 +689,8 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 show_Other_Aggreement = aggreementsection.show_Other_Aggreement,
                 Other_Aggreements = aggreementsection.Other_Aggreements
             };
-
             _context.Update(addaggreementsection);
             await _context.SaveChangesAsync();
-
-
         }
         public async Task<AggreementResponse> GetAllAggreementSections()
         {
@@ -711,191 +699,120 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 using (var scoped = _serviceScopeFactory.CreateScope())
                 {
                     var scopedcontext = scoped.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
                     var Allaggreementsections = await scopedcontext.Sections.ToListAsync();
-
                     if (Allaggreementsections == null)
                     {
                         return new AggreementResponse("110", "The sections do not exist", null);
                     }
                     return new AggreementResponse("200", "Queried successfully", Allaggreementsections);
                 }
-
             }
             catch (Exception ex)
             {
-
                 return new AggreementResponse("180", ex.Message, null);
             }
-
-
         }
 
         public async Task<AggreementResponse> SelectAggeementSections(int aggreementID, int aggreeementSectionID)
         {
-
             try
             {
-
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
                     var AggreementExists = await scopedcontext.Aggrement.Where(x => x.AggreementID == aggreementID).FirstOrDefaultAsync();
-
                     if (AggreementExists == null)
                     {
-
                         return new AggreementResponse("190", "The aggreement does not exist", null);
                     }
-
                     var sectionExists = await scopedcontext.Sections.Where(x => x.AggreementSectiondID == aggreeementSectionID).FirstOrDefaultAsync();
-
                     if (sectionExists == null)
                     {
-
                         return new AggreementResponse("190", "The aggreement section  does not exist", null);
                     }
-
-                    var AddAggreementSection = new SectionMapper 
-                    { 
-                                              
-                        AggreemenID= AggreementExists.AggreementID,
-                        AggreementSectionID=sectionExists.AggreementSectiondID
-
+                    var AddAggreementSection = new SectionMapper
+                    {
+                        AggreemenID = AggreementExists.AggreementID,
+                        AggreementSectionID = sectionExists.AggreementSectiondID
                     };
-
                     scopedcontext.Update(AddAggreementSection);
                     await scopedcontext.SaveChangesAsync();
                     return new AggreementResponse("200", "Successfully queried", AddAggreementSection);
                 }
-               
+
             }
             catch (Exception ex)
             {
-
                 return new AggreementResponse("190", ex.Message, null);
             }
-
-
         }
 
         public async Task<classicaggreementresponse> GetAggementSections(int aggreemeniD)
         {
-
             try
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
                     var aggreementExists = await scopedcontext.Aggrement.Where(x => x.AggreementID == aggreemeniD).FirstOrDefaultAsync();
-
                     if (aggreementExists == null)
                     {
                         return new classicaggreementresponse("120", "aggreement not found", "NOthing to show here", null);
                     }
-
                     var allaggreementsections = await scopedcontext
                         .SectionMapper.Where(s => s
                         .AggreemenID == aggreementExists.AggreementID).ToListAsync();
-
                     List<Sections> sectionsofAggreements = new List<Sections>();
-
                     foreach (var eachsection in allaggreementsections)
                     {
-
                         var sectionnameexists = await scopedcontext.Sections
-                            .Where(e => e.AggreementSectiondID == eachsection.AggreementSectionID).FirstOrDefaultAsync();
-
-                        var sectionsvmvalue = new Sections {
-
+                           .Where(e => e.AggreementSectiondID == eachsection.AggreementSectionID).FirstOrDefaultAsync();
+                        var sectionsvmvalue = new Sections
+                        {
                             SectionName = sectionnameexists.SectionName,
-                            IsTrue= sectionnameexists.IsTrue
-                        
+                            IsTrue = sectionnameexists.IsTrue
                         };
-
                         sectionsofAggreements.Add(sectionsvmvalue);
-
                     }
                     var houseexists = await scopedcontext.House_Registration.Where(h => h.HouseiD == aggreementExists.HouseID).FirstOrDefaultAsync();
                     if (houseexists == null)
                     {
                         return new classicaggreementresponse("127", "House not found", "NOthing to show here", null);
                     }
-
-                    return new classicaggreementresponse("200","Queried successfully", houseexists.House_Name, sectionsofAggreements);
-                   
-                }
-            }
-            catch (Exception ex)
-            {
-
-                return new classicaggreementresponse("120", ex.Message, "Nothing  to show here ", null);
-            }
-
-        }
-
-        public async Task<classicaggreementresponse> GetAggementSectionsByHouseID(int HouseID)
-        {
-
-            try
-            {
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
-                    var houseexisted = await scopedcontext.House_Registration.Where(x => x.HouseiD == HouseID).FirstOrDefaultAsync();
-
-                    if (houseexisted == null)
-                    {
-                        return new classicaggreementresponse("120", "House not found", "NOthing to show here", null);
-                    }
-
-                    var aggreementexists = await scopedcontext.Aggrement.Where(a => a.HouseID == houseexisted.HouseiD).FirstOrDefaultAsync();
-
-                    if (aggreementexists == null)
-                    {
-                        return new classicaggreementresponse("120", "aggreement not found", "NOthing to show here", null);
-                    }
-
-                    var allsectionswithaggreemnetid = await scopedcontext.SectionMapper.Where(s => s.AggreemenID == aggreementexists.AggreementID).ToListAsync();
-
-                    List<Sections> sectionsofAggreements = new List<Sections>();
-
-                    foreach (var eachsection in allsectionswithaggreemnetid)
-                    {
-
-                        var sectionnameexists = await scopedcontext.Sections
-                            .Where(e => e.AggreementSectiondID == eachsection.AggreementSectionID).FirstOrDefaultAsync();
-
-                        var sectionsvmvalue = new Sections
-                        {
-
-                            SectionName = sectionnameexists.SectionName,
-                            IsTrue = sectionnameexists.IsTrue
-
-                        };
-
-                        sectionsofAggreements.Add(sectionsvmvalue);
-
-                    }
-                    var houseexists = await scopedcontext.House_Registration.Where(h => h.HouseiD == aggreementexists.HouseID).FirstOrDefaultAsync();
-                    if (houseexists == null)
-                    {
-                        return new classicaggreementresponse("127", "House not found", "NOthing to show here", null);
-                    }
-
                     return new classicaggreementresponse("200", "Queried successfully", houseexists.House_Name, sectionsofAggreements);
 
                 }
             }
             catch (Exception ex)
             {
-
                 return new classicaggreementresponse("120", ex.Message, "Nothing  to show here ", null);
             }
+        }
 
+        public async Task<classicaggreementresponse> GetAggementSectionsByHouseID(int HouseID)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var houseexisted = await scopedcontext.House_Registration.Where(x => x.HouseiD == HouseID).FirstOrDefaultAsync();
+                    if (houseexisted == null)
+                    {
+                        return new classicaggreementresponse("120", "House not found", "NOthing to show here", null);
+                    }
+                    var aggreementexists = await scopedcontext.Aggrement.Where(a => a.HouseID == houseexisted.HouseiD).ToListAsync();
+                    if (aggreementexists == null)
+                    {
+                        return new classicaggreementresponse("120", "aggreement not found", "NOthing to show here", null);
+                    }
+                    return new classicaggreementresponse("200", "Aggreement queries successfully", $"agreement on house {houseexisted.House_Name}", aggreementexists);
+                }
+            }
+            catch (Exception ex)
+            {
+                return new classicaggreementresponse("120", ex.Message, "Nothing  to show here ", null);
+            }
         }
         public async Task<AggreementResponse> GetggreementByHouseID(int houseid)
         {
@@ -903,51 +820,88 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
-
                     var aggreeementexists = await scopedcontext.Aggrement.Where(a => a.HouseID == houseid).FirstOrDefaultAsync();
-
                     if (aggreeementexists == null)
                     {
-
-
                         return new AggreementResponse("160", "The aggreement does not exist", null);
-
                     }
-
                     return new AggreementResponse("200", "Successfully queried", aggreeementexists);
                 }
-
             }
 
             catch (Exception ex)
             {
-
                 return new AggreementResponse("120", ex.Message, null);
             }
         }
 
         public async Task<object> GethouseById(int houseid)
         {
-
             var houseexists = await _context.House_Registration.Where(h => h.HouseiD == houseid).FirstOrDefaultAsync();
-
-
             if (houseexists == null)
             {
-
                 return null;
             }
-
             return houseexists;
         }
+        public async Task<BaseResponse> GetAggreementByTenantId(int tenantid)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    //tenant exists
+
+                    var tenantexists = await scopedcontext.TenantClass.Where(h => h.RenteeId == tenantid).FirstOrDefaultAsync();
+                    if (tenantexists == null)
+                    {
+                        return new BaseResponse { ErrorMessage = "tenant does not exist" };
+                    }
+
+                    //aggreemnt exists 
+
+                    var aggreementexists = await scopedcontext.Aggrement.Where(h => h.TenantId == tenantid).FirstOrDefaultAsync();
+                    if (aggreementexists == null)
+                    {
+                        return new BaseResponse { ErrorMessage ="aggreement does not exist"};
+                    }
+
+                    return new BaseResponse { Code = "200", SuccessMessage = "successfully queried ", Body = aggreementexists };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "150", ErrorMessage = ex.Message };
+            }
+        }
+
+        public async Task<BaseResponse> GetUnoccupiedhouseunits(string housename)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                    {
+                        var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                        var un_occupied_house_units = await scopedcontext.HouseUnitsStatus.Where(u => u.HouseName == housename && u.Occupied == false).ToListAsync();
+                        if (un_occupied_house_units == null)
+                        {
+                            return new BaseResponse();
+                        }
+                       return new BaseResponse { Code = "200", SuccessMessage = "Successfully queried", Body = un_occupied_house_units };
+                    }
+            }
+            catch (Exception ex)
+                {
+                    return new BaseResponse { Code = "130", ErrorMessage = ex.Message };
+                }
+        }
+
     }
 
-
-
 }
+
 
 
 

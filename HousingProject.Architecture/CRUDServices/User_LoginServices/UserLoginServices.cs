@@ -182,6 +182,16 @@ namespace HousingProject.Architecture.Services.User_Login
                     var securitytoken =
                         jwtsecuritytokenhandler.CreateToken(securitytokendescripor);
                     var token = jwtsecuritytokenhandler.WriteToken(securitytoken);
+                    var loggedintime =  DateTime.Now;
+                   
+                    var emailbody = new UserEmailOptions
+                    {
+                        ToEmail = loggedinuser.UserName,
+                        UserName = userexists.FirstName + " " + userexists.LasstName,
+                        PayLoad = $"Hi there {userexists.FirstName}, you successfully logged into Lively Homes at {Convert.ToString(loggedintime)}"
+                    };
+
+                    await  _iemailservvices.EmailOnSuccessfulLogin(emailbody);
                     return new authenticationResponses
                     {
                         Code = "200",
@@ -525,6 +535,7 @@ namespace HousingProject.Architecture.Services.User_Login
             }
         }
 
-      
+       
+
     }
 }

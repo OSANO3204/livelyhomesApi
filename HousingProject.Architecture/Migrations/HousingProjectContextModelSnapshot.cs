@@ -244,6 +244,9 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<bool>("AggreeToAggreement")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("AggreementStatus")
+                        .HasColumnType("bit");
+
                     b.Property<string>("AnyOtherTerms")
                         .HasColumnType("nvarchar(max)");
 
@@ -256,6 +259,9 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<bool>("EnforceAggreement")
                         .HasColumnType("bit");
 
+                    b.Property<string>("HouseAddress")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("HouseID")
                         .HasColumnType("int");
 
@@ -263,6 +269,9 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LandlordName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Landlordphone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LeastEndDateDate")
@@ -292,129 +301,21 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<decimal>("Serviceffeedeposit")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("TenantEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenantName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tenantphone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("AggreementID");
 
                     b.ToTable("Aggrement");
-                });
-
-            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.AggrementSections", b =>
-                {
-                    b.Property<int>("AggreementfieldsId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("AgentName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HouseLocation")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HouseName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Increase_flat_rate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Increasepercentage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LandlordName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Maintainance_and_Repairs")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Other_Aggreements")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Rent_Increased_After_in_years")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SecurityDeposit")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ServiceFee")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TenantNmae")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("show_AgentName")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_HouseLocation")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_HouseName")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_Increase_flat_rate")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_Increasepercentage")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_LandlordName")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_Maintainance_and_Repairs")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_Other_Aggreement")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_Rent_Increased_After_in_years")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_SecurityDeposit")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_ServiceFee")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("show_TenantNmae")
-                        .HasColumnType("bit");
-
-                    b.HasKey("AggreementfieldsId");
-
-                    b.ToTable("AggrementSections");
-                });
-
-            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.HouseAggrementMapper", b =>
-                {
-                    b.Property<int>("Aggreement_sections_mapperID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("AggrementID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Aggrement_sections_fields")
-                        .HasColumnType("int");
-
-                    b.HasKey("Aggreement_sections_mapperID");
-
-                    b.ToTable("HouseAggrementMapper");
-                });
-
-            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.MapperofAggreement", b =>
-                {
-                    b.Property<int>("Aggreement_sections_mapperID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("AggrementID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Aggrement_sections_fields")
-                        .HasColumnType("int");
-
-                    b.HasKey("Aggreement_sections_mapperID");
-
-                    b.ToTable("MapperofAggreement");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseAggrement.SectionMapper", b =>
@@ -492,6 +393,9 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<int>("HouseUnitNumber")
                         .HasColumnType("int");
 
+                    b.Property<int>("MyProperty")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Occupied")
                         .HasColumnType("bit");
 
@@ -501,6 +405,27 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("HouseunitId");
 
                     b.ToTable("HouseUnit");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseUnitRegistration.HouseUnitsStatus", b =>
+                {
+                    b.Property<int>("HouseidstatusID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("DoorNumber")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HouseName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Occupied")
+                        .HasColumnType("bit");
+
+                    b.HasKey("HouseidstatusID");
+
+                    b.ToTable("HouseUnitsStatus");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.Houses.HouseUsers.HouseUsers", b =>
@@ -656,6 +581,9 @@ namespace HousingProject.Infrastructure.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HouseDoorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("HouseFloor")
                         .HasColumnType("nvarchar(max)");
@@ -988,40 +916,40 @@ namespace HousingProject.Infrastructure.Migrations
                     b.ToTable("ReminderTable");
                 });
 
-            modelBuilder.Entity("HousingProject.Core.Models.RentPayment.RentDebit", b =>
+            modelBuilder.Entity("HousingProject.Core.Models.RentPayment.PayRent", b =>
                 {
-                    b.Property<int>("rentID")
+                    b.Property<int>("Payrentid")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<bool>("Completed")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Credit")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Debit")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("HousedId")
+                    b.Property<int>("HouseID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Month")
+                    b.Property<string>("InternalReference")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Rentmount")
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("RentAmount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
 
-                    b.HasKey("rentID");
+                    b.HasKey("Payrentid");
 
-                    b.ToTable("RentDebit");
+                    b.ToTable("PayRent");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.RentPayment.Rentpayment", b =>

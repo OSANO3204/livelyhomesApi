@@ -19,27 +19,23 @@ namespace HousingProject.Core.Models.Houses.HouseAggrement
         public DateTime LeastStartDate { get; set; }
 
         public DateTime LeastEndDateDate { get; set; }
-
         public string CreatedBy { get; set; }
-
         public decimal RentAmount { get; set; }
-
         public Decimal MaintainceAndRepairDeposit { get; set; }
-
         public int RentIncreasePeriod { get; set; }
-
         public int RentDepositAmount { get; set; }
-
         public int Rentincreasepercentage { get; set; }
-
         public int Renincreaseflatrate { get; set; }
-
-
         public decimal Serviceffeedeposit { get; set; }
-
-
         public string  AnyOtherTerms { get; set; }
         public bool AggreeToAggreement { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.Now;
+        public string TenantName { get; set; }
+        public string TenantEmail { get; set; }
+        public bool AggreementStatus { get; set; }
+        public int TenantId { get; set; }
+        public string HouseAddress { get; set; }
+        public string Landlordphone { get; set; }
+        public string Tenantphone { get; set; }
     }
 }

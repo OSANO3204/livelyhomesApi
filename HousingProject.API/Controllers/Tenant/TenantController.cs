@@ -74,8 +74,6 @@ namespace HousingProject.API.Controllers.Rentee
         [HttpPost]
         public async Task<BaseResponse> RentTotal(int tenantid)
         {
-
-
             return await _irenteeServices.RentTotal(tenantid);
         }
 
@@ -84,7 +82,6 @@ namespace HousingProject.API.Controllers.Rentee
         [HttpPost]
         public async Task<IEnumerable> rentpaymentList(int tenantId)
         {
-
             return await  _irenteeServices.rentpaymentList(tenantId);
         }
 
@@ -93,18 +90,15 @@ namespace HousingProject.API.Controllers.Rentee
         [HttpPost]
         public async Task<BaseResponse> UpdateRentpaid(int tenantid, float rentadded)
         {
-
             return await _irenteeServices.UpdateRentpaid(tenantid, rentadded);
-
         }
             [Authorize]
             [Route("GetTeanntById")]
             [HttpPost]
             public async Task<BaseResponse> GetTenantById(int tenantId)
             {
-
             return await _irenteeServices.GetTenantById(tenantId);
-        }
+             }
 
         [Authorize]
         [Route("GettenantsbyHouseId")]
@@ -134,14 +128,14 @@ namespace HousingProject.API.Controllers.Rentee
         }
 
 
-        [Authorize]
-        [Route("TenantRentPayment")]
-        [HttpPost]
-        public async Task<BaseResponse> Rentpayments(TenntDebitvm vm)
-        {
+        //[Authorize]
+        //[Route("TenantRentPayment")]
+        //[HttpPost]
+        //public async Task<BaseResponse> Rentpayments(TenntDebitvm vm)
+        //{
 
-            return await _tenantStatementServices.Rentpayments(vm);
-        }
+        //    return await _tenantStatementServices.Rentpayments(vm);
+        //}
 
 
         [Authorize]
@@ -170,8 +164,34 @@ namespace HousingProject.API.Controllers.Rentee
             return await _irenteeServices.AllRemindersSent(houseid);
 
         }
+        [Authorize]
+        [Route("PayingRent")]
+        [HttpPost]
+        public async Task<BaseResponse> PayingRent(int tenantid, decimal rentamount)
+        {
+            return await _irenteeServices.PayingRent(tenantid, rentamount);
 
-      
+        }
+
+        [Authorize]
+        [Route("GettingAllTenantPayment")]
+        [HttpPost]
+        public async Task<BaseResponse> GetAllTenantPayments(int tenantid)
+        {
+
+            return await _irenteeServices.GetAllTenantPayments(tenantid);
+        }
+
+        [Authorize]
+        [Route("GetHouseUnitByiD")]
+        [HttpPost]
+        public async Task<BaseResponse> GetHouseUnitBodyById(int houseuintid)
+        {
+            return await _irenteeServices.GetHouseUnitBodyById(houseuintid);
+        }
+
+
+
 
 
 
