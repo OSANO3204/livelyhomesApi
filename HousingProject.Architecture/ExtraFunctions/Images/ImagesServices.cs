@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,10 +41,8 @@ namespace HousingProject.Infrastructure.ExtraFunctions.Images
             ILoggedIn loggedIn,
             IServiceScopeFactory servicescope,
             IUrlHelper urlhelper
-
             )
-        {
-        
+        {        
             _environment = environment;
             _context = context;
             _httpContextAccessor = httpContextAccessor;
@@ -53,21 +52,16 @@ namespace HousingProject.Infrastructure.ExtraFunctions.Images
             _urlhelper = urlhelper;
         }
 
-
-
         public async Task<BaseResponse> UploadImages( List<IFormFile> ifiles, string  uploadReason, string useremail)
         {
             var user = _loggedIn.LoggedInUser().Result;
-
             if (ifiles == null || ifiles.Count==0)
             {
-
                 return new BaseResponse { Code = "234", ErrorMessage = "No image selected" };
             }
             foreach (var ifile in ifiles)
             {
                 string imagetext = Path.GetExtension(ifile.FileName);
-
                 if (imagetext == ".jpg" || imagetext == ".gif" || imagetext == ".jpeg"  ||imagetext== ".png")
                 {
                     var saveimage = Path.Combine(_environment.WebRootPath, "Images", ifile.FileName);
@@ -81,11 +75,10 @@ namespace HousingProject.Infrastructure.ExtraFunctions.Images
                         Description=uploadReason,
                         CreatedBy= user.Email,
                         UserEmail= useremail
-
                     };
                     await _context.AddAsync(saveImage);
                     await _context.SaveChangesAsync();
-                    return new BaseResponse { Code = "200", SuccessMessage = "Image uploaded successfully" };
+                    return new BaseResponse {Code = "200",SuccessMessage = "Image uploaded successfully" };
                 }
             }          
         return new BaseResponse { Code = "140", ErrorMessage = "Something foreign happened" };
@@ -95,64 +88,54 @@ namespace HousingProject.Infrastructure.ExtraFunctions.Images
         {
             if (profiledescription =="")
             {
-                return new BaseResponse { Code = "123", ErrorMessage = "Description cannot be empty" };
-                
+                return new BaseResponse { Code = "123", ErrorMessage = "Description cannot be empty" };               
             }
             if (userEmail == "")
             {
                 return new BaseResponse { Code = "467", ErrorMessage = "Email cannot be empty" };
-
             }
 
             try
             {
-
               var imageuploaded =await  _context.ImaageUploadClass.Where(x => x.UserEmail == userEmail && x.Description == profiledescription).FirstOrDefaultAsync();
               if (imageuploaded == null)
                 {
-
                     return new BaseResponse { Code = "346", ErrorMessage = "The profile image cannot be found " };
                 }
-
-
                 var ImagePath=_environment.WebRootPath + Path.DirectorySeparatorChar.ToString() + "Images" + Path.DirectorySeparatorChar.ToString() + imageuploaded.ImagePath;
                 return new BaseResponse { Code = "200", SuccessMessage = ImagePath };
-
             }
             catch (Exception ex)
             {
                 return new BaseResponse { Code = "467", ErrorMessage = ex.ToString() };
-
             }
         }
         public async Task<imageresponse> GetAllImages()
         {
-
-            try
+           try
             {
                 using (var scope = _servicescope.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider
                         .GetRequiredService<HousingProjectContext>();
+                    ////start 
 
+                    //string webRootPath = _environment.WebRootPath;
+                    //string imagesPath = Path.Combine(webRootPath, "Images\\");
+                    //string[] imageFiles = Directory.GetFiles(imagesPath);
+                    //var imageUrls = new List<string>();
+                    //foreach (var imagePath in imageFiles)
+                    //{
+                    //    var imageUrl = _urlhelper.Content(imagesPath + Path.GetFileName(imagePath));
+                    //    imageUrls.Add(imageUrl);
+                    //}
+                    //return new imageresponse { message = "Successfully queried", imagepaths = imageUrls };
+                    ////end
+                    ///
 
-                    //start 
-                    string webRootPath = _environment.WebRootPath;
-                    string imagesPath = Path.Combine(webRootPath, "images");
-                    string[] imageFiles = Directory.GetFiles(imagesPath);
-                    var imageUrls = new List<string>();
+                    var allimagesfound = await scopedcontext.ImaageUploadClass.ToListAsync();
 
-                    foreach (var imagePath in imageFiles)
-                    {
-                        var imageUrl = _urlhelper.Content("~/images/" + Path.GetFileName(imagePath));
-                        imageUrls.Add(imageUrl);
-                    }
-                    return new imageresponse { message = "Successfully queried", imagepaths = imageUrls };
-               
-
-                    //end 
-
-
+                    return new imageresponse { message = "Queried successfully", imagepaths=allimagesfound };
                 }
 
             }
@@ -161,5 +144,8 @@ namespace HousingProject.Infrastructure.ExtraFunctions.Images
                 return new imageresponse {message = ex.Message };
             }
         }
+
+
+
     }
 }

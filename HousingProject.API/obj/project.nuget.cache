@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "V/TTKMAzQchEgqC4GoyTA4tZu0Obe1rqF/UFZ8Fpo+sCF/WlQZq9/lG218/UJtkPipbuws7mfkI77DXMboZZ2Q==",
+  "dgSpecHash": "YkHXmwm5fuCFMJ38W5LNFcIKWI/BFzx/SUK1JQ64LCYtDRzfYaesfvRHpsNVTKVZ0YA/4yIL8yBSUAAl4fO7+A==",
   "success": true,
   "projectFilePath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.API\\HousingProject.API.csproj",
   "expectedPackageFiles": [
@@ -45,6 +45,7 @@
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\microsoft.aspnetcore.responsecaching.abstractions\\2.2.0\\microsoft.aspnetcore.responsecaching.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\microsoft.aspnetcore.routing\\2.2.0\\microsoft.aspnetcore.routing.2.2.0.nupkg.sha512",
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\microsoft.aspnetcore.routing.abstractions\\2.2.0\\microsoft.aspnetcore.routing.abstractions.2.2.0.nupkg.sha512",
+    "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\microsoft.aspnetcore.staticfiles\\2.2.0\\microsoft.aspnetcore.staticfiles.2.2.0.nupkg.sha512",
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\microsoft.aspnetcore.webutilities\\2.2.0\\microsoft.aspnetcore.webutilities.2.2.0.nupkg.sha512",
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\microsoft.azure.management.containerinstance.fluent\\1.38.1\\microsoft.azure.management.containerinstance.fluent.1.38.1.nupkg.sha512",
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\microsoft.azure.management.graph.rbac.fluent\\1.38.1\\microsoft.azure.management.graph.rbac.fluent.1.38.1.nupkg.sha512",

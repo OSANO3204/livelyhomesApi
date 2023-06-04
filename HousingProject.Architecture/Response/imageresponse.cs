@@ -9,6 +9,6 @@ namespace HousingProject.Infrastructure.Response
    public  class imageresponse
     {
         public string message { get; set; }
-        public List<string> imagepaths { get; set; }
+        public object imagepaths { get; set; }
     }
 }

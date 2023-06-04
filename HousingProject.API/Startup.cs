@@ -223,7 +223,6 @@ namespace HousingProject.API
                 );
             }
 
-            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseCors(builder =>
@@ -232,10 +231,10 @@ namespace HousingProject.API
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             });
-            app.UseStaticFiles();       
+               
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseStaticFiles();
+   
 
             app.UseEndpoints(endpoints =>
             {

@@ -229,7 +229,6 @@ namespace HousingProject.Architecture.HouseRegistration_Services
         public async Task<BaseResponse> Registered_Houses()
         {
             var user = LoggedInUser().Result;
-
             if (user.Is_Tenant)
             {
                 return new BaseResponse { Code = "123", ErrorMessage = "You dont have permission to view this" };
@@ -239,13 +238,13 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 var usershouselist = Get_HouseUsers_Houses().Result.Body;
                 return new BaseResponse { Code = "200", SuccessMessage = "Successful", Body = usershouselist };
             }
-
-            var houselists = await _context.House_Registration.Where(x => x.CreatorEmail == user.Email).OrderByDescending(x => x.DateCreated).ToListAsync();
-
+            var houselists = await _context.House_Registration
+                .Where(x => x.CreatorEmail == user.Email)
+                .OrderByDescending(x => x.DateCreated)
+                .ToListAsync();
             List<HouseListsViewModel> houses = new List<HouseListsViewModel>();
             foreach (var houseitem in houselists)
             {
-
                 var houselistvm = new HouseListsViewModel
                 {
                     House_Location = houseitem.House_Location,
@@ -262,60 +261,52 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                     CreatorEmail = houseitem.CreatorEmail,
                     CreatorNames = houseitem.CreatorNames,
                 };
-
                 houses.Add(houselistvm);
             }
 
             if (user.Is_Admin)
             {
                 var response = AdminHouseList().Result.Body;
-
                 return new BaseResponse { Code = "200", SuccessMessage = "Successful", Body = response };
             }
 
             else
             {
                 return new BaseResponse { Code = "200", SuccessMessage = "Successful", Body = houses };
-
             }
         }
 
 
         public async Task<BaseResponse> AddAdminContacts(AdminContctsViewModel vm)
         {
-
             var user = LoggedInUser().Result;
             if (user.Is_Agent)
             {
-
                 if (vm.AdminEmail == "")
                 {
                     return new BaseResponse
-                    {
-                        Code = "120",
-                        ErrorMessage = "Admin email cannot be empty"
-                    };
-                }
+                            {
+                            Code = "120",
+                            ErrorMessage = "Admin email cannot be empty"
 
+                            };
+                }
                 if (vm.Creator == "")
                 {
-                    return new BaseResponse { Code = "120", ErrorMessage = "Email address cannot be empty" };
+                  return new BaseResponse { Code = "120", ErrorMessage = "Email address cannot be empty" };
                 }
 
                 if (vm.AdminPhoneNumber == "")
                 {
                     return new BaseResponse { Code = "122", ErrorMessage = "Phone Number cannot be empty" };
                 }
-
                 if (user.Is_Agent)
                 {
-
                     var admincontactsmodel = new AdminContacts
                     {
                         AdminEmail = vm.AdminEmail,
                         Creator = user.Email,
                         AdminPhoneNumber = vm.AdminPhoneNumber,
-
                     };
                     await _context.AddAsync(admincontactsmodel);
                     await _context.SaveChangesAsync();
