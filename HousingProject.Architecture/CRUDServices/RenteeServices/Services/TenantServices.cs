@@ -4,6 +4,7 @@ using HousingProject.Architecture.Interfaces.IRenteeServices;
 using HousingProject.Architecture.IPeopleManagementServvices;
 using HousingProject.Architecture.Response.Base;
 using HousingProject.Architecture.ViewModel.People;
+using HousingProject.Core.Models.DelayRequest;
 using HousingProject.Core.Models.Email;
 using HousingProject.Core.Models.General;
 using HousingProject.Core.Models.People;
@@ -83,14 +84,14 @@ namespace HousingProject.Architecture.Services.Rentee.Services
         public async Task<BaseResponse> Register_Rentee(Rentee_RegistrationViewModel RenteeVm)
         {
             var loggeinuserr = LoggedInUser().Result;
-            if (_loggedIn.LoggedInUser().Result.Is_Tenant)
+            if (_loggedIn.LoggedInUser().Result.Is_Tenant || !_loggedIn.LoggedInUser().Result.Is_Admin)
             {
                 return new BaseResponse { Code = "124", ErrorMessage = "You do not have permision to do this" };
             }
 
             try
             {
-                if (!(loggeinuserr.Is_Agent || loggeinuserr.Is_Landlord))
+                if (!(loggeinuserr.Is_Agent || !loggeinuserr.Is_Landlord))
 
                 {
                     return new BaseResponse { Code = "129", ErrorMessage = "You do not have permission to do this" };
@@ -882,6 +883,186 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             }
             return new BaseResponse { Code = "200", SuccessMessage = "Queried successfully" };
         }
+        public async Task<BaseResponse> RequestRentDelay(string requestdate, string addtionalDetails)
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();                   
+                    var user = await _loggedIn.LoggedInUser();
+                    var tenantexists = await scopedcontext.TenantClass.Where(t => t.Email == user.Email).FirstOrDefaultAsync();
+                    if (tenantexists == null)
+                    {
+                        new BaseResponse { Code = "140", ErrorMessage = "Tenant does not exist" };
+                    }
+                    else
+                    {
+                        var newdelayrequest = new RentDelayRequestTable
+                        {
+                            AdditionDetails = addtionalDetails,
+                            RequestDate = Convert.ToDateTime(requestdate),
+                            TenantRentPaymentDate = tenantexists.RentPayDay,
+                            RequesterId = user.Id,
+                            Requestermail = tenantexists.Email,
+                            RequesterNames = tenantexists.FirstName + " " + tenantexists.LastName,
+                            HouseId = tenantexists.HouseiD,
+                            DoorNumber = tenantexists.Appartment_DoorNumber,
+                            Status="PENDING"
+                        };
+
+                        await scopedcontext.AddAsync(newdelayrequest);
+                        await scopedcontext.SaveChangesAsync();
+                        return new BaseResponse { Code = "200", SuccessMessage = $"successfully submited a request for rent details date to {Convert.ToString(newdelayrequest.RequestDate)} " };
+
+
+                    }
+                    return new BaseResponse();
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "120", ErrorMessage = ex.Message };
+            }
+
+        }
+
+        public async Task<BaseResponse> GetAll_DelayRequests_By_HouseId(int houseid)
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var all_delay_requests = await scopedcontext.RentDelayRequestTable.Where(u => u.HouseId == houseid).OrderByDescending(y=>y.DateRequested).ToListAsync();
+                    if (all_delay_requests == null)
+                    {
+                        new BaseResponse { Code = "140", ErrorMessage = "No delay requests available" };
+                    }
+                  return   new BaseResponse { Code = "200", SuccessMessage = "Successfully queried" , Body= all_delay_requests};
+
+
+                }
+            
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse { Code = "109", ErrorMessage = ex.Message };
+            }
+
+        }
+
+
+        public async Task<BaseResponse> GetAll_DelayRequests_By_TenantEmail(string tenantemail)
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var all_User_delay_requests = await scopedcontext.RentDelayRequestTable.Where(u => u.Requestermail == tenantemail).OrderByDescending(y => y.DateRequested).ToListAsync();
+                    if (all_User_delay_requests == null)
+                    {
+                        new BaseResponse { Code = "140", ErrorMessage = "No delay requests available" };
+                    }
+                    return new BaseResponse { Code = "200", SuccessMessage = "Successfully queried", Body = all_User_delay_requests };
+
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse { Code = "109", ErrorMessage = ex.Message };
+            }
+
+        }
+
+        public async Task<BaseResponse> GetDelayRequestsBystatus(string status ,int  houseid)
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                 var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    if (status == "APPROVED")
+                    {
+                        var approved_request = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "APPROVED" || u.HouseId == houseid).ToListAsync();
+
+                        if (approved_request == null)
+                        {
+
+                            return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
+                        }
+                        return new BaseResponse { Code = "200", SuccessMessage = "successfully queried", Body = approved_request };
+                    }
+                    else if (status == "PENDING")
+                    {
+                        var pending_request = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "PENDING" || u.HouseId == houseid).ToListAsync();
+                        if (pending_request == null)
+                        {
+
+                            return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
+                        }
+                        return new BaseResponse { Code = "200", SuccessMessage = "successfully queried", Body = pending_request };
+
+                    }
+                    else if (status == "DECLINED")
+                    {
+                        var declined_requests = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "DECLINED" || u.HouseId == houseid).ToListAsync();
+                        if (declined_requests == null)
+                        {
+
+                            return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
+                        }
+                        return new BaseResponse { Code = "200", SuccessMessage = "successfully queried", Body = declined_requests };
+
+                    }
+
+                    return new BaseResponse();
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "190", ErrorMessage = ex.Message };
+            }
+
+        }
+
+        public async Task<BaseResponse> ApproveRequest(int requestid)
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    var pending_requestfound = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "PENDING" || u.delay_request_id == requestid).FirstOrDefaultAsync();
+                    if (pending_requestfound == null)
+                    {
+                        return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
+                    }
+
+                    pending_requestfound.Status = "PENDING";
+
+                     scopedcontext.Update(pending_requestfound);
+                    await scopedcontext.SaveChangesAsync();
+                    return new BaseResponse { Code = "200", SuccessMessage = "successfully approved"};
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "190", ErrorMessage = ex.Message };
+            }
+
+        }
+
+
+            }
 
     }
-}

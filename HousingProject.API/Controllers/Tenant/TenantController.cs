@@ -190,8 +190,39 @@ namespace HousingProject.API.Controllers.Rentee
             return await _irenteeServices.GetHouseUnitBodyById(houseuintid);
         }
 
+        [Authorize]
+        [Route("RequestRentDelay")]
+        [HttpPost]
+        public async Task<BaseResponse> RequestRentDelay(string requestdate, string addtionalDetails)
+        {
+
+            return await _irenteeServices.RequestRentDelay(requestdate, addtionalDetails);
+        }
 
 
+        [Authorize]
+        [Route("GetDelaysbyHouseId")]
+        [HttpPost]
+        public async Task<BaseResponse> GetAll_DelayRequests_By_HouseId(int houseid)
+        {
+            return await _irenteeServices.GetAll_DelayRequests_By_HouseId(houseid);
+        }
+
+        [Authorize]
+        [Route("GetDelaysByTenantEmail")]
+        [HttpPost]
+        public async Task<BaseResponse> GetAll_DelayRequests_By_TenantEmail(string tenantemail)
+        {
+            return await _irenteeServices.GetAll_DelayRequests_By_TenantEmail(tenantemail);
+        }
+
+        [Authorize]
+        [Route("Approve_Request")]
+        [HttpPost]
+        public async Task<BaseResponse> ApproveRequest(int requestid)
+        {
+            return await  _irenteeServices.ApproveRequest(requestid);
+        }
 
 
 

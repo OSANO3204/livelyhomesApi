@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230605121718_adding datetime in units area ")]
+    partial class addingdatetimeinunitsarea
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,19 +73,16 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<string>("AdditionDetails")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateRequested")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("DoorNumber")
                         .HasColumnType("int");
 
                     b.Property<int>("HouseId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MyProperty")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("RequestDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("RequestPaymentDatedate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("RequesterId")
@@ -93,9 +92,6 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Requestermail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("TenantRentPaymentDate")

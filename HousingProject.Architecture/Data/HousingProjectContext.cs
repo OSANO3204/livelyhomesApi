@@ -1,4 +1,5 @@
 ﻿using HousingProject.Core.Models.CountiesModel;
+using HousingProject.Core.Models.DelayRequest;
 using HousingProject.Core.Models.General;
 using HousingProject.Core.Models.Houses.Flats.AdminContacts;
 using HousingProject.Core.Models.Houses.Flats.House_Registration;
@@ -65,6 +66,7 @@ namespace HousingProject.Architecture.Data
         public DbSet<ReminderSentDate> ReminderTable { get; set; }
         public DbSet<HouseUnitsStatus> HouseUnitsStatus { get; set; }
         public DbSet<PayRent> PayRent { get; set; }
+        public DbSet<RentDelayRequestTable> RentDelayRequestTable { get; set; }
 
     }
 }
