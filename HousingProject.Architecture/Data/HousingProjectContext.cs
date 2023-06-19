@@ -13,6 +13,7 @@ using HousingProject.Core.Models.People.General;
 using HousingProject.Core.Models.People.Landlord;
 using HousingProject.Core.Models.Professionals;
 using HousingProject.Core.Models.ReminderonRentpayment;
+using HousingProject.Core.Models.RentMonthly;
 using HousingProject.Core.Models.RentPayment;
 using HousingProject.Core.Models.Reply;
 using HousingProject.Core.Models.WorkIdModel;
@@ -67,6 +68,7 @@ namespace HousingProject.Architecture.Data
         public DbSet<HouseUnitsStatus> HouseUnitsStatus { get; set; }
         public DbSet<PayRent> PayRent { get; set; }
         public DbSet<RentDelayRequestTable> RentDelayRequestTable { get; set; }
+        public DbSet<Rent_Monthly_Update> Rent_Monthly_Update { get; set; }
 
     }
 }

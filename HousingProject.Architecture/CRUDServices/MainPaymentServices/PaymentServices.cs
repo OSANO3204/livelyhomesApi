@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using HousingProject.Architecture.Data;
 using System.Web.Http.Results;
+using System.Net.Http.Headers;
 
 namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 {
@@ -27,17 +28,37 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 
         public async Task<mpesaAuthenticationvm> Getauthenticationtoken()
         {
-            var client = _httpClientFactory.CreateClient("mpesa");
-            var authString = "ayDShXXoHYSaZXCkeNXM7G8318udLh3V:uike4BHVsClxdvTJ";
-            var encodedpassword = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authString));
-            var _url = "/oauth/v1/generate?grant_type=client_credentials";
-            var request = new HttpRequestMessage(HttpMethod.Get, _url);
-            request.Headers.Add("Authorization", $"Basic {encodedpassword}");
-            var response = await client.SendAsync(request);
-            var mpesaauthtoken = await response.Content.ReadAsStringAsync();
-            var responseobject = JsonConvert.DeserializeObject<mpesaAuthenticationvm>(mpesaauthtoken);
-            return responseobject;
-        }
+         var client =   _httpClientFactory.CreateClient("mpesa");
+            string username = "brian.otieno@ngaocredit.com";
+                string password = "Kyla@2018";
+                string credentials = $"{username}:{password}";
+                byte[] credentialsBytes = System.Text.Encoding.UTF8.GetBytes(credentials);
+                string base64Credentials = Convert.ToBase64String(credentialsBytes);
+                var url_value = "/oauth/v1/generate?grant_type=client_credentials";    
+                var request = new HttpRequestMessage(HttpMethod.Get, url_value);
+                request.Headers.Add("Authorization", $"Basic {base64Credentials}");
+                var response = await client.SendAsync(request);
+                var mpesaauthtoken = await response.Content.ReadAsStringAsync();
+                var responseobject = JsonConvert.DeserializeObject<mpesaAuthenticationvm>(mpesaauthtoken);
+                return responseobject;
+
+            }
+
+
+            //var client = _httpClientFactory.CreateClient("mpesa");
+
+            //string username = "brian.otieno@ngaocredit.com";
+            //string password = "Kyla@2018";
+            //var authString = "ayDShXXoHYSaZXCkeNXM7G8318udLh3V:uike4BHVsClxdvTJ";
+            //var encodedpassword = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authString));
+            //var _url = "/oauth/v1/generate?grant_type=client_credentials";
+            //var request = new HttpRequestMessage(HttpMethod.Get, _url);
+            //request.Headers.Add("Authorization", $"Basic {encodedpassword}");
+            //var response = await client.SendAsync(request);
+            //var mpesaauthtoken = await response.Content.ReadAsStringAsync();
+            //var responseobject = JsonConvert.DeserializeObject<mpesaAuthenticationvm>(mpesaauthtoken);
+            //return responseobject;
+        
 
         public async Task<string> RegisterURL()
         {

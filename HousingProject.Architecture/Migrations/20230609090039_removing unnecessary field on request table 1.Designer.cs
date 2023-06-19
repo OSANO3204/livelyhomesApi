@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230609090039_removing unnecessary field on request table 1")]
+    partial class removingunnecessaryfieldonrequesttable1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -959,42 +961,6 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("ReminderTableId");
 
                     b.ToTable("ReminderTable");
-                });
-
-            modelBuilder.Entity("HousingProject.Core.Models.RentMonthly.Rent_Monthly_Update", b =>
-                {
-                    b.Property<int>("Monthlyrentid")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<double>("Balance")
-                        .HasColumnType("float");
-
-                    b.Property<string>("HouseName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Month")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("RentAmount")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Tenant_Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Tenantid")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Tenantnames")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Year")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Monthlyrentid");
-
-                    b.ToTable("Rent_Monthly_Update");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.RentPayment.PayRent", b =>

@@ -180,6 +180,7 @@ namespace HousingProject.API.Controllers.Rentee
         {
 
             return await _irenteeServices.GetAllTenantPayments(tenantid);
+            return await _irenteeServices.GetAllTenantPayments(tenantid);
         }
 
         [Authorize]
@@ -224,7 +225,21 @@ namespace HousingProject.API.Controllers.Rentee
             return await  _irenteeServices.ApproveRequest(requestid);
         }
 
+        [Authorize]
+        [Route("GetAllRequestsByStatusAndHouseId")]
+        [HttpPost]
+        public async Task<BaseResponse> GetDelayRequetsByHouseIDandStatus(int houseid, string requestStatus)
+        {
+            return await _irenteeServices.GetDelayRequetsByHouseIDandStatus(houseid,requestStatus);
+        }
 
+        [Authorize]
+        [Route("Reject_Rent_ Delay_Request")]
+        [HttpPost]
+        public async Task<BaseResponse> RejectRequest(int requestid)
+        {
+            return await _irenteeServices.RejectRequest(requestid);
+        }
 
 
 

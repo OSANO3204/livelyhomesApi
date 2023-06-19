@@ -80,7 +80,6 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             var loggedinuser = await _context.RegistrationModel
                 .Where(x => x.Id == currentuserid)
                 .FirstOrDefaultAsync();
-
             return loggedinuser;
         }
 
@@ -99,123 +98,120 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             try
             {
                 var currentuser = LoggedInUser().Result;
-
-
                 if (currentuser.Is_CareTaker && currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent)
-                {
-                    return new BaseResponse { Code = "159", ErrorMessage = "You cannot register a house, your role is a caretaker and a tenant" };
-
-                }
+                    {
+                        return new BaseResponse { Code = "159", ErrorMessage = "You cannot register a house, your role is a caretaker and a tenant" };
+                    }
 
                 if (currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_CareTaker)
-                {
-                    return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a tenant" };
+                    {
+                        return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a tenant" };
 
-                }
+                    }
                 if (currentuser.Is_CareTaker && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_Tenant)
-                {
-                    return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a caretaker" };
+                    {
+                        return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a caretaker" };
 
-                }
+                    }
 
                 //var currentuser = LoggedInUser().Result;
                 if (!currentuser.Is_Agent && !currentuser.Is_Landlord)
-                {
+                    {
 
-                    return new BaseResponse { Code = "129", ErrorMessage = "You don't  have access to do this" };
-                }
+                        return new BaseResponse { Code = "129", ErrorMessage = "You don't  have access to do this" };
+                    }
 
                 if (newvm.House_Location == "")
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "House location cannot be null" };
-                }
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "House location cannot be null" };
+                    }
                 if (newvm.Total_Units <= 0)
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "House units cannot be less than or equal to zero" };
-                }
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "House units cannot be less than or equal to zero" };
+                    }
                 if (newvm.Owner_Firstname == "")
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "owner first name cannot be empty" };
-                }
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "owner first name cannot be empty" };
+                    }
 
                 if (newvm.Owner_LastName == "")
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "owner last name cannot be empty" };
-                }
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "owner last name cannot be empty" };
+                    }
                 if (newvm.Country == "")
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "County field cannot be empty" };
-                }
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "County field cannot be empty" };
+                    }
                 if (newvm.Estimated_Maximum_Capacity <= 0)
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "Estimated capacity must me higher than zero" };
-                }
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "Estimated capacity must me higher than zero" };
+                    }
                 if (newvm.Owner_id_Number <= 0)
-                {
+                    {
 
-                    return new BaseResponse { Code = "110", ErrorMessage = "House owner id cannot be null" };
-                }
+                        return new BaseResponse { Code = "110", ErrorMessage = "House owner id cannot be null" };
+                    }
 
                 var housereg = new House_Registration
-                {
-                    Owner_Firstname = newvm.Owner_Firstname,
-                    Owner_LastName = newvm.Owner_LastName,
-                    Owner_id_Number = newvm.Owner_id_Number,
-                    House_Name = newvm.House_Name,
-                    Total_Units = newvm.Total_Units,
-                    Area = newvm.Area,
-                    Country = newvm.Country,
-                    House_Location = newvm.House_Location,
-                    Estimated_Maximum_Capacity = newvm.Estimated_Maximum_Capacity,
-                    EmailSent = false,
-                    CreatorEmail = currentuser.Email,
-                    CreatorNames = currentuser.FirstName + " " + currentuser.LasstName,
-                    UserId = currentuser.Id,
+                        {
+                            Owner_Firstname = newvm.Owner_Firstname,
+                            Owner_LastName = newvm.Owner_LastName,
+                            Owner_id_Number = newvm.Owner_id_Number,
+                            House_Name = newvm.House_Name,
+                            Total_Units = newvm.Total_Units,
+                            Area = newvm.Area,
+                            Country = newvm.Country,
+                            House_Location = newvm.House_Location,
+                            Estimated_Maximum_Capacity = newvm.Estimated_Maximum_Capacity,
+                            EmailSent = false,
+                            CreatorEmail = currentuser.Email,
+                            CreatorNames = currentuser.FirstName + " " + currentuser.LasstName,
+                            UserId = currentuser.Id,
 
-                };
+                        };
 
                 await _context.House_Registration.AddAsync(housereg);
                 await _context.SaveChangesAsync();
                 var emails = housereg.CreatorEmail;
                 var creatorusername = LoggedInUser().Result;
                 var sendbody = new UserEmailOptions
-                {
-                    UserName = creatorusername.FirstName,
-                    PayLoad = "sent mail test",
-                    ToEmail = emails
-                };
+                        {
+                            UserName = creatorusername.FirstName,
+                            PayLoad = "sent mail test",
+                            ToEmail = emails
+                        };
 
                 var result = await _iemailservices.sendEmailOnHouseRegistration(sendbody);
 
                 if (result.Code == "200")
-                {
-                    int fromzero = 0;
-                    while (newvm.Total_Units > fromzero )
                     {
-                        fromzero++;
+                        int fromzero = 0;
+                        while (newvm.Total_Units > fromzero )
+                        {
+                            fromzero++;
 
-                        var saveunit = new HouseUnitsStatus();
+                            var saveunit = new HouseUnitsStatus();
 
-                        saveunit.DoorNumber = fromzero;
-                        saveunit.HouseName = newvm.House_Name;
-                        saveunit.Occupied = false;
+                            saveunit.DoorNumber = fromzero;
+                            saveunit.HouseName = newvm.House_Name;
+                            saveunit.Occupied = false;
 
-                        await _context.AddAsync(saveunit);
-                        await _context.SaveChangesAsync();
+                            await _context.AddAsync(saveunit);
+                            await _context.SaveChangesAsync();
 
-                    }
+                        }
 
                    
-                    housereg.EmailSent = true;
+                        housereg.EmailSent = true;
 
-                    _context.House_Registration.Update(housereg);
-                    await _context.SaveChangesAsync();
-                    return new BaseResponse
-                    {
-                        Code = "200",
-                        SuccessMessage = "House  registered successfully and email sent  "
-                    };
-                }
+                        _context.House_Registration.Update(housereg);
+                        await _context.SaveChangesAsync();
+                        return new BaseResponse
+                        {
+                            Code = "200",
+                            SuccessMessage = "House  registered successfully and email sent  "
+                        };
+                    }
                 return (new BaseResponse { SuccessMessage = "Failed to send ", });
             }
             catch (Exception ex)

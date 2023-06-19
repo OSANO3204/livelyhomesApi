@@ -36,6 +36,8 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task<BaseResponse> GetAll_DelayRequests_By_HouseId(int houseid);
         Task<BaseResponse> GetAll_DelayRequests_By_TenantEmail(string tenantemail);
         Task<BaseResponse> ApproveRequest(int requestid );
+        Task<BaseResponse> GetDelayRequetsByHouseIDandStatus(int houseid, string requestStatus);
+        Task<BaseResponse> RejectRequest(int requestid);
 
 
     }

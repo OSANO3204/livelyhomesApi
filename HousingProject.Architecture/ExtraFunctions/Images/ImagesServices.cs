@@ -120,22 +120,22 @@ namespace HousingProject.Infrastructure.ExtraFunctions.Images
                         .GetRequiredService<HousingProjectContext>();
                     ////start 
 
-                    //string webRootPath = _environment.WebRootPath;
-                    //string imagesPath = Path.Combine(webRootPath, "Images\\");
-                    //string[] imageFiles = Directory.GetFiles(imagesPath);
-                    //var imageUrls = new List<string>();
-                    //foreach (var imagePath in imageFiles)
-                    //{
-                    //    var imageUrl = _urlhelper.Content(imagesPath + Path.GetFileName(imagePath));
-                    //    imageUrls.Add(imageUrl);
-                    //}
-                    //return new imageresponse { message = "Successfully queried", imagepaths = imageUrls };
+                    string webRootPath = _environment.WebRootPath;
+                    string imagesPath = Path.Combine(webRootPath, "Images\\");
+                    string[] imageFiles = Directory.GetFiles(imagesPath);
+                    var imageUrls = new List<string>();
+                    foreach (var imagePath in imageFiles)
+                    {
+                        var imageUrl = _urlhelper.Content("localhost:2023/"+ imagesPath + Path.GetFileName(imagePath));
+                        imageUrls.Add(imageUrl);
+                    }
+                    return new imageresponse { message = "Successfully queried", imagepaths = imageUrls };
                     ////end
                     ///
 
-                    var allimagesfound = await scopedcontext.ImaageUploadClass.ToListAsync();
+                    //var allimagesfound = await scopedcontext.ImaageUploadClass.ToListAsync();
 
-                    return new imageresponse { message = "Queried successfully", imagepaths=allimagesfound };
+                    //return new imageresponse { message = "Queried successfully", imagepaths=allimagesfound };
                 }
 
             }
