@@ -8,6 +8,7 @@ using HousingProject.Core.Models.Houses.HouseAggrement;
 using HousingProject.Core.Models.Houses.HouseUnitRegistration;
 using HousingProject.Core.Models.Houses.HouseUsers;
 using HousingProject.Core.Models.ImagesModelsUsed;
+using HousingProject.Core.Models.N_IMAGES;
 using HousingProject.Core.Models.People;
 using HousingProject.Core.Models.People.General;
 using HousingProject.Core.Models.People.Landlord;
@@ -69,6 +70,7 @@ namespace HousingProject.Architecture.Data
         public DbSet<PayRent> PayRent { get; set; }
         public DbSet<RentDelayRequestTable> RentDelayRequestTable { get; set; }
         public DbSet<Rent_Monthly_Update> Rent_Monthly_Update { get; set; }
+        public DbSet<Image_Models> Image_Models { get; set; }
 
     }
 }

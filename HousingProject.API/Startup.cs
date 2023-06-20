@@ -17,6 +17,7 @@ using HousingProject.Core.Models.Houses.HouseUnitRegistration;
 using HousingProject.Core.Models.People;
 using HousingProject.Infrastructure.CRUDServices.HouseRegistration_Services.HouseUnitsServices;
 using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
+using HousingProject.Infrastructure.CRUDServices.N_IMages_Services;
 using HousingProject.Infrastructure.CRUDServices.Payments.Rent;
 using HousingProject.Infrastructure.CRUDServices.ProfessionalsServices;
 using HousingProject.Infrastructure.CRUDServices.UsersExtra;
@@ -208,6 +209,7 @@ namespace HousingProject.API
             });
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
+            services.AddScoped<In_ImagesServices, n_images_services>();
 
         }
 
