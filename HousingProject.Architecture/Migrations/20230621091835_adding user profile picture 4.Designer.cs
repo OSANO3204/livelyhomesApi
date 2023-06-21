@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230621091835_adding user profile picture 4")]
+    partial class addinguserprofilepicture4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -531,29 +533,6 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("HouseuserId");
 
                     b.ToTable("HouseUsers");
-                });
-
-            modelBuilder.Entity("HousingProject.Core.Models.Houses.House_Profile_Image", b =>
-                {
-                    b.Property<int>("House_Image_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("House_Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("House_Image_Id");
-
-                    b.ToTable("House_Profile_Image");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.ImagesModelsUsed.ImaageUploadClass", b =>

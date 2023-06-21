@@ -1,6 +1,7 @@
 ﻿using HousingProject.Core.Models.CountiesModel;
 using HousingProject.Core.Models.DelayRequest;
 using HousingProject.Core.Models.General;
+using HousingProject.Core.Models.Houses;
 using HousingProject.Core.Models.Houses.Flats.AdminContacts;
 using HousingProject.Core.Models.Houses.Flats.House_Registration;
 using HousingProject.Core.Models.Houses.Flats.uploadImage;
@@ -9,6 +10,7 @@ using HousingProject.Core.Models.Houses.HouseUnitRegistration;
 using HousingProject.Core.Models.Houses.HouseUsers;
 using HousingProject.Core.Models.ImagesModelsUsed;
 using HousingProject.Core.Models.N_IMAGES;
+using HousingProject.Core.Models.N_IMAGES.profile_Image;
 using HousingProject.Core.Models.People;
 using HousingProject.Core.Models.People.General;
 using HousingProject.Core.Models.People.Landlord;
@@ -71,6 +73,9 @@ namespace HousingProject.Architecture.Data
         public DbSet<RentDelayRequestTable> RentDelayRequestTable { get; set; }
         public DbSet<Rent_Monthly_Update> Rent_Monthly_Update { get; set; }
         public DbSet<Image_Models> Image_Models { get; set; }
+        public  DbSet<profile_Images> profile_Images { get; set; }
+
+        public DbSet<House_Profile_Image> House_Profile_Image { get; set; }
 
     }
 }

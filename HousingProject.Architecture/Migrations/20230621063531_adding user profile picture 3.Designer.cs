@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230621063531_adding user profile picture 3")]
+    partial class addinguserprofilepicture3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -533,29 +535,6 @@ namespace HousingProject.Infrastructure.Migrations
                     b.ToTable("HouseUsers");
                 });
 
-            modelBuilder.Entity("HousingProject.Core.Models.Houses.House_Profile_Image", b =>
-                {
-                    b.Property<int>("House_Image_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<byte[]>("Data")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("House_Id")
-                        .HasColumnType("int");
-
-                    b.HasKey("House_Image_Id");
-
-                    b.ToTable("House_Profile_Image");
-                });
-
             modelBuilder.Entity("HousingProject.Core.Models.ImagesModelsUsed.ImaageUploadClass", b =>
                 {
                     b.Property<int>("imagedId")
@@ -615,9 +594,6 @@ namespace HousingProject.Infrastructure.Migrations
 
                     b.Property<byte[]>("Data")
                         .HasColumnType("varbinary(max)");
-
-                    b.Property<DateTime>("Date_Uploaded")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");

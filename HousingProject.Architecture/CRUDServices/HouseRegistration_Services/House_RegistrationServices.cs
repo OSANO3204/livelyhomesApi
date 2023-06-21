@@ -17,6 +17,7 @@ using HousingProject.Core.ViewModel.House;
 using HousingProject.Core.ViewModel.House.HouseUsersvm;
 using HousingProject.Core.ViewModel.HouseUnitRegistrationvm;
 using HousingProject.Core.ViewModels;
+using HousingProject.Infrastructure.CRUDServices.N_IMages_Services;
 using HousingProject.Infrastructure.ExtraFunctions.Checkroles.IcheckRole;
 using HousingProject.Infrastructure.ExtraFunctions.RolesDescription;
 using HousingProject.Infrastructure.Response.BaseResponses;
@@ -45,6 +46,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
         public readonly IRegistrationServices _registrationServices;
         private readonly ILogger<House_RegistrationServices> _logger;
         private readonly IloggedInServices _iloggedInServices;
+        private readonly In_ImagesServices _n_imageservics;
         public House_RegistrationServices(
             HousingProjectContext context,
             IEmailServices iemailservices,
@@ -55,7 +57,8 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             IRegistrationServices registrationServices,
             IServiceScopeFactory serviceScopeFactory,
             ILogger<House_RegistrationServices> logger,
-            IloggedInServices iloggedInServices
+            IloggedInServices iloggedInServices,
+            In_ImagesServices n_imageservics
 
         )
         {
@@ -69,6 +72,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
             _iloggedInServices = iloggedInServices;
+            _n_imageservics = n_imageservics;
         }
 
         public async Task<RegistrationModel> LoggedInUser()
@@ -884,6 +888,9 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                     return new BaseResponse { Code = "130", ErrorMessage = ex.Message };
                 }
         }
+
+       
+        
 
     }
 
