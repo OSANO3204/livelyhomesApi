@@ -2,6 +2,7 @@
 using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.Models.WorkIdModel;
 using HousingProject.Core.ViewModel.GenerateworkIdVm;
+using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,12 @@ namespace HousingProject.Infrastructure.ExtraFunctions.GenerateWorkId
 
         private readonly HousingProjectContext _context;
         private static Random random = new Random();
-        public GenerateIdService(HousingProjectContext context)
+        private readonly IUserExtraServices _iuser_services;
+        public GenerateIdService(HousingProjectContext context, IUserExtraServices iuser_services)
         {
             _context = context;
+            _iuser_services = iuser_services;
+
         }
 
         public async Task<BaseResponse> GenerateWorlkIdFn(GenerateworkIdVm  vm)
@@ -47,31 +51,9 @@ namespace HousingProject.Infrastructure.ExtraFunctions.GenerateWorkId
         {
 
 
-            var CurrentNumber = _context.WorkIdModel.OrderByDescending(x=>x.DateCreated).FirstOrDefault();
-            var changedid = new WorkIdModel { 
-                       
-                WorkIdSaved= CurrentNumber.WorkIdSaved + 1 
-            
-            
-            };
-        
-
-            _context.Update(changedid);
-               await _context.SaveChangesAsync();
-
-            var CurrentNumberupdate = _context.WorkIdModel.OrderByDescending(x=>x.DateCreated).FirstOrDefault();
-
-
-            var Covertaddedtostring= CurrentNumberupdate.WorkIdSaved.ToString();
-
-
-
-            int length = 5;
-              const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-              var randomstrings=    new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+            var CurrentNumber = _iuser_services.GenerateReferenceNumber(5);         
               
-              
-            return new BaseResponse { Code = "200", SuccessMessage = "LH"+ randomstrings+ Covertaddedtostring };
+            return new BaseResponse { Code = "200", SuccessMessage = "LH"+ CurrentNumber };
 
         }
     }
