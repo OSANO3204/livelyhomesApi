@@ -13,9 +13,9 @@ namespace HousingProject.Core.ViewModel.HouseUnitRegistrationvm
         public bool EnforceAggreement { get; set; }
         public string LandlordName { get; set; }
         public string Agent { get; set; }
-        public DateTime LeastStartDate { get; set; }
+        public string LeastStartDate { get; set; }
         public string HouseLocation { get; set; }
-        public DateTime LeastEndDateDate { get; set; }
+        public string LeastEndDateDate { get; set; }
 
    
 

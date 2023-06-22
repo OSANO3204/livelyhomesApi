@@ -20,6 +20,7 @@ using HousingProject.Core.ViewModels;
 using HousingProject.Infrastructure.CRUDServices.N_IMages_Services;
 using HousingProject.Infrastructure.ExtraFunctions.Checkroles.IcheckRole;
 using HousingProject.Infrastructure.ExtraFunctions.RolesDescription;
+using HousingProject.Infrastructure.Response;
 using HousingProject.Infrastructure.Response.BaseResponses;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -594,8 +595,8 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         LandlordName = vm.LandlordName,
                         Agent = vm.Agent,
                         AggreeToAggreement = vm.AggreeToAggreement,
-                        LeastStartDate = vm.LeastStartDate,
-                        LeastEndDateDate = vm.LeastEndDateDate,
+                        LeastStartDate = Convert.ToDateTime(vm.LeastStartDate),
+                        LeastEndDateDate =Convert.ToDateTime(vm.LeastEndDateDate),
                         RentAmount = vm.RentAmount,
                         MaintainceAndRepairDeposit = vm.MaintainceAndRepairDeposit,
                         RentIncreasePeriod = vm.RentIncreasePeriod,
@@ -875,7 +876,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 using (var scope = _serviceScopeFactory.CreateScope())
                     {
                         var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-                        var un_occupied_house_units = await scopedcontext.HouseUnitsStatus.Where(u => u.HouseName == housename && u.Occupied == false).ToListAsync();
+                        var un_occupied_house_units = await scopedcontext.HouseUnitsStatus.Where(u => u.HouseName == housename && !u.Occupied ).ToListAsync();
                         if (un_occupied_house_units == null)
                         {
                             return new BaseResponse();
@@ -886,11 +887,54 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             catch (Exception ex)
                 {
                     return new BaseResponse { Code = "130", ErrorMessage = ex.Message };
-                }
+            }
         }
 
-       
-        
+        public async Task<Housing_Profile_Response> Get_House_Details_By_Id(int house_id)
+        {
+
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopecontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    var house_exists = await scopecontext.House_Registration.Where(y => y.HouseiD == house_id).FirstOrDefaultAsync();
+
+                    if (house_exists == null)
+                        {
+                            return new Housing_Profile_Response { Code = "190", ErrorMessage = "The house does not exists" };
+                        }
+
+                    var total_occupeid_units =  scopecontext.HouseUnitsStatus.Where(y => y.Occupied == true && y.HouseName == house_exists.House_Name).Count();                                  
+                    var un_occpuied_units = scopecontext.HouseUnitsStatus.Where(y => y.Occupied == false && y.HouseName == house_exists.House_Name).Count();
+                    var total_house_units = scopecontext.HouseUnitsStatus.Where( y=>y.HouseName == house_exists.House_Name).Count();
+                    var total_expected_service_fee =await  scopecontext.TenantClass.Where(y => y.HouseiD == house_exists.HouseiD).SumAsync(y => y.ServicesFees);
+                    var total_monthly_rent_amount = await scopecontext.TenantClass.Where(y => y.HouseiD == house_id).ToListAsync();
+
+                    var total_Tenants =  scopecontext.TenantClass.Where(y=>y.HouseiD==house_id).Count();
+                    var monthly_rent_totals = total_monthly_rent_amount.Sum(y=>y.House_Rent);
+                    var total_montly_expected_amount = total_expected_service_fee + monthly_rent_totals;
+
+                    return new Housing_Profile_Response { Code = "200", Body = house_exists, Occupied_Units = total_occupeid_units, 
+                                                              Un_Occupied_Units = un_occpuied_units, 
+                                                              Total_Rent= monthly_rent_totals, Total_Units= total_house_units 
+                                                              ,Total_Expected_Service= (float) total_expected_service_fee,
+                                                               Total_Amounts=total_montly_expected_amount,Total_Tenants= total_Tenants
+
+                    };
+                    
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return new Housing_Profile_Response { Code = "140", ErrorMessage = ex.Message };
+            }
+        }
+
+
+
 
     }
 

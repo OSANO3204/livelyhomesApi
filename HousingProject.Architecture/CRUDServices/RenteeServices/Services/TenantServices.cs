@@ -126,11 +126,17 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     BirthDate = "00/00/00",
                     Is_Tenant = true,
                 };
+                var houseexist = await _context.House_Registration.Where(y => y.HouseiD == RenteeVm.HouseiD).FirstOrDefaultAsync();
 
+                if (houseexist == null)
+                {
+
+                    return new BaseResponse { Code = "150", ErrorMessage = "House does not exist" };
+                }
                 var resp = await _registrationServices.UserRegistration(usermodel);
                 if (resp.Code == "200")
                 {
-                    await Update_unitStatus(RenteeVm.Appartment_DoorNumber);
+                    await Update_unitStatus(RenteeVm.Appartment_DoorNumber, houseexist.House_Name);
                     var emailbody = new UserEmailOptions
                     {
                         UserName = RenteeVm.FirstName,
@@ -753,7 +759,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
             }
         }
-        public async Task Update_unitStatus(int doornumber)
+        public async Task Update_unitStatus(int doornumber, string housename)
         {
             try
             {
@@ -762,12 +768,13 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     var scopedcontet = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     //unit exists
                     var house_unit_exists = await scopedcontet.HouseUnitsStatus
-                        .Where(s => s.DoorNumber == doornumber).FirstOrDefaultAsync();
+                        .Where(s => s.DoorNumber == doornumber &&s.HouseName== housename).FirstOrDefaultAsync();
                     if (house_unit_exists == null)
                     {
                         _logger.LogInformation("_house unit does not exist ");
                     }
                     house_unit_exists.Occupied = true;
+                   
                     scopedcontet.Update(house_unit_exists);
                     await scopedcontet.SaveChangesAsync();
                     _logger.LogInformation("_successully updated house status ");

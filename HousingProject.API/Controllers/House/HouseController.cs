@@ -8,6 +8,7 @@ using HousingProject.Core.ViewModel.House.HouseUsersvm;
 using HousingProject.Core.ViewModel.HouseUnitRegistrationvm;
 using HousingProject.Core.ViewModels;
 using HousingProject.Infrastructure.Interfaces.IHouseRegistration_Services;
+using HousingProject.Infrastructure.Response;
 using HousingProject.Infrastructure.Response.BaseResponses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -256,6 +257,15 @@ namespace HousingProject.API.Controllers.House
         {
 
             return await _house_registrationservices.GetUnoccupiedhouseunits(housename);
+        }
+
+        [Authorize]
+        [Route("Get_House_Profile")]
+        [HttpPost]
+        public async Task<Housing_Profile_Response> Get_House_Details_By_Id(int house_id)
+        {
+            return await _house_registrationservices.Get_House_Details_By_Id(house_id);
+
         }
 
     }
