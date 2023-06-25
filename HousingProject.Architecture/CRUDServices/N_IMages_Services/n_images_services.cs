@@ -3,6 +3,7 @@ using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.Models.Houses;
 using HousingProject.Core.Models.N_IMAGES;
 using HousingProject.Core.Models.N_IMAGES.profile_Image;
+using HousingProject.Core.Models.Professionals;
 using HousingProject.Core.ViewModel.n_Images;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using Microsoft.AspNetCore.Http;
@@ -307,6 +308,95 @@ namespace HousingProject.Infrastructure.CRUDServices.N_IMages_Services
                 return new BaseResponse { Code = "190", ErrorMessage = $"An error occurred: {ex.Message}" };
             }
         }
+
+
+        //technician profile 
+        public async Task<BaseResponse> upload_Technician_Profile_Image(IFormFile file, string workerid)
+        {
+
+            try
+            {
+                using (var scope = _servicescope.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    if (file == null || file.Length == 0)
+                    {
+                        return new BaseResponse { Code = "190", ErrorMessage = "No file uploaded." };
+                    }
+                    var user = _iloogedinservices.LoggedInUser().Result;
+                    var image = await scopedcontext.profiessional_profile_image.Where(y => y.WorkerId == workerid).FirstOrDefaultAsync();
+
+
+                    if (image == null)
+                    {
+
+                        var technician_profile = new profiessional_profile_image();
+
+                        technician_profile.FileName = Path.GetFileName(file.FileName);
+                        technician_profile.WorkerId = workerid;
+
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await file.CopyToAsync(memoryStream);
+                            technician_profile.Data = memoryStream.ToArray();
+                        }
+                        await scopedcontext.AddAsync(technician_profile);
+                        await scopedcontext.SaveChangesAsync();
+                        return new BaseResponse { Code = "200", SuccessMessage = "Technician Profile Image Uploaded successfully" };
+                    }
+                    else
+                    {
+                        image.FileName = Path.GetFileName(file.FileName);
+                        image.WorkerId = workerid;
+
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await file.CopyToAsync(memoryStream);
+                            image.Data = memoryStream.ToArray();
+                            scopedcontext.Update(image);
+                            await scopedcontext.SaveChangesAsync();
+                            return new BaseResponse { Code = "200", SuccessMessage = "Technician Profile Image updated successfully" };
+                        }
+
+
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
+            }
+
+        }
+
+
+
+        public async Task<BaseResponse> Get_Technician_Profile_Image(string worker_id)
+        {
+            try
+            {
+                using (var scope = _servicescope.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var image = await scopedcontext.profiessional_profile_image.Where(x=>x.WorkerId== worker_id).FirstOrDefaultAsync();
+                    if (image == null)
+                    {
+                        return new BaseResponse();
+                    }
+
+                    return new BaseResponse { Body = image.Data, SuccessMessage = "Technician profile image queried successfully" };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "190", ErrorMessage = $"An error occurred: {ex.Message}" };
+            }
+        }
+
+
 
     }
 }

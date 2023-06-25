@@ -14,5 +14,7 @@ namespace HousingProject.Infrastructure.CRUDServices.N_IMages_Services
          Task<BaseResponse> Get_User_Profile_Image();
          Task<BaseResponse> Add_House_Profile_Image(IFormFile file, int houseid);
          Task<BaseResponse> Get_House_Profile_Image(int house_id);
+        Task<BaseResponse> upload_Technician_Profile_Image(IFormFile file, string workerid);
+        Task<BaseResponse> Get_Technician_Profile_Image(string worker_id);
     }
 }

@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230623134331_Adding changes on technician services 1")]
+    partial class Addingchangesontechnicianservices1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -924,36 +926,6 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Registration");
-                });
-
-            modelBuilder.Entity("HousingProject.Core.Models.Professionals.Add_User_Request", b =>
-                {
-                    b.Property<int>("request_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Job_Number")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Names")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone_Number")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Worker_Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("request_id");
-
-                    b.ToTable("Add_User_Request");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.Professionals.RegisterProfessional", b =>

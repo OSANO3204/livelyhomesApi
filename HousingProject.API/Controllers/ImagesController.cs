@@ -107,7 +107,25 @@ namespace HousingProject.API.Controllers
             {
             return await _n_imageservices.Get_House_Profile_Image(house_id);
 
-            } 
+            }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Upload_Technician_Profile_Image")]
+        public async Task<BaseResponse> upload_Technician_Profile_Image(IFormFile file, string workerid)
+        {
+            return await _n_imageservices.upload_Technician_Profile_Image(file, workerid);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get_Technician_Profile_Image")]
+
+        public async Task<BaseResponse> Get_Technician_Profile_Image(string worker_id)
+        {
+            return await _n_imageservices.Get_Technician_Profile_Image(worker_id);
+
+        }
 
     }
 }
