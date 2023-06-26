@@ -141,6 +141,35 @@ namespace HousingProject.API.Controllers
             return await _professionalsServices.Get_request_by_Job_Number(job_number);
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("Close_user_request")]
+        public async Task<BaseResponse> Close_Request(int request_id)
+        {
+            return await _professionalsServices.Close_Request(request_id);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Add_Services")]
+        public async Task<BaseResponse> Add_Services(string service_added, string job_number)
+        {
+            return await _professionalsServices.Add_Services(service_added,job_number);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get_All_Services")]
+        public async Task<BaseResponse> Get_Services_By_Job_Number(string job_number)
+        {
+            return await _professionalsServices.Get_Services_By_Job_Number(job_number);
+        }
+
+
+
+
+
+
 
 
 

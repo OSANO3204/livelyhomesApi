@@ -251,10 +251,15 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
         {
             try
             {
+
+
+              
                 using (var scope = _servicescopefactory.CreateScope())
                 {
+
+                    var user = _loggedIn.LoggedInUser().Result;
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-                    var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.User_Id == user_id).OrderByDescending(y=>y.DateCreated).ToListAsync();
+                    var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.User_Id == user_id && y.Email==user.Email).OrderByDescending(y=>y.DateCreated).ToListAsync();
                     if (professionalexists == null)
                     {
                         return new BaseResponse { Code = "140", ErrorMessage = "User does not exist" };
@@ -364,7 +369,7 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
 
                         var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
 
-                    var allrequests = await scopedcontext.Add_User_Request.Where(y => y.Worker_Email == worker_email).ToListAsync();
+                    var allrequests = await scopedcontext.Add_User_Request.Where(y => y.Worker_Email == worker_email).OrderByDescending(y=>y.CreatedOn).ToListAsync();
                     if (allrequests == null)
                     {
                         return new BaseResponse { Code = "170", ErrorMessage = "No requests  found" };
@@ -400,7 +405,7 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
 
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
 
-                    var allrequests = await scopedcontext.Add_User_Request.Where(y => y.Job_Number == job_number).ToListAsync();
+                    var allrequests = await scopedcontext.Add_User_Request.Where(y => y.Job_Number == job_number).OrderByDescending(y=>y.CreatedOn).ToListAsync();
                     if (allrequests == null)
                     {
                         return new BaseResponse { Code = "170", ErrorMessage = "No requests  found" };
@@ -423,6 +428,101 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                 return new BaseResponse { Code = "340", ErrorMessage = ex.Message };
             }
         }
+        public async Task<BaseResponse> Close_Request(int request_id)
+        {
+            try
+            {
+                using(var scope = _servicescopefactory.CreateScope())
+                {
+                    var scopedocntext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var request_exists = await scopedocntext.Add_User_Request.Where(y => y.request_id == request_id).FirstOrDefaultAsync();
+
+                    if (request_exists == null)
+                    {
+                        return new BaseResponse { Code = "140", ErrorMessage = "This request does not exist" };
+                    }
+                    request_exists.Is_Closed = true;
+                    scopedocntext.Update(request_exists);
+                    await scopedocntext.SaveChangesAsync();
+
+                    return new BaseResponse { Code = "200", SuccessMessage = "The request  has been closed successfully" };
+
+                }
+
+            }
+            catch(Exception ex){
+                return new BaseResponse { Code = "130", ErrorMessage = ex.Message };
+
+
+            }
+        }
+
+        public async Task<BaseResponse> Add_Services(string service_added, string job_number)
+        {
+
+            try
+            {
+                using (var scope = _servicescopefactory.CreateScope())
+                {
+
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    var new_service = new Add_Services
+                    {
+                        Service = service_added,
+                       
+                        Job_Number=job_number
+                    };
+
+                    await scopedcontext.AddAsync(new_service);
+                    await scopedcontext.SaveChangesAsync();
+                    return new BaseResponse
+                    {
+                        Code = "200",
+                        SuccessMessage = "You added a service successfully"
+                    };
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse { Code = "340", ErrorMessage = ex.Message };
+            }
+        }
+
+        public async Task<BaseResponse> Get_Services_By_Job_Number(string job_number)
+        {
+
+            try
+            {
+                using (var scope = _servicescopefactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var all_services_jobs = await scopedcontext.Add_Services.Where(y => y.Job_Number == job_number).OrderByDescending(y=>y.DateCreated).ToListAsync();
+
+                    if (all_services_jobs == null)
+                    {
+                        return new BaseResponse { Code = "200", ErrorMessage = "The services don't exist" };
+                    }
+                    return new BaseResponse
+                    {
+                        Code = "200",
+                        SuccessMessage = "successfully queried ",
+                        Body = all_services_jobs
+                    };
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse { Code = "340", ErrorMessage = ex.Message };
+            }
+        }
+
 
 
     }

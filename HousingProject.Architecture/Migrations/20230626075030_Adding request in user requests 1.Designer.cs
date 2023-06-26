@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230626075030_Adding request in user requests 1")]
+    partial class Addingrequestinuserrequests1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -924,27 +926,6 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Registration");
-                });
-
-            modelBuilder.Entity("HousingProject.Core.Models.Professionals.Add_Services", b =>
-                {
-                    b.Property<int>("Service_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Job_Number")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Service")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Service_Id");
-
-                    b.ToTable("Add_Services");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.Professionals.Add_User_Request", b =>

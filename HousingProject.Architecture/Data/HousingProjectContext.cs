@@ -78,6 +78,7 @@ namespace HousingProject.Architecture.Data
         public DbSet<House_Profile_Image> House_Profile_Image { get; set; }
         public DbSet<profiessional_profile_image> profiessional_profile_image { get; set; }
         public DbSet<Add_User_Request> Add_User_Request { get; set; }
+        public DbSet<Add_Services> Add_Services { get; set; }
 
     }
 }

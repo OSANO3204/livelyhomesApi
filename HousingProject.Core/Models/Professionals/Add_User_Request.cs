@@ -17,5 +17,7 @@ namespace HousingProject.Core.Models.Professionals
         public string Worker_Email { get; set; }
         public string Phone_Number { get; set; }
         public string Names { get; set; }
+        public  bool Is_Closed { get; set; }
+        public DateTime CreatedOn { get; set; } = DateTime.Now;
     }
 }
