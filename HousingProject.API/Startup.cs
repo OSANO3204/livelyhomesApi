@@ -18,6 +18,7 @@ using HousingProject.Core.Models.People;
 using HousingProject.Infrastructure.CRUDServices.HouseRegistration_Services.HouseUnitsServices;
 using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
 using HousingProject.Infrastructure.CRUDServices.N_IMages_Services;
+using HousingProject.Infrastructure.CRUDServices.Payments.Daraja;
 using HousingProject.Infrastructure.CRUDServices.Payments.Rent;
 using HousingProject.Infrastructure.CRUDServices.ProfessionalsServices;
 using HousingProject.Infrastructure.CRUDServices.UsersExtra;
@@ -30,6 +31,7 @@ using HousingProject.Infrastructure.ExtraFunctions.IExtraFunctions;
 using HousingProject.Infrastructure.ExtraFunctions.Images;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.ExtraFunctions.RolesDescription;
+using HousingProject.Infrastructure.Interfaces.IDarraja;
 using HousingProject.Infrastructure.Interfaces.IHouseRegistration_Services;
 using HousingProject.Infrastructure.Interfaces.IProfessionalsServices;
 using HousingProject.Infrastructure.Interfaces.ITenantStatementServices;
@@ -210,7 +212,7 @@ namespace HousingProject.API
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.AddScoped<In_ImagesServices, n_images_services>();
-
+            services.AddScoped<IDarajaServices, Daraja_Services>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

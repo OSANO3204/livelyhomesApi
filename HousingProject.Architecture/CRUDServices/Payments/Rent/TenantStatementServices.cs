@@ -1,16 +1,6 @@
 ﻿using HousingProject.Architecture.Data;
-using HousingProject.Architecture.Response.Base;
-using HousingProject.Core.Models.RentPayment;
-using HousingProject.Core.ViewModel;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.Interfaces.ITenantStatementServices;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HousingProject.Infrastructure.CRUDServices.Payments.Rent
 {
@@ -27,7 +17,7 @@ namespace HousingProject.Infrastructure.CRUDServices.Payments.Rent
         }
 
         //public async Task<BaseResponse> Rentpayments(TenntDebitvm vm)
-        //{
+       // {
            
         //    try
         //    {
@@ -53,14 +43,8 @@ namespace HousingProject.Infrastructure.CRUDServices.Payments.Rent
         //    {
         //        return new BaseResponse { Code = "230", ErrorMessage = ex.Message };
         //    }
-
-
-
-
-
-
-
-
         //}
+
     }
+
 }

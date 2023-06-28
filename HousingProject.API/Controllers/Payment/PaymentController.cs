@@ -19,7 +19,6 @@ namespace HousingProject.API.Controllers.Payment
             _paymentServices = paymentServices;
         }
 
-        [Authorize]
         [Route("Get_mpesa_auth_token")]
         [HttpGet]
         public async Task<mpesaAuthenticationvm> Getauthenticationtoken()
@@ -34,6 +33,14 @@ namespace HousingProject.API.Controllers.Payment
         public async Task<string> RegisterURL()
         {
             return await _paymentServices.RegisterURL();
+        }
+
+        [Route("Stk_Push")]
+        [HttpPost]
+        public async Task<string> STk_Push(string phoneNumber, decimal amount)
+        {
+            return await _paymentServices.STk_Push(phoneNumber, amount);
+
         }
 
 

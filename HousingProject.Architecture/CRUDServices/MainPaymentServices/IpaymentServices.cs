@@ -11,5 +11,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
     {
         Task<mpesaAuthenticationvm> Getauthenticationtoken();
         Task<string> RegisterURL();
+        Task<string> STk_Push(string phoneNumber, decimal amount);
     }
 }
