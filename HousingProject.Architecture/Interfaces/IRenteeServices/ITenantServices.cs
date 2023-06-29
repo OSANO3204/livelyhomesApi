@@ -39,7 +39,8 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task<BaseResponse> GetDelayRequetsByHouseIDandStatus(int houseid, string requestStatus);
         Task<BaseResponse> RejectRequest(int requestid);
         Task<string> GetGeneratedref();
-
+        Task MonthlyRentfn();
+        Task Reset_Updated_this_month();
 
     }
 }

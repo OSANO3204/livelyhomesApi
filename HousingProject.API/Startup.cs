@@ -37,6 +37,7 @@ using HousingProject.Infrastructure.Interfaces.IProfessionalsServices;
 using HousingProject.Infrastructure.Interfaces.ITenantStatementServices;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
 using HousingProject.Infrastructure.JobServices;
+using HousingProject.Infrastructure.JobServices.tenantjobs;
 using HousingProject.Infrastructure.SuperServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -98,7 +99,22 @@ namespace HousingProject.API
                 .WithIdentity("automatedMail-trigger")
                 .WithCronSchedule("0 0 12 5 1/1 ? *"));
                 //.WithCronSchedule("0 0/5 * 1/1 * ? *"));
-        });
+
+
+                //automated rent payday
+                var monthly_rent_Update_key = new JobKey("Monthly_Rent_Update");
+                q.AddJob<Monthly_Rent_Update>(z => z.WithIdentity(monthly_rent_Update_key));
+                q.AddTrigger(y => y.ForJob(monthly_rent_Update_key)
+                .WithIdentity("Monthly_Rent_Update-trigger")
+                .WithCronSchedule("0/1 * * * * ?"));
+
+                //automated rent payday
+                var Back_monthly_update_key = new JobKey("Reset_Updated_this_month");
+                q.AddJob<Back_monthly_update>(z => z.WithIdentity(Back_monthly_update_key));
+                q.AddTrigger(y => y.ForJob(Back_monthly_update_key)
+                .WithIdentity("Back_monthly_update-trigger")
+                .WithCronSchedule("0/2 * * * * ?"));
+            });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             services.AddHttpClient("mpesa", m => { m.BaseAddress =
                 new System.Uri("https://sandbox.safaricom.co.ke"

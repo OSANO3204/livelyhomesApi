@@ -934,13 +934,12 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             DoorNumber = tenantexists.Appartment_DoorNumber,
                             Status = "PENDING"
                         };
-
-                       
+                     
                         var currentDate = DateTime.Now;
 
                         if (newdelayrequest.DateRequested < currentDate)
                         {
-                            return new BaseResponse { Code = "178", ErrorMessage = "Requested date should not a passed date" };
+                            return new BaseResponse { Code = "178", ErrorMessage = "Kindly make sure your requested payment  date is not an already passed date" };
                         }
                         await scopedcontext.AddAsync(newdelayrequest);
                         await scopedcontext.SaveChangesAsync();
@@ -953,7 +952,6 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             {
                 return new BaseResponse { Code = "120", ErrorMessage = ex.Message };
             }
-
         }
 
         public async Task<BaseResponse> GetAll_DelayRequests_By_HouseId(int houseid)
@@ -969,18 +967,12 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         new BaseResponse { Code = "140", ErrorMessage = "No delay requests available" };
                     }
                     return new BaseResponse { Code = "200", SuccessMessage = "Successfully queried", Body = all_delay_requests };
-
-
                 }
-
-
             }
             catch (Exception ex)
             {
-
                 return new BaseResponse { Code = "109", ErrorMessage = ex.Message };
             }
-
         }
 
 
@@ -999,11 +991,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         new BaseResponse { Code = "140", ErrorMessage = "No delay requests available" };
                     }
                     return new BaseResponse { Code = "200", SuccessMessage = "Successfully queried", Body = all_User_delay_requests };
-
-
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -1040,7 +1028,6 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
                         }
                         return new BaseResponse { Code = "200", SuccessMessage = "successfully queried", Body = pending_request };
-
                     }
                     else if (status == "DECLINED")
                     {
@@ -1053,7 +1040,6 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
                         }
                         return new BaseResponse { Code = "200", SuccessMessage = "successfully queried", Body = declined_requests };
-
                     }
 
                     return new BaseResponse();
@@ -1063,7 +1049,6 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             {
                 return new BaseResponse { Code = "190", ErrorMessage = ex.Message };
             }
-
         }
 
         public async Task<BaseResponse> ApproveRequest(int requestid)
@@ -1073,26 +1058,21 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
                     var pending_requestfound = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "PENDING" || u.delay_request_id == requestid).FirstOrDefaultAsync();
                     if (pending_requestfound == null)
-                    {
-                        return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
-                    }
-
+                        {
+                            return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
+                        }
                     pending_requestfound.Status = "APPROVED";
-
                     scopedcontext.Update(pending_requestfound);
                     await scopedcontext.SaveChangesAsync();
                     return new BaseResponse { Code = "200", SuccessMessage = "successfully approved" };
-
                 }
             }
             catch (Exception ex)
             {
                 return new BaseResponse { Code = "190", ErrorMessage = ex.Message };
             }
-
         }
 
         //reject request
@@ -1171,28 +1151,25 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             Year = Convert.ToString(DateTime.Now.Year),
                             RentAmount = tenantdata.House_Rent,
                             HouseName = houseexists.House_Name,
-
-
+                            Updated_This_Month=true
                         };
-                        var last_balanceentry = await scopedcontext.Rent_Monthly_Update
-                        .Where(c => c.Tenantid == tenantdata.RenteeId).FirstOrDefaultAsync();
-
-                        if (last_balanceentry == null)
+                        var rent_value_exists = await scopedcontext.Rent_Monthly_Update
+                            .Where(y => y.Tenantid == newmnthpay.Tenantid && y.DateCreated> DateTime.Now.AddDays(-30))
+                            .OrderByDescending(x=>x.DateCreated).LastOrDefaultAsync();
+                        if (rent_value_exists != null)
                         {
-
-
+                            _logger.LogInformation("Rent details already updaaate for the month");
+                        }
+                        else
+                        {
+                            await scopedcontext.AddAsync(newmnthpay);
+                            await scopedcontext.SaveChangesAsync();
+                            _logger.LogInformation($"saved successfully @ {Convert.ToString(DateTime.Now)} ");
+                           
                         }
                     }
 
-
-
-
-
-
-                    // public double Balance { get; set; }
-
-
-
+           
 
                 }
         
@@ -1203,6 +1180,43 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 _logger.LogInformation(ex.StackTrace);
                 _logger.LogInformation(ex.Message);
             }
+        }
+        public async Task Reset_Updated_this_month()
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var all_tenants = await scopedcontext.Rent_Monthly_Update
+                        .Where(y => y.DateCreated > DateTime.Now.AddDays(-30) && y.Updated_This_Month == true).ToListAsync();
+
+                    if (all_tenants == null)
+                    {
+                        _logger.LogInformation("No tenants found");
+                    }
+
+                    foreach (var existing_tenant in all_tenants)
+                    {
+
+                        existing_tenant.Updated_This_Month = false;
+                        scopedcontext.Update(existing_tenant);
+                       await scopedcontext.SaveChangesAsync();
+
+                        _logger.LogInformation("Successfully updated back to false on monthly rent payment");
+
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.Message);
+            }
+
+
         }
     }
 }

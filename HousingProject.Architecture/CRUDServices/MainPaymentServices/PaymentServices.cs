@@ -94,17 +94,17 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 
             // Set the request payload
             var payload = new Dictionary<string, string>
-        {
+                {
             
-            { "Timestamp", DateTime.Now.ToString("yyyyMMddHHmmss") },
-            { "TransactionType", "CustomerPayBillOnline" },
-            { "Amount", amount.ToString("F2") },
-            { "PartyA", phoneNumber },
-            { "PhoneNumber", phoneNumber },
-            { "CallBackURL", "https://webhook.site/38ab2f23-57d0-420a-977a-e1cd34f1f12f" }, // Replace with your callback URL
-            { "AccountReference", accountReference },
-            { "TransactionDesc", transactionDesc }
-        };
+                    { "Timestamp", DateTime.Now.ToString("yyyyMMddHHmmss") },
+                    { "TransactionType", "CustomerPayBillOnline" },
+                    { "Amount", amount.ToString("F2") },
+                    { "PartyA", phoneNumber },
+                    { "PhoneNumber", phoneNumber },
+                    { "CallBackURL", "https://webhook.site/38ab2f23-57d0-420a-977a-e1cd34f1f12f" }, // Replace with your callback URL
+                    { "AccountReference", accountReference },
+                    { "TransactionDesc", transactionDesc }
+                };
             request.Content = new FormUrlEncodedContent(new[]
                    {
                    new KeyValuePair<string, string>("grant_type", "client_credentials")
