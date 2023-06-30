@@ -21,7 +21,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IServiceScopeFactory _serviceScopeFactory;
-
+        private const string DarajaEndpoint = "https://api.safaricom.co.ke";
         private ITenantServices _tenant_services;
         public PaymentServices(IHttpClientFactory httpClientFactory, 
             IServiceScopeFactory serviceScopeFactory,
@@ -38,8 +38,8 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         
             var client = _httpClientFactory.CreateClient("mpesa");
 
-            string username = "gRO5xyvopGEiUrkMoN43m3OjQfn0b1TY";
-            string password = "FQSx1olBTIbcJxEb";
+            string username = "ozma4Oaf44ZPkkU6JvMqDpo9VNOb50Oz";
+            string password = "ok0vxpMbWCQT6baC";
             string auth = $"{username}:{password}";
             byte[] authBytes = Encoding.ASCII.GetBytes(auth);
             string base64Auth = Convert.ToBase64String(authBytes);  
@@ -83,47 +83,71 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         }
         public async Task<string> STk_Push( string phoneNumber, decimal amount)
         {
-            var accountReference = _tenant_services.GetGeneratedref().Result;
-            string transactionDesc = "C2b Transactions";
-            var accessToken= Getauthenticationtoken().Result;
-            var client = _httpClientFactory.CreateClient("mpesa");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, "stkpush/v1/processrequest"); 
-
-            request.Headers.Add("Authorization", $"Bearer {accessToken.access_token}");
-
-            // Set the request payload
-            var payload = new Dictionary<string, string>
-                {
-            
-                    { "Timestamp", DateTime.Now.ToString("yyyyMMddHHmmss") },
-                    { "TransactionType", "CustomerPayBillOnline" },
-                    { "Amount", amount.ToString("F2") },
-                    { "PartyA", phoneNumber },
-                    { "PhoneNumber", phoneNumber },
-                    { "CallBackURL", "https://webhook.site/38ab2f23-57d0-420a-977a-e1cd34f1f12f" }, // Replace with your callback URL
-                    { "AccountReference", accountReference },
-                    { "TransactionDesc", transactionDesc }
-                };
-            request.Content = new FormUrlEncodedContent(new[]
-                   {
-                   new KeyValuePair<string, string>("grant_type", "client_credentials")
-                  });
-
-            request.Content = new FormUrlEncodedContent(payload);
-
-            var response = await client.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                return responseContent;
+
+                var accountReference = _tenant_services.GetGeneratedref().Result;
+                string transactionDesc = "C2b Transactions";
+                var accessToken = Getauthenticationtoken().Result;
+                var client = _httpClientFactory.CreateClient("mpesa");
+                var shortcode = "999880";
+                var request = new HttpRequestMessage(HttpMethod.Post, "stkpush/v1/processrequest");
+                request.Headers.Add("Authorization", $"Basic {accessToken.access_token}");
+                //shorcode
+                var passkey = "ok0vxpMbWCQT6baC";
+
+                   var encoded_timestamp = DateTime.Now.ToString("yyyyMMddHHmmss"); 
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.access_token}");
+                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+                    // Generate the password by base64 encoding the BusinessShortCode, Passkey, and timestamp
+                    var encorded_pass = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{shortcode}{passkey}{encoded_timestamp}"));
+
+                    // Prepare the request payload
+                    var payload = new
+
+                    {
+
+                        BusinessShortCode = shortcode,
+                        Password = encorded_pass,
+                        Timestamp = encoded_timestamp,
+                        TransactionType = "CustomerPayBillOnline",
+                        Amount = amount.ToString(),
+                        PartyA = phoneNumber,
+                        PartyB = shortcode,
+                        PhoneNumber = phoneNumber,
+                        CallBackURL = "https://webhook.site/38ab2f23-57d0-420a-977a-e1cd34f1f12f",
+                        AccountReference = accountReference + "2675",
+                        TransactionDesc = transactionDesc
+
+                    };
+
+                    var requestUri = "/mpesa/stkpush/v1/processrequest";
+                    var content = new StringContent(payload.ToString(), Encoding.UTF8, "application/json");
+                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{accessToken.access_token}");
+                    // Send the HTTP POST request to initiate STK push
+                    var response = await client.PostAsync(requestUri, payload);
+                    var responseContent = await response.Content.ReadAsStringAsync();
+
+                    // Process the response
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("STK push initiated successfully.");
+                        return ("Response: " + responseContent);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to initiate STK push.");
+                        return ("Response: " + responseContent);
+                    }
+                
             }
-            else
+            catch (Exception ex)
             {
-                // Handle error response
-                return null;
+                return ex.Message;
             }
+        
         }
     }
 }
