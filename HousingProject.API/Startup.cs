@@ -229,6 +229,7 @@ namespace HousingProject.API
             services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
             services.AddScoped<In_ImagesServices, n_images_services>();
             services.AddScoped<IDarajaServices, Daraja_Services>();
+            services.AddScoped<IpaymentServices, PaymentServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

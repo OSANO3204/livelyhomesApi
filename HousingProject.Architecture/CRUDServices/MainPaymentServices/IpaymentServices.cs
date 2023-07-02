@@ -1,4 +1,5 @@
 ﻿using HousingProject.Core.Models.mpesaauthvm;
+using HousingProject.Infrastructure.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
     {
         Task<mpesaAuthenticationvm> Getauthenticationtoken();
         Task<string> RegisterURL();
-        Task<string> STk_Push(string phoneNumber, decimal amount);
+        Task<stk_push_response> STk_Push(string phoneNumber, decimal amount);
     }
 }

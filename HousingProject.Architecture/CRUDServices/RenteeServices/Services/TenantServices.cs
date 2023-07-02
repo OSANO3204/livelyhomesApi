@@ -15,6 +15,7 @@ using HousingProject.Core.Models.RentPayment;
 using HousingProject.Core.ViewModel;
 using HousingProject.Core.ViewModel.Rentee;
 using HousingProject.Core.ViewModel.Rentpayment;
+using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
 using Microsoft.AspNetCore.Http;
@@ -39,6 +40,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
         public readonly IRegistrationServices _registrationServices;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserExtraServices _userExtraServices;
+        private readonly IpaymentServices _paymentservice;
 
         public TenantServices(
           HousingProjectContext context,
@@ -48,7 +50,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
           ILoggedIn loggedIn,
           IServiceScopeFactory scopeFactory,
           ILogger<ITenantServices> logger,
-          IUserExtraServices userExtraServices
+          IUserExtraServices userExtraServices,
+          IpaymentServices paymentservice
         )
         {
             _context = context;
@@ -59,6 +62,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             _scopeFactory = scopeFactory;
             _logger = logger;
             _userExtraServices = userExtraServices;
+            _paymentservice = paymentservice;
         }
 
         // get loggin user
@@ -812,16 +816,34 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         // Payrentid= tenantexists.RenteeId,
                         TenantId = tenantexists.RenteeId,
                         RentAmount = rentamount,
-                        Status = "PROCCESSING",
+                       
                         Completed = false,
                         PhoneNumber = tenantexists.Rentee_PhoneNumber,
                         HouseID = tenantexists.HouseiD
                     };
-                    var generatedref = await GetGeneratedref();
-                    newrent.InternalReference = generatedref;
-                    await scopedcontext.AddAsync(newrent);
-                    await scopedcontext.SaveChangesAsync();
-                    return new BaseResponse { Code = "200", SuccessMessage = "Rent payment initiated successfully " };
+
+                    var rent_payment =await  _paymentservice.STk_Push(tenantexists.Rentee_PhoneNumber, rentamount);
+                    var trans_ref = rent_payment.internalref;
+                    if (rent_payment.Code == "200")
+                    {
+                        //if(rent_payment.)
+                        var generatedref = await GetGeneratedref();
+                        newrent.InternalReference = trans_ref;
+                        newrent.Status = "PROCCESSING";
+                        await scopedcontext.AddAsync(newrent);
+                        await scopedcontext.SaveChangesAsync();
+                        return new BaseResponse { Code = "200", SuccessMessage = "Rent payment initiated successfully " };
+                    }
+                    else
+                    {
+
+                        var generatedref = await GetGeneratedref();
+                        newrent.InternalReference = trans_ref;
+                        newrent.Status = "FAILED";
+                        await scopedcontext.AddAsync(newrent);
+                        await scopedcontext.SaveChangesAsync();
+                        return new BaseResponse { Code = "200", SuccessMessage = "Rent payment FAILED " };
+                    }
                 }
             }
             catch (Exception ex)

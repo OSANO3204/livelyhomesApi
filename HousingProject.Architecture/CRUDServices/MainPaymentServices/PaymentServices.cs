@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Net.Http.Json;
-using System.Text.Json;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
+﻿using HousingProject.Architecture.Interfaces.IRenteeServices;
 using HousingProject.Core.Models.mpesaauthvm;
-using Newtonsoft.Json;
+using HousingProject.Infrastructure.Response;
 using Microsoft.Extensions.DependencyInjection;
-using HousingProject.Architecture.Data;
-using System.Web.Http.Results;
+using Newtonsoft.Json;
+using System;
+using System.Net.Http;
 using System.Net.Http.Headers;
-using HousingProject.Architecture.Interfaces.IRenteeServices;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 {
-   public  class PaymentServices: IpaymentServices
+    public  class PaymentServices: IpaymentServices
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -37,7 +31,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         {
         
             var client = _httpClientFactory.CreateClient("mpesa");
-
             string username = "ozma4Oaf44ZPkkU6JvMqDpo9VNOb50Oz";
             string password = "ok0vxpMbWCQT6baC";
             string auth = $"{username}:{password}";
@@ -81,13 +74,13 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
           
 
         }
-        public async Task<string> STk_Push( string phoneNumber, decimal amount)
+        public async Task<stk_push_response> STk_Push( string phoneNumber, decimal amount)
         {
 
             try
             {
 
-                var accountReference = _tenant_services.GetGeneratedref().Result;
+                var trans_Reference = _tenant_services.GetGeneratedref().Result;
                 string transactionDesc = "C2b Transactions";
                 var accessToken = Getauthenticationtoken().Result;
                 var client = _httpClientFactory.CreateClient("mpesa");
@@ -106,48 +99,48 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 
                     // Prepare the request payload
                     var payload = new
-
-                    {
-
-                        BusinessShortCode = shortcode,
-                        Password = encorded_pass,
-                        Timestamp = encoded_timestamp,
-                        TransactionType = "CustomerPayBillOnline",
-                        Amount = amount.ToString(),
-                        PartyA = phoneNumber,
-                        PartyB = shortcode,
-                        PhoneNumber = phoneNumber,
-                        CallBackURL = "https://webhook.site/38ab2f23-57d0-420a-977a-e1cd34f1f12f",
-                        AccountReference = accountReference + "2675",
-                        TransactionDesc = transactionDesc
-
-                    };
+                         {
+                            BusinessShortCode = shortcode,
+                            Password = encorded_pass,
+                            Timestamp = encoded_timestamp,
+                            TransactionType = "CustomerPayBillOnline",
+                            Amount = amount.ToString(),
+                            PartyA = phoneNumber,
+                            PartyB = shortcode,
+                            PhoneNumber = phoneNumber,
+                            CallBackURL = "https://webhook.site/38ab2f23-57d0-420a-977a-e1cd34f1f12f",
+                            AccountReference = trans_Reference + "2675",
+                            TransactionDesc = transactionDesc
+                        };
 
                     var requestUri = "/mpesa/stkpush/v1/processrequest";
                     var content = new StringContent(payload.ToString(), Encoding.UTF8, "application/json");
                      client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{accessToken.access_token}");
-                    // Send the HTTP POST request to initiate STK push
-                    var response = await client.PostAsync(requestUri, payload);
+            
+                    var response = await client.PostAsync(requestUri, content);
                     var responseContent = await response.Content.ReadAsStringAsync();
 
-                    // Process the response
+                  
                     if (response.IsSuccessStatusCode)
                     {
                         Console.WriteLine("STK push initiated successfully.");
-                        return ("Response: " + responseContent);
+                    return new stk_push_response { Code = "200", internalref = trans_Reference };
                     }
                     else
-                    {
-                        Console.WriteLine("Failed to initiate STK push.");
-                        return ("Response: " + responseContent);
-                    }
+                        {
+                            Console.WriteLine("Failed to initiate STK push.");
+                    return new stk_push_response { Code = "350", internalref = trans_Reference };
+                          }
                 
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                return new stk_push_response { Code = "367", message=ex.Message };
             }
         
         }
+
+      
+     
     }
 }

@@ -1,5 +1,6 @@
 ﻿using HousingProject.Core.Models.mpesaauthvm;
 using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
+using HousingProject.Infrastructure.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -37,7 +38,7 @@ namespace HousingProject.API.Controllers.Payment
 
         [Route("Stk_Push")]
         [HttpPost]
-        public async Task<string> STk_Push(string phoneNumber, decimal amount)
+        public async Task<stk_push_response> STk_Push(string phoneNumber, decimal amount)
         {
             return await _paymentServices.STk_Push(phoneNumber, amount);
 
