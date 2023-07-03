@@ -1,13 +1,9 @@
 ﻿using HousingProject.Architecture.Response.Base;
-using HousingProject.Core.ViewModel.ImagesVm;
-using HousingProject.Core.ViewModel.n_Images;
 using HousingProject.Infrastructure.CRUDServices.N_IMages_Services;
 using HousingProject.Infrastructure.ExtraFunctions.Images;
-using HousingProject.Infrastructure.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HousingProject.API.Controllers
@@ -78,7 +74,7 @@ namespace HousingProject.API.Controllers
         [Authorize]
         [HttpPost]
         [Route("Add_User_Profile_Pic")]
-        public async Task<BaseResponse> Add_Profile_Pics(IFormFile file , string Image_Description)
+        public async Task<BaseResponse> Add_Profile_Pics(IFormFile file, string Image_Description)
         {
             return await _n_imageservices.Add_Profile_Pics(file, Image_Description);
         }
@@ -103,11 +99,11 @@ namespace HousingProject.API.Controllers
         [HttpPost]
         [Route("Get_House_Profile_Id")]
 
-        public async Task<BaseResponse> Get_House_Profile_Image(int house_id) 
-            {
+        public async Task<BaseResponse> Get_House_Profile_Image(int house_id)
+        {
             return await _n_imageservices.Get_House_Profile_Image(house_id);
 
-            }
+        }
 
         [Authorize]
         [HttpPost]

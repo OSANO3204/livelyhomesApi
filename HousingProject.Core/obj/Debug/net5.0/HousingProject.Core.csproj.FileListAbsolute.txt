@@ -21,4 +21,3 @@ D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\Hous
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\ref\HousingProject.Core.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.pdb
-D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.csproj.AssemblyReference.cache

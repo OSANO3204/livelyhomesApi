@@ -1,6 +1,5 @@
 ﻿using HousingProject.Architecture.Interfaces.IRenteeServices;
 using HousingProject.Architecture.Response.Base;
-using HousingProject.Core.ViewModel;
 using HousingProject.Core.ViewModel.Rentee;
 using HousingProject.Core.ViewModel.Rentpayment;
 using HousingProject.Infrastructure.Interfaces.ITenantStatementServices;
@@ -31,8 +30,8 @@ namespace HousingProject.API.Controllers.Rentee
         [Route("Register_Rentee")]
         [HttpPost]
         public async Task<BaseResponse> Register_Rentee(Rentee_RegistrationViewModel RenteeVm)
-         {
-          return  await _irenteeServices.Register_Rentee(RenteeVm);
+        {
+            return await _irenteeServices.Register_Rentee(RenteeVm);
         }
 
         [Authorize]
@@ -57,7 +56,7 @@ namespace HousingProject.API.Controllers.Rentee
         [HttpGet]
         public async Task<IEnumerable> GetAllRenteess()
         {
-           return await  _irenteeServices.GetAllRenteess();
+            return await _irenteeServices.GetAllRenteess();
         }
 
         [Authorize]
@@ -66,7 +65,7 @@ namespace HousingProject.API.Controllers.Rentee
         public async Task<BaseResponse> GetTenantSummary(int houseId, int tenantId)
         {
 
-           return  await _irenteeServices.GetTenantSummary(houseId, tenantId);
+            return await _irenteeServices.GetTenantSummary(houseId, tenantId);
         }
 
         [Authorize]
@@ -82,7 +81,7 @@ namespace HousingProject.API.Controllers.Rentee
         [HttpPost]
         public async Task<IEnumerable> rentpaymentList(int tenantId)
         {
-            return await  _irenteeServices.rentpaymentList(tenantId);
+            return await _irenteeServices.rentpaymentList(tenantId);
         }
 
         [Authorize]
@@ -92,13 +91,13 @@ namespace HousingProject.API.Controllers.Rentee
         {
             return await _irenteeServices.UpdateRentpaid(tenantid, rentadded);
         }
-            [Authorize]
-            [Route("GetTeanntById")]
-            [HttpPost]
-            public async Task<BaseResponse> GetTenantById(int tenantId)
-            {
+        [Authorize]
+        [Route("GetTeanntById")]
+        [HttpPost]
+        public async Task<BaseResponse> GetTenantById(int tenantId)
+        {
             return await _irenteeServices.GetTenantById(tenantId);
-             }
+        }
 
         [Authorize]
         [Route("GettenantsbyHouseId")]
@@ -144,7 +143,7 @@ namespace HousingProject.API.Controllers.Rentee
         public async Task<BaseResponse> SpecificTenantReminderonRentPayment(int tenantid)
         {
 
-           return  await _irenteeServices.SpecificTenantReminderonRentPayment(tenantid);
+            return await _irenteeServices.SpecificTenantReminderonRentPayment(tenantid);
         }
 
         [Authorize]
@@ -222,7 +221,7 @@ namespace HousingProject.API.Controllers.Rentee
         [HttpPost]
         public async Task<BaseResponse> ApproveRequest(int requestid)
         {
-            return await  _irenteeServices.ApproveRequest(requestid);
+            return await _irenteeServices.ApproveRequest(requestid);
         }
 
         [Authorize]
@@ -230,7 +229,7 @@ namespace HousingProject.API.Controllers.Rentee
         [HttpPost]
         public async Task<BaseResponse> GetDelayRequetsByHouseIDandStatus(int houseid, string requestStatus)
         {
-            return await _irenteeServices.GetDelayRequetsByHouseIDandStatus(houseid,requestStatus);
+            return await _irenteeServices.GetDelayRequetsByHouseIDandStatus(houseid, requestStatus);
         }
 
         [Authorize]

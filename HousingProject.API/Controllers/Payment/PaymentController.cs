@@ -3,9 +3,6 @@ using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
 using HousingProject.Infrastructure.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HousingProject.API.Controllers.Payment
@@ -25,7 +22,7 @@ namespace HousingProject.API.Controllers.Payment
         public async Task<mpesaAuthenticationvm> Getauthenticationtoken()
         {
             return await _paymentServices.Getauthenticationtoken();
-    }
+        }
 
 
         [Authorize]

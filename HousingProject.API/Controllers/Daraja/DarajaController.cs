@@ -1,9 +1,5 @@
 ﻿using HousingProject.Infrastructure.Interfaces.IDarraja;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HousingProject.API.Controllers.Daraja
@@ -19,12 +15,12 @@ namespace HousingProject.API.Controllers.Daraja
             _darajaServices = darajaServices;
         }
 
-      
+
         [Route("Getting_auth_token")]
         [HttpGet]
         public Task<string> FetchAccessToken()
         {
-            return  _darajaServices.FetchAccessToken();
+            return _darajaServices.FetchAccessToken();
         }
     }
 }

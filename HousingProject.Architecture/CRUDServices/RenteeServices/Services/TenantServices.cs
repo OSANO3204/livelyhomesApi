@@ -257,10 +257,10 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                   .FirstOrDefaultAsync();
                 var arears = tenant.House_Rent - tenant.RentPaid;
 
-                //if (arears >= 1)
-                //{
-                //    return new BaseResponse { Code = "200", SuccessMessage = $"You have  arrears of {arears} Ksh" };
-                //}
+                if (arears >= 1)
+                {
+                    return new BaseResponse { Code = "200", SuccessMessage = $"You have  arrears of {arears} Ksh" };
+                }
                 if (gethouseid.HouseiD == tenant.HouseiD)
                 {
                     var summaryobjects = new TenantSummary

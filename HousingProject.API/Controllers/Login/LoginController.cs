@@ -30,7 +30,7 @@ namespace HousingProject.API.Controllers.Login
         [Authorize]
         [Route("LoggedInUser")]
         [HttpGet]
-        public async   Task<RegistrationModel> LoggedInUser()
+        public async Task<RegistrationModel> LoggedInUser()
         {
             var res = await _iloggedInServices.LoggedInUser();
             return res;
@@ -52,7 +52,7 @@ namespace HousingProject.API.Controllers.Login
         public async Task<BaseResponse> ContactUs(ContactUsViewModel vm)
 
         {
-        return   await   _iloggedInServices.ContactUs(vm);
+            return await _iloggedInServices.ContactUs(vm);
         }
 
         [Authorize]
@@ -61,10 +61,10 @@ namespace HousingProject.API.Controllers.Login
 
         public async Task<BaseResponse> ChangeUserEmail(string emailaddress)
         {
-            return  await _iloggedInServices.ChangeUserEmail(emailaddress);
+            return await _iloggedInServices.ChangeUserEmail(emailaddress);
         }
 
-      
+
         [Route("Reset_Password")]
         [HttpPost]
         public async Task<BaseResponse> ResetPassword(ResetPassword resetpasswordvm)

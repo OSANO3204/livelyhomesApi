@@ -31,7 +31,7 @@ namespace HousingProject.API.Controllers
         [HttpPost]
         [Route("Registerprojessional")]
 
-       public async  Task<BaseResponse> Createprofessonal(Professionalsvm vm)
+        public async Task<BaseResponse> Createprofessonal(Professionalsvm vm)
         {
 
             return await _professionalsServices.Createprofessonal(vm);
@@ -73,17 +73,17 @@ namespace HousingProject.API.Controllers
         [HttpPost]
         [Route("Update_Upvotes")]
         public async Task<VotesResponse> Update_UpVotes(int userid)
-                {
-                    return await _professionalsServices.Update_UpVotes(userid);
-                }
+        {
+            return await _professionalsServices.Update_UpVotes(userid);
+        }
 
         [Authorize]
         [HttpPost]
         [Route("Update_Downvotes")]
         public async Task<VotesResponse> Update_DownVotes(int userid)
-                {
-               return await _professionalsServices.Update_DownVotes(userid);
-                }
+        {
+            return await _professionalsServices.Update_DownVotes(userid);
+        }
 
         [Authorize]
         [HttpPost]
@@ -154,7 +154,7 @@ namespace HousingProject.API.Controllers
         [Route("Add_Services")]
         public async Task<BaseResponse> Add_Services(string service_added, string job_number)
         {
-            return await _professionalsServices.Add_Services(service_added,job_number);
+            return await _professionalsServices.Add_Services(service_added, job_number);
         }
 
         [Authorize]

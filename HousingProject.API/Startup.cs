@@ -13,7 +13,6 @@ using HousingProject.Architecture.Services.Landlord;
 using HousingProject.Architecture.Services.Rentee.Services;
 using HousingProject.Architecture.Services.User_Login;
 using HousingProject.Core.Models.Email;
-using HousingProject.Core.Models.Houses.HouseUnitRegistration;
 using HousingProject.Core.Models.People;
 using HousingProject.Infrastructure.CRUDServices.HouseRegistration_Services.HouseUnitsServices;
 using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
@@ -23,7 +22,6 @@ using HousingProject.Infrastructure.CRUDServices.Payments.Rent;
 using HousingProject.Infrastructure.CRUDServices.ProfessionalsServices;
 using HousingProject.Infrastructure.CRUDServices.UsersExtra;
 using HousingProject.Infrastructure.ExtraFunctions;
-using HousingProject.Infrastructure.ExtraFunctions.Checkroles;
 using HousingProject.Infrastructure.ExtraFunctions.Checkroles.ChcekRoles;
 using HousingProject.Infrastructure.ExtraFunctions.Checkroles.IcheckRole;
 using HousingProject.Infrastructure.ExtraFunctions.GenerateWorkId;
@@ -52,13 +50,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MySql.Data.MySqlClient;
 using Quartz;
-using System.IO;
 using System.Security.Claims;
 using System.Text;
 
@@ -75,8 +70,8 @@ namespace HousingProject.API
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
-            
+        {
+
 
             services.Configure<EmailConfiguration>(Configuration.GetSection("EmailConfiguration"));
             services.AddControllers().AddNewtonsoftJson();
@@ -116,10 +111,13 @@ namespace HousingProject.API
                 .WithCronSchedule("0/2 * * * * ?"));
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-            services.AddHttpClient("mpesa", m => { m.BaseAddress =
-                new System.Uri("https://sandbox.safaricom.co.ke"
-                
-                );});
+            services.AddHttpClient("mpesa", m =>
+            {
+                m.BaseAddress =
+new System.Uri("https://sandbox.safaricom.co.ke"
+
+);
+            });
 
             services.Configure<FormOptions>(o =>
             {
@@ -134,7 +132,7 @@ namespace HousingProject.API
             );
             //services.AddTransient<MySqlConnection>(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
             services.AddControllers();
-        
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(
@@ -193,17 +191,18 @@ namespace HousingProject.API
                 });
 
             services.Configure<IdentityOptions>(options =>
-            
+
                 options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier
             );
-           
+
             services.AddHttpContextAccessor();
             services.AddScoped<IRegistrationServices, RegistrationServices>();
             services.AddScoped<IHouse_RegistrationServices, House_RegistrationServices>();
             services.AddScoped<IEmailServices, EmailServices>();
-            services.AddScoped<IverificationGenerator,verificationtokenGenerator>();
+            services.AddScoped<IverificationGenerator, verificationtokenGenerator>();
             services.AddScoped<ILandlordServices, LanlordServices>();
             services.AddScoped<ITenantServices, TenantServices>();
+            services.AddScoped<IpaymentServices, PaymentServices>();
             services.AddScoped<IloggedInServices, UserLoginServices>();
             services.AddScoped<IextraFunctions, AddingCountiesCRUD>();
             services.AddScoped<IImagesServices, ImagesServices>();
@@ -211,12 +210,13 @@ namespace HousingProject.API
             services.AddScoped<ILoggedIn, LoggedIn>();
             services.AddScoped<ITenantStatementServices, TenantStatementServices>();
             services.AddScoped<IHouseUnits, HouseUnitsServices>();
-            services.AddScoped<IProfessionalsServices,ProfessionalServices>();
-            services.AddScoped<IGenerateIdService, GenerateIdService>();         
+            services.AddScoped<IProfessionalsServices, ProfessionalServices>();
+            services.AddScoped<IGenerateIdService, GenerateIdService>();
             services.AddScoped<ICheckroles, CheckRoles>();
             services.AddScoped<IAdminServices, AdminService>();
+            
             services.AddScoped<IUserExtraServices, UserExtraServices>();
-            services.AddScoped<IpaymentServices, PaymentServices>();
+         
             services.AddCors();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IUrlHelper>(x =>
@@ -252,17 +252,17 @@ namespace HousingProject.API
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             });
-               
+
             app.UseAuthentication();
             app.UseAuthorization();
-   
+
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
 
-            
+
         }
     }
 }

@@ -7,6 +7,14 @@ namespace HousingProject.API
     {
         public static void Main(string[] args)
         {
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -15,6 +23,6 @@ namespace HousingProject.API
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-                     
+
     }
 }
