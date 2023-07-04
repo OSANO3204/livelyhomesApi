@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -37,8 +38,41 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\Images\" />
     <Folder Include="wwwroot\Images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Images\15937061849186146577024567108498.jpg" />
+    <None Include="wwwroot\Images\15937064325943147257925162976157.jpg" />
+    <None Include="wwwroot\Images\25.01.2023_11.03.20_REC.png" />
+    <None Include="wwwroot\Images\ai.jpg" />
+    <None Include="wwwroot\Images\ailanguage.jpg" />
+    <None Include="wwwroot\Images\animationapp.png" />
+    <None Include="wwwroot\Images\deductions.png" />
+    <None Include="wwwroot\Images\descriptions.png" />
+    <None Include="wwwroot\Images\logo.jpg" />
+    <None Include="wwwroot\Images\mpesa_logo.png" />
+    <None Include="wwwroot\Images\ngao.jpg" />
+    <None Include="wwwroot\Images\pexels-dave-frisch-1575939.jpg" />
+    <None Include="wwwroot\Images\pexels-ekaterina-bolovtsova-4050216.jpg" />
+    <None Include="wwwroot\Images\pexels-fwstudio-129731.jpg" />
+    <None Include="wwwroot\Images\pexels-gerd-altmann-21696.jpg" />
+    <None Include="wwwroot\Images\pexels-olena-bohovyk-3806690.jpg" />
+    <None Include="wwwroot\Images\pexels-pixabay-161768.jpg" />
+    <None Include="wwwroot\Images\pexels-pixabay-33688.jpg" />
+    <None Include="wwwroot\Images\pexels-polina-zimmerman-4108129.jpg" />
+    <None Include="wwwroot\Images\pexels-scott-webb-1029599.jpg" />
+    <None Include="wwwroot\Images\pexels-suzy-hazelwood-2855628.jpg" />
+    <None Include="wwwroot\Images\pexels-tyler-lastovich-1275929.jpg" />
+    <None Include="wwwroot\Images\repairs_3.png" />
+    <None Include="wwwroot\Images\Screenshot 2023-01-05 103644.png" />
+    <None Include="wwwroot\Images\search image.png" />
+    <None Include="wwwroot\Images\switchlink-logo.jpg" />
+    <None Include="wwwroot\Images\switchlink.png" />
+    <None Include="wwwroot\Images\SWITHLINK LOGO-03.png" />
+    <None Include="wwwroot\Images\trackinghublogo.png" />
+    <None Include="wwwroot\Images\welcom1.jpeg" />
+    <None Include="wwwroot\Images\welcome2.jpeg" />
   </ItemGroup>
 	
 

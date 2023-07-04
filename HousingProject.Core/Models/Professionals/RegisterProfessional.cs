@@ -27,6 +27,7 @@ namespace HousingProject.Core.Models.Professionals
         public decimal Upvotes { get; set; }
         public decimal Downvotes { get; set; }
         public decimal TotalVotes { get; set; }
+        public string User_Id { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.Now;
 
 

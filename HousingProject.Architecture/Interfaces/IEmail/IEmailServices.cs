@@ -21,5 +21,6 @@ namespace HousingProject.Architecture.Interfaces.IEmail
         Task<BaseResponse> SendTenantEmailReminderOnRentPayment(TenantReminderEmail options);
         Task SendMessageReply(message_replybody options);
         Task<BaseResponse> notificationOnRentPaymeentDay(AutomaticMessaging options);
+        Task<BaseResponse> EmailOnSuccessfulLogin(UserEmailOptions emailbody);
     }
 }

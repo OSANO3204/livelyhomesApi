@@ -1,6 +1,8 @@
 ﻿using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.ViewModel;
 using HousingProject.Core.ViewModel.Professionalsvm;
 using HousingProject.Infrastructure.Interfaces.IProfessionalsServices;
+using HousingProject.Infrastructure.Response;
 using HousingProject.Infrastructure.Response.VotesResponse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +31,7 @@ namespace HousingProject.API.Controllers
         [HttpPost]
         [Route("Registerprojessional")]
 
-       public async  Task<BaseResponse> Createprofessonal(Professionalsvm vm)
+        public async Task<BaseResponse> Createprofessonal(Professionalsvm vm)
         {
 
             return await _professionalsServices.Createprofessonal(vm);
@@ -71,17 +73,17 @@ namespace HousingProject.API.Controllers
         [HttpPost]
         [Route("Update_Upvotes")]
         public async Task<VotesResponse> Update_UpVotes(int userid)
-                {
-                    return await _professionalsServices.Update_UpVotes(userid);
-                }
+        {
+            return await _professionalsServices.Update_UpVotes(userid);
+        }
 
         [Authorize]
         [HttpPost]
         [Route("Update_Downvotes")]
         public async Task<VotesResponse> Update_DownVotes(int userid)
-                {
-               return await _professionalsServices.Update_DownVotes(userid);
-                }
+        {
+            return await _professionalsServices.Update_DownVotes(userid);
+        }
 
         [Authorize]
         [HttpPost]
@@ -91,6 +93,84 @@ namespace HousingProject.API.Controllers
             return await _professionalsServices.Userrating(userid);
 
         }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get_All_User_Services")]
+        public async Task<BaseResponse> Get_User_Profession(string user_id)
+        {
+
+            return await _professionalsServices.Get_User_Profession(user_id);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get_tech+profle_with_job_number")]
+        public async Task<professional_profile_Response> Get_technician_profile_with_job(string job_number)
+        {
+            return await _professionalsServices.Get_technician_profile_with_job(job_number);
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get_techician_requests")]
+
+        public async Task<BaseResponse> Get_Technician_Requests(string worker_email)
+        {
+
+            return await _professionalsServices.Get_Technician_Requests(worker_email);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Add_techician_requests")]
+        public async Task<BaseResponse> AddingRequest_to_Worker(add_request__vm vm)
+        {
+
+            return await _professionalsServices.AddingRequest_to_Worker(vm);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get_technician_with_jb_id")]
+        public async Task<BaseResponse> Get_request_by_Job_Number(string job_number)
+        {
+
+            return await _professionalsServices.Get_request_by_Job_Number(job_number);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Close_user_request")]
+        public async Task<BaseResponse> Close_Request(int request_id)
+        {
+            return await _professionalsServices.Close_Request(request_id);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Add_Services")]
+        public async Task<BaseResponse> Add_Services(string service_added, string job_number)
+        {
+            return await _professionalsServices.Add_Services(service_added, job_number);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get_All_Services")]
+        public async Task<BaseResponse> Get_Services_By_Job_Number(string job_number)
+        {
+            return await _professionalsServices.Get_Services_By_Job_Number(job_number);
+        }
+
+
+
+
+
+
+
 
 
     }

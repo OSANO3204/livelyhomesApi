@@ -3,10 +3,7 @@ using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.ViewModel.Landlord;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace HousingProject.API.Controllers.LandLord
@@ -16,7 +13,7 @@ namespace HousingProject.API.Controllers.LandLord
     [Route("api/[controller]", Name = "Landlord")]
     [ApiController]
 
-    public class LandlordController: ILandlordServices
+    public class LandlordController : ILandlordServices
     {
         public readonly ILandlordServices _ilandlordservices;
         public LandlordController(ILandlordServices ilandlordservices)

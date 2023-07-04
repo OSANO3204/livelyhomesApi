@@ -29,5 +29,18 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task AutomtedRentNotiication();
         Task<BaseResponse> ReminderSentEntry(int tenantid);
         Task<BaseResponse> AllRemindersSent(int houseid);
+        Task<BaseResponse> PayingRent(int tenantid, decimal rentamount);
+        Task<BaseResponse> GetAllTenantPayments(int tenantid);
+        Task<BaseResponse> GetHouseUnitBodyById(int houseuintid);
+        Task<BaseResponse> RequestRentDelay(string requestdate, string addtionalDetails);
+        Task<BaseResponse> GetAll_DelayRequests_By_HouseId(int houseid);
+        Task<BaseResponse> GetAll_DelayRequests_By_TenantEmail(string tenantemail);
+        Task<BaseResponse> ApproveRequest(int requestid );
+        Task<BaseResponse> GetDelayRequetsByHouseIDandStatus(int houseid, string requestStatus);
+        Task<BaseResponse> RejectRequest(int requestid);
+        Task<string> GetGeneratedref();
+        Task MonthlyRentfn();
+        Task Reset_Updated_this_month();
+
     }
 }

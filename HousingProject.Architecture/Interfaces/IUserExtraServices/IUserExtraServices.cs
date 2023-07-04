@@ -16,5 +16,6 @@ namespace HousingProject.Infrastructure.Interfaces.IUserExtraServices
         Task<messagereplyresponse> Replymessage(replyvm vm);
         Task<messagereplyresponse> GetreplybymessageID(int messageid);
         Task<BaseResponse> GetClosedMessages();
+        string GenerateReferenceNumber(int length);
     }
 }

@@ -13,15 +13,15 @@ using HousingProject.Architecture.Services.Landlord;
 using HousingProject.Architecture.Services.Rentee.Services;
 using HousingProject.Architecture.Services.User_Login;
 using HousingProject.Core.Models.Email;
-using HousingProject.Core.Models.Houses.HouseUnitRegistration;
 using HousingProject.Core.Models.People;
 using HousingProject.Infrastructure.CRUDServices.HouseRegistration_Services.HouseUnitsServices;
 using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
+using HousingProject.Infrastructure.CRUDServices.N_IMages_Services;
+using HousingProject.Infrastructure.CRUDServices.Payments.Daraja;
 using HousingProject.Infrastructure.CRUDServices.Payments.Rent;
 using HousingProject.Infrastructure.CRUDServices.ProfessionalsServices;
 using HousingProject.Infrastructure.CRUDServices.UsersExtra;
 using HousingProject.Infrastructure.ExtraFunctions;
-using HousingProject.Infrastructure.ExtraFunctions.Checkroles;
 using HousingProject.Infrastructure.ExtraFunctions.Checkroles.ChcekRoles;
 using HousingProject.Infrastructure.ExtraFunctions.Checkroles.IcheckRole;
 using HousingProject.Infrastructure.ExtraFunctions.GenerateWorkId;
@@ -29,27 +29,31 @@ using HousingProject.Infrastructure.ExtraFunctions.IExtraFunctions;
 using HousingProject.Infrastructure.ExtraFunctions.Images;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.ExtraFunctions.RolesDescription;
+using HousingProject.Infrastructure.Interfaces.IDarraja;
 using HousingProject.Infrastructure.Interfaces.IHouseRegistration_Services;
 using HousingProject.Infrastructure.Interfaces.IProfessionalsServices;
 using HousingProject.Infrastructure.Interfaces.ITenantStatementServices;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
 using HousingProject.Infrastructure.JobServices;
+using HousingProject.Infrastructure.JobServices.tenantjobs;
 using HousingProject.Infrastructure.SuperServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MySql.Data.MySqlClient;
 using Quartz;
-using System.IO;
 using System.Security.Claims;
 using System.Text;
 
@@ -66,8 +70,8 @@ namespace HousingProject.API
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        { 
-            
+        {
+
 
             services.Configure<EmailConfiguration>(Configuration.GetSection("EmailConfiguration"));
             services.AddControllers().AddNewtonsoftJson();
@@ -90,12 +94,30 @@ namespace HousingProject.API
                 .WithIdentity("automatedMail-trigger")
                 .WithCronSchedule("0 0 12 5 1/1 ? *"));
                 //.WithCronSchedule("0 0/5 * 1/1 * ? *"));
-        });
+
+
+                //automated rent payday
+                var monthly_rent_Update_key = new JobKey("Monthly_Rent_Update");
+                q.AddJob<Monthly_Rent_Update>(z => z.WithIdentity(monthly_rent_Update_key));
+                q.AddTrigger(y => y.ForJob(monthly_rent_Update_key)
+                .WithIdentity("Monthly_Rent_Update-trigger")
+                .WithCronSchedule("0/1 * * * * ?"));
+
+                //automated rent payday
+                var Back_monthly_update_key = new JobKey("Reset_Updated_this_month");
+                q.AddJob<Back_monthly_update>(z => z.WithIdentity(Back_monthly_update_key));
+                q.AddTrigger(y => y.ForJob(Back_monthly_update_key)
+                .WithIdentity("Back_monthly_update-trigger")
+                .WithCronSchedule("0/2 * * * * ?"));
+            });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
-            services.AddHttpClient("mpesa", m => { m.BaseAddress =
-                new System.Uri("https://sandbox.safaricom.co.ke"
-                
-                );});
+            services.AddHttpClient("mpesa", m =>
+            {
+                m.BaseAddress =
+new System.Uri("https://sandbox.safaricom.co.ke"
+
+);
+            });
 
             services.Configure<FormOptions>(o =>
             {
@@ -110,7 +132,7 @@ namespace HousingProject.API
             );
             //services.AddTransient<MySqlConnection>(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
             services.AddControllers();
-        
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(
@@ -169,17 +191,18 @@ namespace HousingProject.API
                 });
 
             services.Configure<IdentityOptions>(options =>
-            
+
                 options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier
             );
-           
+
             services.AddHttpContextAccessor();
             services.AddScoped<IRegistrationServices, RegistrationServices>();
             services.AddScoped<IHouse_RegistrationServices, House_RegistrationServices>();
             services.AddScoped<IEmailServices, EmailServices>();
-            services.AddScoped<IverificationGenerator,verificationtokenGenerator>();
+            services.AddScoped<IverificationGenerator, verificationtokenGenerator>();
             services.AddScoped<ILandlordServices, LanlordServices>();
             services.AddScoped<ITenantServices, TenantServices>();
+            services.AddScoped<IpaymentServices, PaymentServices>();
             services.AddScoped<IloggedInServices, UserLoginServices>();
             services.AddScoped<IextraFunctions, AddingCountiesCRUD>();
             services.AddScoped<IImagesServices, ImagesServices>();
@@ -187,14 +210,26 @@ namespace HousingProject.API
             services.AddScoped<ILoggedIn, LoggedIn>();
             services.AddScoped<ITenantStatementServices, TenantStatementServices>();
             services.AddScoped<IHouseUnits, HouseUnitsServices>();
-            services.AddScoped<IProfessionalsServices,ProfessionalServices>();
-            services.AddScoped<IGenerateIdService, GenerateIdService>();         
+            services.AddScoped<IProfessionalsServices, ProfessionalServices>();
+            services.AddScoped<IGenerateIdService, GenerateIdService>();
             services.AddScoped<ICheckroles, CheckRoles>();
             services.AddScoped<IAdminServices, AdminService>();
+            
             services.AddScoped<IUserExtraServices, UserExtraServices>();
-            services.AddScoped<IpaymentServices, PaymentServices>();
+         
             services.AddCors();
-           
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IUrlHelper>(x =>
+            {
+                var actionContext = x.GetRequiredService<IActionContextAccessor>().ActionContext;
+                var factory = x.GetRequiredService<IUrlHelperFactory>();
+                return factory.GetUrlHelper(actionContext);
+            });
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
+            services.AddScoped<In_ImagesServices, n_images_services>();
+            services.AddScoped<IDarajaServices, Daraja_Services>();
+            services.AddScoped<IpaymentServices, PaymentServices>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -209,7 +244,6 @@ namespace HousingProject.API
                 );
             }
 
-            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseCors(builder =>
@@ -218,17 +252,17 @@ namespace HousingProject.API
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             });
-            app.UseStaticFiles();       
+
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseStaticFiles();
+
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
 
-            
+
         }
     }
 }

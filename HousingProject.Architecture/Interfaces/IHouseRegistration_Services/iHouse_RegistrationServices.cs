@@ -5,6 +5,7 @@ using HousingProject.Core.ViewModel.House;
 using HousingProject.Core.ViewModel.House.HouseUsersvm;
 using HousingProject.Core.ViewModel.HouseUnitRegistrationvm;
 using HousingProject.Core.ViewModels;
+using HousingProject.Infrastructure.Response;
 using HousingProject.Infrastructure.Response.BaseResponses;
 using System.Threading.Tasks;
 
@@ -36,5 +37,8 @@ namespace HousingProject.Architecture.IHouseRegistration_Services
         //Task<string> uploadimage(IFormFile objfiles);
 
         //Task<AddImages> Create(IFormFile file);
+        Task<BaseResponse> GetAggreementByTenantId(int tenantid);
+        Task<BaseResponse> GetUnoccupiedhouseunits(string housename);
+        Task<Housing_Profile_Response> Get_House_Details_By_Id(int house_id);
     }
 }

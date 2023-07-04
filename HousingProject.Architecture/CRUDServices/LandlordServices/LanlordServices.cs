@@ -42,15 +42,11 @@ namespace HousingProject.Architecture.Services.Landlord
 
             if (vm.FirstName == "")
             {
-
                 return (new BaseResponse { Code = "101", ErrorMessage = "Firstname can't be empty" });
-
             }
             if (vm.LasstName == "")
             {
-
                 return (new BaseResponse { Code = "102", ErrorMessage = "Lastname can't be empty" });
-
             }
 
             await _context.Landlordmodel.AddAsync(LandlordHoyseRegistration);

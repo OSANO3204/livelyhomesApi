@@ -8,12 +8,12 @@ using HousingProject.Core.ViewModel.House.HouseUsersvm;
 using HousingProject.Core.ViewModel.HouseUnitRegistrationvm;
 using HousingProject.Core.ViewModels;
 using HousingProject.Infrastructure.Interfaces.IHouseRegistration_Services;
+using HousingProject.Infrastructure.Response;
 using HousingProject.Infrastructure.Response.BaseResponses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HousingProject.API.Controllers.House
@@ -44,10 +44,10 @@ namespace HousingProject.API.Controllers.House
         [Authorize]
         [Route("Get_Registererd_House")]
         [HttpGet]
-         public async Task<BaseResponse> Registered_Houses()
+        public async Task<BaseResponse> Registered_Houses()
         {
 
-            return await  _house_registrationservices.Registered_Houses();
+            return await _house_registrationservices.Registered_Houses();
         }
 
 
@@ -61,11 +61,11 @@ namespace HousingProject.API.Controllers.House
                 return await _house_registrationservices.Register_House(newvm);
             }
 
-            catch(Exception ex ) 
+            catch (Exception ex)
             {
-                return new BaseResponse { Code="145", ErrorMessage= ex.Message}; 
+                return new BaseResponse { Code = "145", ErrorMessage = ex.Message };
             }
-           
+
         }
 
         [Authorize]
@@ -149,7 +149,7 @@ namespace HousingProject.API.Controllers.House
         public async Task<BaseResponse> Get_HouseUsers_Houses()
         {
 
-            return await  _house_registrationservices.Get_HouseUsers_Houses();
+            return await _house_registrationservices.Get_HouseUsers_Houses();
         }
 
         [Authorize]
@@ -164,9 +164,9 @@ namespace HousingProject.API.Controllers.House
         [Authorize]
         [Route("CreateAggeementSection")]
         [HttpPost]
-        public  Task AggreementSections(AggrementSections aggreementsection)
+        public Task AggreementSections(AggrementSections aggreementsection)
         {
-            return  _house_registrationservices.AggreementSections(aggreementsection);
+            return _house_registrationservices.AggreementSections(aggreementsection);
 
         }
 
@@ -218,7 +218,7 @@ namespace HousingProject.API.Controllers.House
         public async Task<classicaggreementresponse> GetAggementSectionsByHouseID(int HouseID)
         {
 
-            return  await _house_registrationservices.GetAggementSectionsByHouseID(HouseID);
+            return await _house_registrationservices.GetAggementSectionsByHouseID(HouseID);
         }
 
         [Authorize]
@@ -226,7 +226,7 @@ namespace HousingProject.API.Controllers.House
         [HttpPost]
         public async Task<AggreementResponse> GetggreementByHouseID(int houseid)
         {
-            return await  _house_registrationservices.GetggreementByHouseID(houseid);
+            return await _house_registrationservices.GetggreementByHouseID(houseid);
         }
 
         [Authorize]
@@ -237,5 +237,35 @@ namespace HousingProject.API.Controllers.House
 
             return await _house_registrationservices.GethouseById(houseid);
         }
+
+        [Authorize]
+        [Route("GetAggreementByTenantId")]
+        [HttpPost]
+        public async Task<BaseResponse> GetAggreementByTenantId(int tenantid)
+        {
+
+            return await _house_registrationservices.GetAggreementByTenantId(tenantid);
+        }
+
+
+        [Authorize]
+        [Route("Get_Unoccupied_house_uints")]
+        [HttpPost]
+
+        public async Task<BaseResponse> GetUnoccupiedhouseunits(string housename)
+        {
+
+            return await _house_registrationservices.GetUnoccupiedhouseunits(housename);
+        }
+
+        [Authorize]
+        [Route("Get_House_Profile")]
+        [HttpPost]
+        public async Task<Housing_Profile_Response> Get_House_Details_By_Id(int house_id)
+        {
+            return await _house_registrationservices.Get_House_Details_By_Id(house_id);
+
+        }
+
     }
 }

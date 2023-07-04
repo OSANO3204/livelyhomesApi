@@ -1,4 +1,5 @@
 ﻿using HousingProject.Architecture.Response.Base;
+using HousingProject.Infrastructure.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -10,5 +11,6 @@ namespace HousingProject.Infrastructure.ExtraFunctions.Images
     {
         Task<BaseResponse> UploadImages(List<IFormFile> ifiles, string uploadReason, string useremail);
         Task<BaseResponse> GetprofileImage(string profiledescription, string userEmail);
+        Task<imageresponse> GetAllImages();
     }
 }

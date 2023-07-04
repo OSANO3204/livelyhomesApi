@@ -46,19 +46,14 @@ namespace HousingProject.Infrastructure.CRUDServices.UsersExtra
 
         public async Task<BaseResponse> GetAllMessages()
         {
-
             using (var scope = _servicefactory.CreateScope())
             {
                 try
                 {
-
-                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
+                   var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var allmessages = scopedcontext.ContactUs.Where(m => m.ClosedMessages == false).OrderByDescending(d=>d.DateCreated).ToList();
-
                     if (allmessages == null)
                     {
-
                         return new BaseResponse { Code = "140", ErrorMessage = "No messages found " };
                     }
                     var totalmessages = allmessages.Count();
@@ -76,24 +71,19 @@ namespace HousingProject.Infrastructure.CRUDServices.UsersExtra
         {
             try
             {
-                using (var scope = _servicefactory.CreateScope())
+               using (var scope = _servicefactory.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
                     var messageexists =  scopedcontext.ContactUs.Where(m => m.ContacusId == messageid).FirstOrDefault();
-
                     if (messageexists == null)
                     {
-
                         return new BaseResponse { Code = "160", ErrorMessage = "message does not exist" };
                     }
-
                     return new BaseResponse { Code = "200", SuccessMessage = "Queried successfully", Body = messageexists };
                 }
             }
             catch (Exception ex)
             {
-
                 return new BaseResponse { Code = "180", ErrorMessage = ex.Message };
             }
         }
@@ -113,21 +103,14 @@ namespace HousingProject.Infrastructure.CRUDServices.UsersExtra
                         Reply = vm.Reply,
                         Closed=true
                     };
-
                     await scopedcontext.AddAsync(messagereply);
                     await scopedcontext.SaveChangesAsync();
                     var specificmessage =  scopedcontext.ContactUs.Where(m => m.ContacusId == vm.MessageID).FirstOrDefault();
-
                     if (specificmessage == null)
                     {
-
                         return new messagereplyresponse("140", "message not found", null);
                     }
-
                     specificmessage.ClosedMessages = true;
-
-                  
-
                     var userexists =  scopedcontext.RegistrationModel.Where(u => u.Email == vm.SenderMail).FirstOrDefault();
                     var emailbody = new message_replybody
                     {
@@ -140,16 +123,10 @@ namespace HousingProject.Infrastructure.CRUDServices.UsersExtra
                         replymessage=vm.Reply,
                         SentOn = DateTime.Now
                     };
-
                     var emailsent =  _emailServices.SendMessageReply(emailbody);
-
                     scopedcontext.Update(specificmessage);
                     await scopedcontext.SaveChangesAsync();
-
-                    return new messagereplyresponse("200", "Reply sent successfully", messagereply);
-
-                  
-
+                    return new messagereplyresponse("200", "Reply sent successfully", messagereply);  
                 }
             }
             catch (Exception ex)
@@ -166,18 +143,13 @@ namespace HousingProject.Infrastructure.CRUDServices.UsersExtra
                 using (var scope = _servicefactory.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
                     var replieseists =  scopedcontext.replyModel.Where(r => r.MessageID == messageid).ToList();
-
                     if (replieseists == null)
                     {
                         return new messagereplyresponse("190", "message reply does npt exist", null);
                     }
-
                     return new messagereplyresponse("200", "Queried successfully", replieseists);
-
                 }
-
             }
             catch (Exception ex)
             {
@@ -185,20 +157,32 @@ namespace HousingProject.Infrastructure.CRUDServices.UsersExtra
             }
         }
 
-
         public async Task<BaseResponse> GetClosedMessages()
         {
-
             var allclosedmessages =  _context.ContactUs.Where(c => c.ClosedMessages == true).ToList();
             if (allclosedmessages == null)
             {
                 return new BaseResponse {Code = "140", ErrorMessage = "No messages found " };
             };
-
              var totalmessages = allclosedmessages.Count();
             return new BaseResponse { Code = "200", SuccessMessage = "Queried successfully", Body = allclosedmessages, Totals = totalmessages, isTrue = true };
         }
 
+
+        public string GenerateReferenceNumber(int length)
+        {
+            string ValidChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnop";
+           
+            StringBuilder sb = new StringBuilder();
+            Random random = new Random();
+            for (int i = 0; i < length; i++)
+            {
+                int randomIndex = random.Next(ValidChars.Length);
+                sb.Append(ValidChars[randomIndex]);
+            }
+            return sb.ToString();
+        }
     }
+
 
 }

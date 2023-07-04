@@ -11,11 +11,11 @@ namespace HousingProject.Core.Models.Houses.HouseUnitRegistration
         public int HouseUnitNumber { get; set; }
         public bool Occupied { get; set; }
         public bool  Vacant { get; set; }
-
         public string GeneratedId { get; set; }
         public string HouseUnitFloor { get; set; }
+        public int MyProperty { get; set; }
 
-        
+
 
 
     }       
