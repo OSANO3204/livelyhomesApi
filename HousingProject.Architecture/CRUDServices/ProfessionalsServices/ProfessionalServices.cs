@@ -40,7 +40,7 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
 
         public async Task<BaseResponse> Createprofessonal(Professionalsvm vm)
         {
-            var checkifexists = await _context.RegisterProfessional.Where(x => x.Email == vm.Email).FirstOrDefaultAsync();
+            var loggedid_in=_loggedIn.LoggedInUser().Result;
             try
             {
                 var user =  _logged_in_user.LoggedInUser().Result;
@@ -57,9 +57,9 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                     Salutation = vm.Salutation,
                     Email = vm.Email,
                     JobNumber = workid,
-                    User_Id= user.Id
+                    User_Id = Convert.ToString(loggedid_in.Id)
                 };
-
+                //ee79fa63-e86d-4cfd-80e9-c256fa0b2f9d
 
                 await _context.AddAsync(newprofessional);
                 await _context.SaveChangesAsync();
@@ -251,15 +251,13 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
         {
             try
             {
-
-
-              
+               
                 using (var scope = _servicescopefactory.CreateScope())
                 {
 
                     var user = _loggedIn.LoggedInUser().Result;
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-                    var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.User_Id == user_id && y.Email==user.Email).OrderByDescending(y=>y.DateCreated).ToListAsync();
+                    var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.User_Id == user_id ).OrderByDescending(y=>y.DateCreated).ToListAsync();
                     if (professionalexists == null)
                     {
                         return new BaseResponse { Code = "140", ErrorMessage = "User does not exist" };
@@ -272,9 +270,6 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             {
                 return new BaseResponse { Code = "180", ErrorMessage = ex.Message };
             }
-
-
-
 
         }
 

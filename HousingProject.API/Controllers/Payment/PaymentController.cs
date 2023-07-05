@@ -1,8 +1,10 @@
-﻿using HousingProject.Core.Models.mpesaauthvm;
+﻿using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.mpesaauthvm;
 using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
 using HousingProject.Infrastructure.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 
 namespace HousingProject.API.Controllers.Payment
@@ -38,6 +40,14 @@ namespace HousingProject.API.Controllers.Payment
         public async Task<stk_push_response> STk_Push(string phoneNumber, decimal amount)
         {
             return await _paymentServices.STk_Push(phoneNumber, amount);
+
+        }
+
+        [Route("Get_CallBack_Body")]
+        [HttpPost]
+        public async Task<BaseResponse> Get_CallBack_Body(JObject requestBody)
+        {
+            return await _paymentServices.Get_CallBack_Body(requestBody);
 
         }
 

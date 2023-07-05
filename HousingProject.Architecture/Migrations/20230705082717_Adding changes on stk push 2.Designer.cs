@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230705082717_Adding changes on stk push 2")]
+    partial class Addingchangesonstkpush2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -586,33 +588,6 @@ namespace HousingProject.Infrastructure.Migrations
                     b.ToTable("ImaageUploadClass");
                 });
 
-            modelBuilder.Entity("HousingProject.Core.Models.Mpesa.Save_Callback_Body", b =>
-                {
-                    b.Property<int>("Callback_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("CheckoutRequestID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MerchantRequestID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("MyProperty")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ResultCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ResultDesc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Callback_id");
-
-                    b.ToTable("Save_Callback_Body");
-                });
-
             modelBuilder.Entity("HousingProject.Core.Models.N_IMAGES.Image_Models", b =>
                 {
                     b.Property<int>("Id")
@@ -1185,30 +1160,6 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("Monthlyrentid");
 
                     b.ToTable("Rent_Monthly_Update");
-                });
-
-            modelBuilder.Entity("HousingProject.Core.Models.RentPayment.Callback_Body", b =>
-                {
-                    b.Property<int>("Callback_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("CheckoutRequestID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MerchantRequestID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ResultCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ResultDesc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Callback_id");
-
-                    b.ToTable("Callback_Body");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.RentPayment.PayRent", b =>

@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230705092336_Adding changes on stk push 3")]
+    partial class Addingchangesonstkpush3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -584,33 +586,6 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("imagedId");
 
                     b.ToTable("ImaageUploadClass");
-                });
-
-            modelBuilder.Entity("HousingProject.Core.Models.Mpesa.Save_Callback_Body", b =>
-                {
-                    b.Property<int>("Callback_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<string>("CheckoutRequestID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MerchantRequestID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("MyProperty")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ResultCode")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ResultDesc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Callback_id");
-
-                    b.ToTable("Save_Callback_Body");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.N_IMAGES.Image_Models", b =>

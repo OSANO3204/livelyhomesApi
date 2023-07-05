@@ -1,5 +1,7 @@
-﻿using HousingProject.Core.Models.mpesaauthvm;
+﻿using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.mpesaauthvm;
 using HousingProject.Infrastructure.Response;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 
 namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
@@ -9,5 +11,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         Task<mpesaAuthenticationvm> Getauthenticationtoken();
         Task<string> RegisterURL();
         Task<stk_push_response> STk_Push(string phoneNumber, decimal amount);
+        Task<BaseResponse> Get_CallBack_Body(JObject requestBody);
     }
 }

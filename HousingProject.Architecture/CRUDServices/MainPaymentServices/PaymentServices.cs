@@ -1,17 +1,21 @@
 ﻿using HousingProject.Architecture.Data;
-using HousingProject.Architecture.Interfaces.IRenteeServices;
+using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.Mpesa;
 using HousingProject.Core.Models.mpesaauthvm;
+using HousingProject.Core.Models.RentPayment;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
 using HousingProject.Infrastructure.Response;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 {
@@ -23,17 +27,17 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private const string DarajaEndpoint = "https://api.safaricom.co.ke";
         private readonly IUserExtraServices _userExtraServices;
-       
 
+        private ILogger<PaymentServices> _logger;
         public PaymentServices(IHttpClientFactory httpClientFactory, 
             IServiceScopeFactory serviceScopeFactory,
-       
+              ILogger<PaymentServices> logger,
             IUserExtraServices userExtraServices
             )
         {
             _httpClientFactory = httpClientFactory;
             _serviceScopeFactory = serviceScopeFactory;
-          
+            _logger = logger;
             _userExtraServices = userExtraServices;
         }
 
@@ -90,65 +94,83 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 
             try
             {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
 
-                var trans_Reference = GetGeneratedref().Result;
-                string transactionDesc = "C2b Transactions";
-                var accessToken = Getauthenticationtoken().Result;
-                var client = _httpClientFactory.CreateClient("mpesa");
-                var shortcode = "174379";
-               
-              
-                //shorcode
-                var passkey = "ok0vxpMbWCQT6baC";
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
 
-                
-            
-                var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
 
-                    // Generate the password by base64 encoding the BusinessShortCode, Passkey, and timestamp
+                    var trans_Reference = GetGeneratedref().Result;
+                    string transactionDesc = "C2b Transactions";
+                    var accessToken = Getauthenticationtoken().Result;
+                    var client = _httpClientFactory.CreateClient("mpesa");
+                    var shortcode = "174379";
+                    var passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+
+                    var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
                     var encorded_pass = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{shortcode}{passkey}{timestamp}"));
 
-                var requestBody = new
-                {
-                    BusinessShortCode = shortcode,
-                    Password = encorded_pass,
-                    Timestamp = timestamp,
-                    TransactionType = "CustomerPayBillOnline",
-                    Amount = amount.ToString(),
-                    PartyA = phoneNumber,
-                    PartyB = shortcode,
-                    PhoneNumber = phoneNumber,
-                    CallBackURL = "https://webhook.site/38ab2f23-57d0-420a-977a-e1cd34f1f12f",
-                    AccountReference = trans_Reference,
-                    TransactionDesc = transactionDesc
-                };
+                    var requestBody = new
+                    {
+                        BusinessShortCode = shortcode,
+                        Password = encorded_pass,
+                        Timestamp = timestamp,
+                        TransactionType = "CustomerPayBillOnline",
+                        Amount = amount.ToString(),
+                        PartyA = phoneNumber,
+                        PartyB = shortcode,
+                        PhoneNumber = phoneNumber,
+                        CallBackURL = "https://webhook.site/d0e6975c-22b2-411d-a793-a4bc1d06b5c0",
+                        AccountReference = trans_Reference,
+                        TransactionDesc = transactionDesc
+                    };
 
-                var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
+                    var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
 
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer  {accessToken.access_token}");
-                string _url = "/mpesa/stkpush/v1/processrequest";
-                var response = await client.PostAsync(_url, content);
-               
+                    client.DefaultRequestHeaders.Add("Authorization", $"Bearer " + accessToken.access_token);
+                    string _url = "/mpesa/stkpush/v1/processrequest";
+                    var response = await client.PostAsync(_url, content);
 
-                var responseContent = await response.Content.ReadAsStringAsync();
 
-                //sent-https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest
-                //required -https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest
+                    var responseContent = await response.Content.ReadAsStringAsync();
 
-                Console.WriteLine(responseContent);
-              
+                    var json_resp_body = JsonConvert.DeserializeObject<Stk_Push_Response_Body>(responseContent);
 
-                if (response.IsSuccessStatusCode)
+
+
+
+                    //public string CustomerMessage { get; set; }
+
+                    var new_response_body = new Stk_Push_Response_Body
+                    {
+
+                        MerchantRequestID = json_resp_body.MerchantRequestID,
+                        CheckoutRequestID = json_resp_body.CheckoutRequestID,
+                        ResponseCode = json_resp_body.ResponseCode,
+                        ResponseDescription = json_resp_body.ResponseDescription,
+                        CustomerMessage = json_resp_body.CustomerMessage,
+                        ReferenceNumber=requestBody.AccountReference
+
+                    };
+
+                    await scopedcontext.AddAsync(new_response_body);
+                   var saved_resp=  await scopedcontext.SaveChangesAsync();
+                   
+                    Console.WriteLine(responseContent);
+
+
+                    if (response.IsSuccessStatusCode)
                     {
                         Console.WriteLine("STK push initiated successfully.");
-                    return new stk_push_response { Code = "200", internalref = trans_Reference };
+                        return new stk_push_response { Code = "200", internalref = trans_Reference };
                     }
                     else
-                        {
-                            Console.WriteLine("Failed to initiate STK push.");
-                    return new stk_push_response { Code = "350", internalref = trans_Reference };
-                          }
-                
+                    {
+                        Console.WriteLine("Failed to initiate STK push.");
+                        return new stk_push_response { Code = "350", internalref = trans_Reference };
+                    }
+
+                }
             }
             catch (Exception ex)
             {
@@ -181,9 +203,52 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
             }
 
         }
+        public async Task<BaseResponse> Get_CallBack_Body([FromBody] JObject requestBody)
+        {
+            try
+            {
+
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var callbackData = JsonConvert.SerializeObject(requestBody);
+
+                    var stk_body = JsonConvert.DeserializeObject<STKCallback>(callbackData);
+
+                    var body_object = stk_body.Body.stkCallback;
+
+                    var new_callback = new Save_Callback_Body
+                    {
 
 
+                        //public int ResultCode { get; set; }
+                        //public string ResultDesc { get; set; }
+                        MerchantRequestID = body_object.MerchantRequestID,
+                        CheckoutRequestID = body_object.CheckoutRequestID,
+                        ResultCode = body_object.ResultCode,
+                        ResultDesc = body_object.ResultDesc
+
+                    };
+
+                    await scopedcontext.AddAsync(new_callback);
+                    await scopedcontext.SaveChangesAsync();
+
+                        return new BaseResponse { Code = "200", SuccessMessage = " saved successfull", Body = body_object };
+
+                   
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("_______" + ex.Message + " ____|||||______");
+                return new BaseResponse { Code = "170", SuccessMessage = ex.Message, Body = ex.StackTrace };
+            }
 
 
+        }
+
+       
     }
 }
