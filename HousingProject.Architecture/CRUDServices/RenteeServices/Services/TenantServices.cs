@@ -829,6 +829,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         //if(rent_payment.)
                         var generatedref = await GetGeneratedref();
                         newrent.InternalReference = trans_ref;
+                        newrent.Merchant_Request_ID = rent_payment.message;
                         newrent.Status = "PROCCESSING";
                         await scopedcontext.AddAsync(newrent);
                         await scopedcontext.SaveChangesAsync();

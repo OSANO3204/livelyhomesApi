@@ -1,5 +1,6 @@
 ﻿using HousingProject.Architecture.Data;
 using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.Extras;
 using HousingProject.Core.Models.Mpesa;
 using HousingProject.Core.Models.mpesaauthvm;
 using HousingProject.Core.Models.RentPayment;
@@ -162,7 +163,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     if (response.IsSuccessStatusCode)
                     {
                         Console.WriteLine("STK push initiated successfully.");
-                        return new stk_push_response { Code = "200", internalref = trans_Reference };
+                        return new stk_push_response { Code = "200", internalref = trans_Reference, message=new_response_body.MerchantRequestID };
                     }
                     else
                     {
@@ -187,13 +188,17 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     int length = 11;
-                    var paymentref = "LH_" + _userExtraServices.GenerateReferenceNumber(length);
+
+                    var generated_number =  Adding_Number().Result;
+                    var paymentref = "LH_" + _userExtraServices.GenerateReferenceNumber(length)  + generated_number;
                     //check reference exists
                     var referenceexists = await scopedcontext.PayRent.Where(y => y.InternalReference == paymentref).ToListAsync();
                     if (referenceexists.Count >= 1)
                     {
                         await GetGeneratedref();
                     }
+
+
                     return paymentref;
                 }
             }
@@ -203,7 +208,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
             }
 
         }
-        public async Task<BaseResponse> Get_CallBack_Body([FromBody] JObject requestBody)
+        public async Task Get_CallBack_Body([FromBody] JObject requestBody)
         {
             try
             {
@@ -219,10 +224,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 
                     var new_callback = new Save_Callback_Body
                     {
-
-
-                        //public int ResultCode { get; set; }
-                        //public string ResultDesc { get; set; }
+                      
                         MerchantRequestID = body_object.MerchantRequestID,
                         CheckoutRequestID = body_object.CheckoutRequestID,
                         ResultCode = body_object.ResultCode,
@@ -230,23 +232,98 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 
                     };
 
-                    await scopedcontext.AddAsync(new_callback);
-                    await scopedcontext.SaveChangesAsync();
+                    
 
-                        return new BaseResponse { Code = "200", SuccessMessage = " saved successfull", Body = body_object };
+                 
+                    var check_checkoutRequestedID = await scopedcontext.Save_Callback_Body.Where(y=>y.MerchantRequestID ==new_callback.MerchantRequestID).FirstOrDefaultAsync();
 
-                   
+                    if (check_checkoutRequestedID == null)
+                    {
+                        await scopedcontext.AddAsync(new_callback);
+                        await scopedcontext.SaveChangesAsync();
 
+                        _logger.LogInformation("Saved callback message successfully to he database ");
+
+                        //update transaction
+                        var check_exists = await scopedcontext.PayRent.Where(u => u.Merchant_Request_ID == new_callback.MerchantRequestID).FirstOrDefaultAsync();
+
+                        if (check_exists != null  && new_callback.ResultCode==0)
+                        {
+
+                            check_exists.Status = "COMPLETED";
+                            scopedcontext.Update(check_exists);
+                            await scopedcontext.SaveChangesAsync();
+                           
+
+                        }
+                        else
+                        {
+                            check_exists.Status = "FAILED";
+                            scopedcontext.Update(check_exists);
+                            await scopedcontext.SaveChangesAsync();
+                        }
+                        
+                    }
+                    else
+                    {
+                        _logger.LogInformation("Not saved");
+                    }
                 }
 
             }
             catch (Exception ex)
             {
                 _logger.LogInformation("_______" + ex.Message + " ____|||||______");
-                return new BaseResponse { Code = "170", SuccessMessage = ex.Message, Body = ex.StackTrace };
+                _logger.LogInformation($"_____||||____________''''''______{ex.Message}");
             }
 
 
+        }
+
+        public async Task<int> Adding_Number()
+        {
+            try
+                {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                 var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                   
+                    var check_last_number = await scopedcontext.Number_Generator.Where(y => y.Generated_Number > 0).OrderByDescending(u=>u.DateUpdated).LastOrDefaultAsync();
+
+                    if (check_last_number == null)
+                    {
+
+                        var new_number = new Number_Generator
+                        {
+                            Generated_Number = 1
+
+                        };
+
+                        await scopedcontext.AddAsync(new_number);
+                        await scopedcontext.SaveChangesAsync();
+                        _logger.LogInformation("Number added for the first time");
+                        return new_number.Generated_Number;
+
+                    }
+                    else
+                    {
+                        var number_update = 1;
+                        check_last_number.Generated_Number = check_last_number.Generated_Number + number_update;
+                        scopedcontext.Update(check_last_number);
+                        await scopedcontext.SaveChangesAsync();
+
+                        _logger.LogInformation("Successfully done");
+
+                        return check_last_number.Generated_Number;
+                    }
+                }
+
+                }
+            catch(Exception ex){
+                return ex.Data.Count;
+                
+            }
         }
 
        

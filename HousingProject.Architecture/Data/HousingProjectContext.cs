@@ -1,5 +1,6 @@
 ﻿using HousingProject.Core.Models.CountiesModel;
 using HousingProject.Core.Models.DelayRequest;
+using HousingProject.Core.Models.Extras;
 using HousingProject.Core.Models.General;
 using HousingProject.Core.Models.Houses;
 using HousingProject.Core.Models.Houses.Flats.AdminContacts;
@@ -82,6 +83,7 @@ namespace HousingProject.Architecture.Data
         public DbSet<Stk_Push_Response_Body> Stk_Push_Response_Body { get; set; }
         public DbSet<Callback_Body> Callback_Body { get; set; }
         public DbSet<Save_Callback_Body> Save_Callback_Body { get; set; }
+        public DbSet<Number_Generator> Number_Generator { get; set; }
 
 
 

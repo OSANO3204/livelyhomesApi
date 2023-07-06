@@ -11,6 +11,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         Task<mpesaAuthenticationvm> Getauthenticationtoken();
         Task<string> RegisterURL();
         Task<stk_push_response> STk_Push(string phoneNumber, decimal amount);
-        Task<BaseResponse> Get_CallBack_Body(JObject requestBody);
+        Task Get_CallBack_Body(JObject requestBody);
     }
 }

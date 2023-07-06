@@ -45,9 +45,9 @@ namespace HousingProject.API.Controllers.Payment
 
         [Route("Get_CallBack_Body")]
         [HttpPost]
-        public async Task<BaseResponse> Get_CallBack_Body(JObject requestBody)
+        public async Task Get_CallBack_Body(JObject requestBody)
         {
-            return await _paymentServices.Get_CallBack_Body(requestBody);
+             await _paymentServices.Get_CallBack_Body(requestBody);
 
         }
 

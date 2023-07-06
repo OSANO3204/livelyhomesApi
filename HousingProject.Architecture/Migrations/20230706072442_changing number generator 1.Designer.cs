@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230706072442_changing number generator 1")]
+    partial class changingnumbergenerator1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1176,20 +1178,11 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<string>("HouseName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Internal_ReferenceNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Month")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Paid")
-                        .HasColumnType("float");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Provider_Reference")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("MyProperty")
+                        .HasColumnType("datetime2");
 
                     b.Property<double>("RentAmount")
                         .HasColumnType("float");
@@ -1255,9 +1248,6 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("InternalReference")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Merchant_Request_ID")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")

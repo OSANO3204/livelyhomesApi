@@ -19,9 +19,14 @@ namespace HousingProject.Core.Models.RentMonthly
         public double RentAmount { get; set; }
         public double Balance { get; set; }
         public string HouseName { get; set; }
+        public double Paid { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Internal_ReferenceNumber { get; set; }
+        public string Provider_Reference { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.Now;
+
         public bool Updated_This_Month { get; set; }
-        public DateTime MyProperty { get; set; } = DateTime.Now;
+ 
 
 
     }

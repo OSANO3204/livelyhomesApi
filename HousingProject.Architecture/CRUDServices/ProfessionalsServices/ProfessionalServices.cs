@@ -1,5 +1,6 @@
 ﻿using HousingProject.Architecture.Data;
 using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.Extras;
 using HousingProject.Core.Models.Professionals;
 using HousingProject.Core.ViewModel;
 using HousingProject.Core.ViewModel.Professionalsvm;
@@ -10,6 +11,7 @@ using HousingProject.Infrastructure.Response;
 using HousingProject.Infrastructure.Response.VotesResponse;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,12 +25,14 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
         private readonly IServiceScopeFactory _servicescopefactory;
         private readonly IGenerateIdService _generateIdService;
         private readonly ILoggedIn _logged_in_user;
+        private readonly ILogger<ProfessionalServices> _logger;
         public ProfessionalServices(
             ILoggedIn loggedIn,
             HousingProjectContext context,
             IGenerateIdService generateIdService,
             IServiceScopeFactory servicescopefactory,
-            ILoggedIn logged_in_user
+            ILoggedIn logged_in_user,
+            ILogger<ProfessionalServices> logger
             )
         {
             _loggedIn = loggedIn;
@@ -36,6 +40,7 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             _generateIdService = generateIdService;
             _servicescopefactory = servicescopefactory;
             _logged_in_user = logged_in_user;
+            _logger = logger;
         }
 
         public async Task<BaseResponse> Createprofessonal(Professionalsvm vm)
@@ -44,7 +49,7 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             try
             {
                 var user =  _logged_in_user.LoggedInUser().Result;
-                var workid = _generateIdService.GenerateWorkId().Result.SuccessMessage;
+                var workid = _generateIdService.GenerateWorkId().Result.SuccessMessage + Adding_Number().Result;
                 var newprofessional = new RegisterProfessional
                 {
                     FirstName = vm.FirstName,
@@ -517,6 +522,53 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                 return new BaseResponse { Code = "340", ErrorMessage = ex.Message };
             }
         }
+        public async Task<int> Adding_Number()
+        {
+            try
+            {
+                using (var scope = _servicescopefactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+
+                    var check_last_number = await scopedcontext.Number_Generator.Where(y => y.Generated_Number > 0).OrderByDescending(u => u.DateUpdated).LastOrDefaultAsync();
+
+                    if (check_last_number == null)
+                    {
+
+                        var new_number = new Number_Generator
+                        {
+                            Generated_Number = 1
+
+                        };
+
+                        await scopedcontext.AddAsync(new_number);
+                        await scopedcontext.SaveChangesAsync();
+                        _logger.LogInformation("Number added for the first time");
+                        return new_number.Generated_Number;
+
+                    }
+                    else
+                    {
+                        var number_update = 1;
+                        check_last_number.Generated_Number = check_last_number.Generated_Number + number_update;
+                        scopedcontext.Update(check_last_number);
+                        await scopedcontext.SaveChangesAsync();
+
+                        _logger.LogInformation("Successfully done");
+
+                        return check_last_number.Generated_Number;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Data.Count;
+
+            }
+        }
+
 
 
 
