@@ -123,5 +123,13 @@ namespace HousingProject.API.Controllers
 
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("Get_user_profile_by_image_by_email")]
+        public async Task<BaseResponse> Get_User_Profile_Image_with_user_email(string user_email)
+        {
+            return await   _n_imageservices.Get_User_Profile_Image_with_user_email(user_email);
+        }
+
     }
 }

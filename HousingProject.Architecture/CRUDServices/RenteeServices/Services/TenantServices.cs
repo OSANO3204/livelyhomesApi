@@ -815,32 +815,30 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     {
                         // Payrentid= tenantexists.RenteeId,
                         TenantId = tenantexists.RenteeId,
-                        RentAmount = rentamount,
-                       
+                        RentAmount = rentamount,                       
                         Completed = false,
                         PhoneNumber = tenantexists.Rentee_PhoneNumber,
                         HouseID = tenantexists.HouseiD
                     };
-
                     var rent_payment =await  _paymentservice.STk_Push(tenantexists.Rentee_PhoneNumber, rentamount);
                     var trans_ref = rent_payment.internalref;
                     if (rent_payment.Code == "200")
-                    {
-                        //if(rent_payment.)
+                    {                 
                         var generatedref = await GetGeneratedref();
                         newrent.InternalReference = trans_ref;
                         newrent.Merchant_Request_ID = rent_payment.message;
                         newrent.Status = "PROCCESSING";
+                        newrent.ProviderReference = "N/A";
                         await scopedcontext.AddAsync(newrent);
                         await scopedcontext.SaveChangesAsync();
                         return new BaseResponse { Code = "200", SuccessMessage = "Rent payment initiated successfully " };
                     }
                     else
                     {
-
                         var generatedref = await GetGeneratedref();
                         newrent.InternalReference = trans_ref;
                         newrent.Status = "FAILED";
+                        newrent.ProviderReference = "N/A";
                         await scopedcontext.AddAsync(newrent);
                         await scopedcontext.SaveChangesAsync();
                         return new BaseResponse { Code = "200", SuccessMessage = "Rent payment FAILED " };

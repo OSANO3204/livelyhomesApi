@@ -65,7 +65,6 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                     User_Id = Convert.ToString(loggedid_in.Id)
                 };
                 //ee79fa63-e86d-4cfd-80e9-c256fa0b2f9d
-
                 await _context.AddAsync(newprofessional);
                 await _context.SaveChangesAsync();
 

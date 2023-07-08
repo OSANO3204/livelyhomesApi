@@ -23,6 +23,7 @@ namespace HousingProject.Core.Models.RentMonthly
         public string PhoneNumber { get; set; }
         public string Internal_ReferenceNumber { get; set; }
         public string Provider_Reference { get; set; }
+        public DateTime DateUpdated { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.Now;
 
         public bool Updated_This_Month { get; set; }

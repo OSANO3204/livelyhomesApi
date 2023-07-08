@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230708071151_adding changes on stk push 101")]
+    partial class addingchangesonstkpush101
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1264,9 +1266,6 @@ namespace HousingProject.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProviderReference")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("RentAmount")
