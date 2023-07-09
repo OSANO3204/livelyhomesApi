@@ -155,7 +155,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                         PartyA = phoneNumber,
                         PartyB = shortcode,
                         PhoneNumber = phoneNumber,
-                        CallBackURL = "https://webhook.site/3452ad40-5e1f-4bd9-b584-70554d487d64",
+                        CallBackURL = "https://webhook.site/94c3d416-42ba-4919-9cbb-16c7ffda9c63",
                         AccountReference = trans_Reference,
                         TransactionDesc = transactionDesc
                     };
@@ -165,6 +165,8 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     string _url = "/mpesa/stkpush/v1/processrequest";
                     var response = await client.PostAsync(_url, content);
                     var responseContent = await response.Content.ReadAsStringAsync();
+
+                    Console.WriteLine(responseContent);
                     var json_resp_body = JsonConvert.DeserializeObject<Stk_Push_Response_Body>(responseContent);
                     var new_response_body = new Stk_Push_Response_Body
                     {
@@ -182,7 +184,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     _logger.LogInformation($"_______________________Logging information ______________________||||________{responseContent}");
                     if (response.IsSuccessStatusCode)
                     {
-                        Console.WriteLine("STK push initiated successfully.");
+                        Console.WriteLine("Rent payment initiated SUCCESSFULLY");
                         return new stk_push_response { Code = "200", internalref = trans_Reference, message = new_response_body.MerchantRequestID };
                     }
                     else
