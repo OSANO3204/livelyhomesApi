@@ -121,9 +121,6 @@ namespace HousingProject.Architecture.PeopleManagementServices
         public async Task<BaseResponse> UserRegistration(RegisterViewModel registervm)
         {
             // pycivaz @mailinator.com
-
-
-
             var verificationtoken = await _iverificationGenerator.GenerateToken();
             byte[] EmailInbytes = Encoding.ASCII.GetBytes(registervm.Email);
             ASCIIEncoding encoding = new ASCIIEncoding();
@@ -131,11 +128,8 @@ namespace HousingProject.Architecture.PeopleManagementServices
             var keyByte = encoding.GetBytes(key);
             var hmacsha256 = new HMACSHA1(keyByte);
             var convertedtoken = verificationtoken.SuccessMessage + Convert.ToHexString(hmacsha256.ComputeHash(encoding.GetBytes(Convert.ToBase64String(EmailInbytes)))).ToLower();
-
-
             if (registervm.Password != registervm.RetypePassword)
             {
-
                 return new BaseResponse { Code = "143", ErrorMessage = "Passwords do not match " };
             }
             var newuser = new RegistrationModel
@@ -155,9 +149,6 @@ namespace HousingProject.Architecture.PeopleManagementServices
                 VerificationToken = convertedtoken,
                 Is_Tenant = registervm.Is_Tenant,
                 IsHouseUsers= registervm.IsHouseUsers
-
-
-
             };
 
             var createduser = await usermanager.CreateAsync(newuser, registervm.Password);

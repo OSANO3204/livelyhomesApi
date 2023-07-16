@@ -1296,10 +1296,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
         public async Task<BaseResponse> Vacant_House_update(int house_id, int door_number)
         {
-
             try
             {
-
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();

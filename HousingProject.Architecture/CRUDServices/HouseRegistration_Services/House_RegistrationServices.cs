@@ -122,41 +122,47 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 //var currentuser = LoggedInUser().Result;
                 if (!currentuser.Is_Agent && !currentuser.Is_Landlord)
                 {
-
                     return new BaseResponse { Code = "129", ErrorMessage = "You don't  have access to do this" };
                 }
-
                 if (newvm.House_Location == "")
                 {
                     return new BaseResponse { Code = "110", ErrorMessage = "House location cannot be null" };
                 }
                 if (newvm.Total_Units <= 0)
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "House units cannot be less than or equal to zero" };
-                }
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "House units cannot be less than or equal to zero" };
+                    }
                 if (newvm.Owner_Firstname == "")
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "owner first name cannot be empty" };
-                }
-
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "owner first name cannot be empty" };
+                    }
                 if (newvm.Owner_LastName == "")
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "owner last name cannot be empty" };
-                }
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "owner last name cannot be empty" };
+                    }
                 if (newvm.Country == "")
-                {
-                    return new BaseResponse { Code = "110", ErrorMessage = "County field cannot be empty" };
-                }
+                    {
+                        return new BaseResponse { Code = "110", ErrorMessage = "County field cannot be empty" };
+                    }
                 if (newvm.Estimated_Maximum_Capacity <= 0)
                 {
                     return new BaseResponse { Code = "110", ErrorMessage = "Estimated capacity must me higher than zero" };
                 }
                 if (newvm.Owner_id_Number <= 0)
                 {
-
                     return new BaseResponse { Code = "110", ErrorMessage = "House owner id cannot be null" };
                 }
 
+                var house_name = await _context.House_Registration.Where(d => d.House_Name == newvm.House_Name).FirstOrDefaultAsync();
+                if (house_name != null)
+                {
+                    return new BaseResponse
+                    {
+                        Code = "160",
+                        ErrorMessage = "House name already taken " +
+                        ", kindly choose another name or  add other distintictive characters "
+                    };
+                }
                 var housereg = new House_Registration
                 {
                     Owner_Firstname = newvm.Owner_Firstname,
@@ -172,7 +178,6 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                     CreatorEmail = currentuser.Email,
                     CreatorNames = currentuser.FirstName + " " + currentuser.LasstName,
                     UserId = currentuser.Id,
-
                 };
 
                 await _context.House_Registration.AddAsync(housereg);
@@ -187,45 +192,35 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 };
 
                 var result = await _iemailservices.sendEmailOnHouseRegistration(sendbody);
-
-                if (result.Code == "200")
-                {
-                    int fromzero = 0;
-                    while (newvm.Total_Units > fromzero)
+                 if (result.Code == "200")
                     {
-                        fromzero++;
-
-                        var saveunit = new HouseUnitsStatus();
-
-                        saveunit.DoorNumber = fromzero;
-                        saveunit.HouseName = newvm.House_Name;
-                        saveunit.Occupied = false;
-
-                        await _context.AddAsync(saveunit);
-                        await _context.SaveChangesAsync();
-
-                    }
-
-
-                    housereg.EmailSent = true;
-
-                    _context.House_Registration.Update(housereg);
+                      int fromzero = 0;
+                      while (newvm.Total_Units > fromzero)
+                        {
+                            fromzero++;
+                            var saveunit = new HouseUnitsStatus();
+                            saveunit.DoorNumber = fromzero;
+                            saveunit.HouseName = newvm.House_Name;
+                            saveunit.Occupied = false;
+                            await _context.AddAsync(saveunit);
+                            await _context.SaveChangesAsync();
+                        }
+                      housereg.EmailSent = true;
+                     _context.House_Registration.Update(housereg);
                     await _context.SaveChangesAsync();
                     return new BaseResponse
                     {
                         Code = "200",
-                        SuccessMessage = "House  registered successfully and email sent  "
+                        SuccessMessage = "House  registered successfully "
                     };
                 }
                 return (new BaseResponse { SuccessMessage = "Failed to send ", });
             }
             catch (Exception ex)
             {
-
                 return new BaseResponse { ErrorMessage = ex.Message };
             }
         }
-
 
         public async Task<BaseResponse> Registered_Houses()
         {
@@ -345,7 +340,6 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             var gethouses = await _context.House_Registration
                 .Where(x => x.Owner_id_Number == OwnerId)
                 .ToListAsync();
-
             try
             {
                 if (gethouses.Count == 0)
@@ -356,7 +350,6 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         ErrorMessage = "The house does not exist"
                     };
                 }
-
                 return new BaseResponse
                 {
                     Code = "200",
@@ -375,7 +368,6 @@ namespace HousingProject.Architecture.HouseRegistration_Services
         {
             var user = LoggedInUser().Result;
             var house = await _context.House_Registration.Where(h => h.HouseiD == vm.HouseID).FirstOrDefaultAsync();
-
             try
             {
                 var createnewnusr = new RegisterViewModel()
@@ -391,12 +383,10 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                     RetypePassword = "Password@1234",
                     Gender = "N/A",
                     IsHouseUsers = true,
-
                 };
-
                 var response = await _registrationServices.UserRegistration(createnewnusr);
-                var specifichouse = await _context.House_Registration.Where(x => x.HouseiD == vm.HouseID).FirstOrDefaultAsync();
-
+                var specifichouse = await _context.House_Registration
+                    .Where(x => x.HouseiD == vm.HouseID).FirstOrDefaultAsync();
                 if (response.Code == "200" || response.Code == "100")
                 {
                     var newhouseUser = new HouseUsers()
@@ -416,17 +406,13 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         HouseName = house.House_Name,
                         AccountActivated = false,
                     };
-
                     var check_house_user_exist = await _context.HouseUsers.Where(x => x.Email == vm.Email).FirstOrDefaultAsync();
-
                     if (check_house_user_exist != null)
                     {
-
                         return new BaseResponse { Code = "150", ErrorMessage = "The house user already exists" };
                     }
                     await _context.AddAsync(newhouseUser);
                     await _context.SaveChangesAsync();
-
                     return new BaseResponse { Code = "200", SuccessMessage = "House user created successfully " };
                 }
                 else
