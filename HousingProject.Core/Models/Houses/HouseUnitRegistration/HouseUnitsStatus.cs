@@ -12,6 +12,7 @@ namespace HousingProject.Core.Models.Houses.HouseUnitRegistration
         [Key]
         public int HouseidstatusID { get; set; }
         public string HouseName { get; set; }
+        public int HouseID { get; set; }
         public  int DoorNumber { get; set; }
         public bool Occupied { get; set; }
         public DateTime DateOccupied { get; set; } = DateTime.Now;

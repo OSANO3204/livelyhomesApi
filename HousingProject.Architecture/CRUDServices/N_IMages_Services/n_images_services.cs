@@ -396,6 +396,39 @@ namespace HousingProject.Infrastructure.CRUDServices.N_IMages_Services
             }
         }
 
+        public async Task<BaseResponse> Get_User_Profile_Image_with_user_email(string user_email)
+        {
+
+            try
+            {
+                using (var scope = _servicescope.CreateScope())
+                {
+
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+
+
+                    var found_user = await scopedcontext.RegistrationModel.Where(y => y.Email == user_email).FirstOrDefaultAsync();
+                    if (found_user == null) new BaseResponse { ErrorMessage = "No user profile image" };
+
+                    var profile_Image_obj = await scopedcontext.profile_Images.Where(y => y.userid == found_user.Id).FirstOrDefaultAsync();
+
+
+                    if (profile_Image_obj == null)
+                    {
+                        return new BaseResponse();
+                    }
+
+                    return new BaseResponse { Body = profile_Image_obj.Data, SuccessMessage = "Image data  Queried successfully " };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "190", ErrorMessage = $"An error occurred: {ex.Message}" };
+            }
+
+        }
+
 
 
     }

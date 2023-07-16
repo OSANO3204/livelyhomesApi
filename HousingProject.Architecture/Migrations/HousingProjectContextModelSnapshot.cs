@@ -103,6 +103,24 @@ namespace HousingProject.Infrastructure.Migrations
                     b.ToTable("RentDelayRequestTable");
                 });
 
+            modelBuilder.Entity("HousingProject.Core.Models.Extras.Number_Generator", b =>
+                {
+                    b.Property<int>("Number_Generator_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Generated_Number")
+                        .HasColumnType("int");
+
+                    b.HasKey("Number_Generator_id");
+
+                    b.ToTable("Number_Generator");
+                });
+
             modelBuilder.Entity("HousingProject.Core.Models.General.TenantSummary", b =>
                 {
                     b.Property<int>("SummaryId")
@@ -462,6 +480,9 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<int>("DoorNumber")
                         .HasColumnType("int");
 
+                    b.Property<int>("HouseID")
+                        .HasColumnType("int");
+
                     b.Property<string>("HouseName")
                         .HasColumnType("nvarchar(max)");
 
@@ -586,6 +607,33 @@ namespace HousingProject.Infrastructure.Migrations
                     b.ToTable("ImaageUploadClass");
                 });
 
+            modelBuilder.Entity("HousingProject.Core.Models.Mpesa.Save_Callback_Body", b =>
+                {
+                    b.Property<int>("Callback_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("CheckoutRequestID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MerchantRequestID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("MyProperty")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ResultCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResultDesc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Callback_id");
+
+                    b.ToTable("Save_Callback_Body");
+                });
+
             modelBuilder.Entity("HousingProject.Core.Models.N_IMAGES.Image_Models", b =>
                 {
                     b.Property<int>("Id")
@@ -666,6 +714,9 @@ namespace HousingProject.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Agent_PhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -1128,14 +1179,29 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("DateUpdated")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("HouseName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("House_ID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Internal_ReferenceNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Month")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("MyProperty")
-                        .HasColumnType("datetime2");
+                    b.Property<double>("Paid")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Provider_Reference")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("RentAmount")
                         .HasColumnType("float");
@@ -1152,12 +1218,36 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<bool>("Updated_This_Month")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Year")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
 
                     b.HasKey("Monthlyrentid");
 
                     b.ToTable("Rent_Monthly_Update");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.RentPayment.Callback_Body", b =>
+                {
+                    b.Property<int>("Callback_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("CheckoutRequestID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MerchantRequestID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ResultCode")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResultDesc")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Callback_id");
+
+                    b.ToTable("Callback_Body");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.RentPayment.PayRent", b =>
@@ -1179,7 +1269,13 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<string>("InternalReference")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Merchant_Request_ID")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProviderReference")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("RentAmount")
@@ -1224,6 +1320,39 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("RentpaidId");
 
                     b.ToTable("Rentpayment");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.RentPayment.Stk_Push_Response_Body", b =>
+                {
+                    b.Property<int>("stk_body_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("CheckoutRequestID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CustomerMessage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MerchantRequestID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReferenceNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponseCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponseDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("stk_body_id");
+
+                    b.ToTable("Stk_Push_Response_Body");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.Reply.replyModel", b =>

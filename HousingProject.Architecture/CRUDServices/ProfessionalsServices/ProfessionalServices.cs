@@ -1,5 +1,6 @@
 ﻿using HousingProject.Architecture.Data;
 using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.Extras;
 using HousingProject.Core.Models.Professionals;
 using HousingProject.Core.ViewModel;
 using HousingProject.Core.ViewModel.Professionalsvm;
@@ -10,6 +11,7 @@ using HousingProject.Infrastructure.Response;
 using HousingProject.Infrastructure.Response.VotesResponse;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,12 +25,14 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
         private readonly IServiceScopeFactory _servicescopefactory;
         private readonly IGenerateIdService _generateIdService;
         private readonly ILoggedIn _logged_in_user;
+        private readonly ILogger<ProfessionalServices> _logger;
         public ProfessionalServices(
             ILoggedIn loggedIn,
             HousingProjectContext context,
             IGenerateIdService generateIdService,
             IServiceScopeFactory servicescopefactory,
-            ILoggedIn logged_in_user
+            ILoggedIn logged_in_user,
+            ILogger<ProfessionalServices> logger
             )
         {
             _loggedIn = loggedIn;
@@ -36,15 +40,16 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             _generateIdService = generateIdService;
             _servicescopefactory = servicescopefactory;
             _logged_in_user = logged_in_user;
+            _logger = logger;
         }
 
         public async Task<BaseResponse> Createprofessonal(Professionalsvm vm)
         {
-            var checkifexists = await _context.RegisterProfessional.Where(x => x.Email == vm.Email).FirstOrDefaultAsync();
+            var loggedid_in=_loggedIn.LoggedInUser().Result;
             try
             {
                 var user =  _logged_in_user.LoggedInUser().Result;
-                var workid = _generateIdService.GenerateWorkId().Result.SuccessMessage;
+                var workid = _generateIdService.GenerateWorkId().Result.SuccessMessage + Adding_Number().Result;
                 var newprofessional = new RegisterProfessional
                 {
                     FirstName = vm.FirstName,
@@ -57,10 +62,9 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                     Salutation = vm.Salutation,
                     Email = vm.Email,
                     JobNumber = workid,
-                    User_Id= user.Id
+                    User_Id = Convert.ToString(loggedid_in.Id)
                 };
-
-
+                //ee79fa63-e86d-4cfd-80e9-c256fa0b2f9d
                 await _context.AddAsync(newprofessional);
                 await _context.SaveChangesAsync();
 
@@ -251,15 +255,13 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
         {
             try
             {
-
-
-              
+               
                 using (var scope = _servicescopefactory.CreateScope())
                 {
 
                     var user = _loggedIn.LoggedInUser().Result;
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-                    var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.User_Id == user_id && y.Email==user.Email).OrderByDescending(y=>y.DateCreated).ToListAsync();
+                    var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.User_Id == user_id ).OrderByDescending(y=>y.DateCreated).ToListAsync();
                     if (professionalexists == null)
                     {
                         return new BaseResponse { Code = "140", ErrorMessage = "User does not exist" };
@@ -272,9 +274,6 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             {
                 return new BaseResponse { Code = "180", ErrorMessage = ex.Message };
             }
-
-
-
 
         }
 
@@ -522,6 +521,53 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                 return new BaseResponse { Code = "340", ErrorMessage = ex.Message };
             }
         }
+        public async Task<int> Adding_Number()
+        {
+            try
+            {
+                using (var scope = _servicescopefactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+
+                    var check_last_number = await scopedcontext.Number_Generator.Where(y => y.Generated_Number > 0).OrderByDescending(u => u.DateUpdated).LastOrDefaultAsync();
+
+                    if (check_last_number == null)
+                    {
+
+                        var new_number = new Number_Generator
+                        {
+                            Generated_Number = 1
+
+                        };
+
+                        await scopedcontext.AddAsync(new_number);
+                        await scopedcontext.SaveChangesAsync();
+                        _logger.LogInformation("Number added for the first time");
+                        return new_number.Generated_Number;
+
+                    }
+                    else
+                    {
+                        var number_update = 1;
+                        check_last_number.Generated_Number = check_last_number.Generated_Number + number_update;
+                        scopedcontext.Update(check_last_number);
+                        await scopedcontext.SaveChangesAsync();
+
+                        _logger.LogInformation("Successfully done");
+
+                        return check_last_number.Generated_Number;
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Data.Count;
+
+            }
+        }
+
 
 
 

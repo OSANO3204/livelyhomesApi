@@ -56,42 +56,22 @@ namespace HousingProject.Infrastructure.CRUDServices.HouseRegistration_Services.
         public async Task<BaseResponse> RegisterHouseUnit(HouseUnitRegistrationvm vm)
         {
             try
-            {
-           
+            {          
                 var generatedstring = GenarateString().Result;
-
                 var storednumber = await _context.GeneratedIdHolder.Select(x => x.GeneratorHolder).FirstOrDefaultAsync();
-
-
                 var thestorednumber = storednumber;
                 var newnumbers = thestorednumber + 1;
-
                 var newnumber = new GeneratedIdHolder
                                 {
                                     GeneratorHolder = newnumbers
                                 };
-
                  _context.Update(newnumber);
                 await _context.SaveChangesAsync();
-
-
-
-
-
-                var generatedtoken = "LHUID" + generatedstring.SuccessMessage +"_" + newnumbers;
-              
+                var generatedtoken = "LHUID" + generatedstring.SuccessMessage +"_" + newnumbers;             
                 var checktoken = await _context.HouseUnit.Where(x => x.GeneratedId == generatedtoken).FirstOrDefaultAsync();
-
-
-
-
                 if (checktoken != null)
                 {
-
-
                     return new BaseResponse { Code = "458", ErrorMessage = "an error cooured, kindly try again" };
-
-
                 }
                 var houseunit = new HouseUnit
                     {
@@ -101,23 +81,17 @@ namespace HousingProject.Infrastructure.CRUDServices.HouseRegistration_Services.
                         Vacant = vm.Vacant,
                         HouseUnitFloor = vm.HouseUnitFloor,
                         GeneratedId = generatedtoken
-
                     };
-
                 await _context.AddAsync(houseunit);
                 await _context.SaveChangesAsync();
-
                 return new BaseResponse { Code = "200", SuccessMessage = "House unit registered successfully", Body=houseunit };
-
             }
 
             catch (Exception ex)
             {
                 return new BaseResponse { Code = "473", ErrorMessage = ex.Message };
             }
-        }
-
-       
+        }     
     }
 
 }

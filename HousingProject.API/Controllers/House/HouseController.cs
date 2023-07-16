@@ -267,5 +267,15 @@ namespace HousingProject.API.Controllers.House
 
         }
 
+
+        [Authorize]
+        [Route("Update_House_unit_Status")]
+        [HttpPost]
+        public async Task<BaseResponse> Change_House_unit_Status(string house_name, int door_number, string unit_status)
+        {
+            return await _house_registrationservices.Change_House_unit_Status(house_name, door_number, unit_status);
+
+        }
+
     }
 }

@@ -18,6 +18,7 @@ using HousingProject.Core.ViewModel.Rentpayment;
 using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
+using HousingProject.Infrastructure.Response.payment_ref;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -129,18 +130,18 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     RetypePassword = "Password@1234",
                     BirthDate = "00/00/00",
                     Is_Tenant = true,
+
                 };
                 var houseexist = await _context.House_Registration.Where(y => y.HouseiD == RenteeVm.HouseiD).FirstOrDefaultAsync();
 
                 if (houseexist == null)
                 {
-
                     return new BaseResponse { Code = "150", ErrorMessage = "House does not exist" };
                 }
                 var resp = await _registrationServices.UserRegistration(usermodel);
                 if (resp.Code == "200")
                 {
-                    await Update_unitStatus(RenteeVm.Appartment_DoorNumber, houseexist.House_Name);
+                    await Update_unitStatus(RenteeVm.Appartment_DoorNumber, houseexist.House_Name, houseexist.HouseiD);
                     var emailbody = new UserEmailOptions
                     {
                         UserName = RenteeVm.FirstName,
@@ -170,6 +171,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     HouseiD = RenteeVm.HouseiD,
                     Appartment_DoorNumber = RenteeVm.Appartment_DoorNumber,
                     Number0f_Occupants = RenteeVm.Number0f_Occupants,
+                    Active = true
                 };
                 _context.Add(renteemodel);
                 await _context.SaveChangesAsync();
@@ -199,7 +201,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
         public async Task<IEnumerable<TenantClass>> GetAllRenteess()
         {
-            return await _context.TenantClass.OrderByDescending(x => x.DateCreated).OrderByDescending(x=>x.DateCreated).ToListAsync();
+            return await _context.TenantClass.OrderByDescending(x => x.DateCreated).OrderByDescending(x => x.DateCreated).ToListAsync();
         }
 
         //get element by id
@@ -372,7 +374,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
             try
             {
-                var tenantpaymenttable = await _context.Rentpayment.Where(x => x.TenantId == tenantId).OrderByDescending(z=>z.Datepaid).ToListAsync();
+                var tenantpaymenttable = await _context.Rentpayment.Where(x => x.TenantId == tenantId).OrderByDescending(z => z.Datepaid).ToListAsync();
                 var tenantcount = tenantpaymenttable.Count;
                 var tenantintenantclass = await _context.TenantClass.Where(x => x.RenteeId == tenantId).FirstOrDefaultAsync();
                 var rentamount = tenantintenantclass.House_Rent;
@@ -399,7 +401,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 using (var scope = _scopeFactory.CreateAsyncScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-                    var alltenantamount = await scopedcontext.PayRent.Where(x => x.TenantId == tenantid).OrderByDescending(y=>y.CreatedOn).ToListAsync();
+                    var alltenantamount = await scopedcontext.PayRent.Where(x => x.TenantId == tenantid).OrderByDescending(y => y.CreatedOn).ToListAsync();
                     var tenanttotalRent = await scopedcontext.PayRent.Where(x => x.TenantId == tenantid).SumAsync(y => y.RentAmount);
                     return new BaseResponse { Code = "200", Body = tenanttotalRent };
                 }
@@ -417,7 +419,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
         public async Task<IEnumerable> rentpaymentList(int tenantId)
         {
-            var tenantlist = await _context.Rentpayment.Where(x => x.TenantId == tenantId).OrderByDescending(a=>a.Email).ToListAsync();
+            var tenantlist = await _context.Rentpayment.Where(x => x.TenantId == tenantId).OrderByDescending(a => a.Email).ToListAsync();
             return tenantlist;
         }
 
@@ -565,7 +567,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
 
-                    var alltentnats = await scopedcontext.TenantClass.OrderByDescending(v=>v.DateCreated).ToListAsync();
+                    var alltentnats = await scopedcontext.TenantClass.OrderByDescending(v => v.DateCreated).ToListAsync();
 
                     foreach (var tenant in alltentnats)
                     {
@@ -626,7 +628,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-                    var alltenants = await scopedcontext.TenantClass.OrderByDescending(y=>y.DateCreated).ToListAsync();
+                    var alltenants = await scopedcontext.TenantClass.OrderByDescending(y => y.DateCreated).ToListAsync();
                     if (alltenants == null)
                     {
                         _logger.LogInformation("Tenants do not exist");
@@ -749,7 +751,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var currentuser = _loggedIn.LoggedInUser().Result;
                     //all reminders sent on rent payment
-                    var allremindersent = await scopedcontext.ReminderTable.Where(h => h.HouseId == houseid).OrderByDescending(h=>h.DateSent).ToListAsync();
+                    var allremindersent = await scopedcontext.ReminderTable.Where(h => h.HouseId == houseid).OrderByDescending(h => h.DateSent).ToListAsync();
                     if (allremindersent == null)
                     {
                         return new BaseResponse { Code = "160", SuccessMessage = "There are no reminders sent to show" };
@@ -763,7 +765,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
             }
         }
-        public async Task Update_unitStatus(int doornumber, string housename)
+        public async Task Update_unitStatus(int doornumber, string housename, int houseid)
         {
             try
             {
@@ -772,13 +774,14 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     var scopedcontet = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     //unit exists
                     var house_unit_exists = await scopedcontet.HouseUnitsStatus
-                        .Where(s => s.DoorNumber == doornumber &&s.HouseName== housename).FirstOrDefaultAsync();
+                        .Where(s => s.DoorNumber == doornumber && s.HouseName == housename).FirstOrDefaultAsync();
                     if (house_unit_exists == null)
                     {
                         _logger.LogInformation("_house unit does not exist ");
                     }
                     house_unit_exists.Occupied = true;
-                   
+                    house_unit_exists.HouseID = houseid;
+
                     scopedcontet.Update(house_unit_exists);
                     await scopedcontet.SaveChangesAsync();
                     _logger.LogInformation("_successully updated house status ");
@@ -816,30 +819,29 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         // Payrentid= tenantexists.RenteeId,
                         TenantId = tenantexists.RenteeId,
                         RentAmount = rentamount,
-                       
                         Completed = false,
                         PhoneNumber = tenantexists.Rentee_PhoneNumber,
                         HouseID = tenantexists.HouseiD
                     };
-
-                    var rent_payment =await  _paymentservice.STk_Push(tenantexists.Rentee_PhoneNumber, rentamount);
+                    var rent_payment = await _paymentservice.STk_Push(tenantexists.Rentee_PhoneNumber, rentamount);
                     var trans_ref = rent_payment.internalref;
                     if (rent_payment.Code == "200")
                     {
-                        //if(rent_payment.)
                         var generatedref = await GetGeneratedref();
                         newrent.InternalReference = trans_ref;
+                        newrent.Merchant_Request_ID = rent_payment.message;
                         newrent.Status = "PROCCESSING";
+                        newrent.ProviderReference = "N/A";
                         await scopedcontext.AddAsync(newrent);
                         await scopedcontext.SaveChangesAsync();
                         return new BaseResponse { Code = "200", SuccessMessage = "Rent payment initiated successfully " };
                     }
                     else
                     {
-
                         var generatedref = await GetGeneratedref();
                         newrent.InternalReference = trans_ref;
                         newrent.Status = "FAILED";
+                        newrent.ProviderReference = "N/A";
                         await scopedcontext.AddAsync(newrent);
                         await scopedcontext.SaveChangesAsync();
                         return new BaseResponse { Code = "200", SuccessMessage = "Rent payment FAILED " };
@@ -869,7 +871,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     }
 
                     //all payments
-                    var alltenantpayments = await scopedcontext.PayRent.Where(t => t.TenantId == tenantexists.RenteeId).OrderByDescending(x=>x.CreatedOn).ToListAsync();
+                    var alltenantpayments = await scopedcontext.PayRent.Where(t => t.TenantId == tenantexists.RenteeId).OrderByDescending(x => x.CreatedOn).ToListAsync();
                     if (alltenantpayments == null)
                     {
                         return new BaseResponse { Code = "190", ErrorMessage = "tenant has no payment record" };
@@ -895,14 +897,14 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     var paymentref = "LH_" + _userExtraServices.GenerateReferenceNumber(length);
                     //check reference exists
                     var referenceexists = await scopedcontext.PayRent.Where(y => y.InternalReference == paymentref).ToListAsync();
-                    if (referenceexists.Count >=1)
+                    if (referenceexists.Count >= 1)
                     {
                         await GetGeneratedref();
                     }
                     return paymentref;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return e.Message;
             }
@@ -912,12 +914,12 @@ namespace HousingProject.Architecture.Services.Rentee.Services
         public async Task<BaseResponse> GetHouseUnitBodyById(int houseuintid)
         {
             try
-            {        
+            {
                 var houseUnitexists = await _context.HouseUnitsStatus.Where(h => h.HouseidstatusID == houseuintid).FirstOrDefaultAsync();
-                if (houseUnitexists == null) 
-                        {
-                            return new BaseResponse { Code = "130", ErrorMessage = "House unit does not exist", Body = houseUnitexists };
-                        }
+                if (houseUnitexists == null)
+                {
+                    return new BaseResponse { Code = "130", ErrorMessage = "House unit does not exist", Body = houseUnitexists };
+                }
             }
             catch (Exception ex)
             {
@@ -945,7 +947,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     else
                     {
                         var newdelayrequest = new RentDelayRequestTable
-                        {                          
+                        {
                             AdditionDetails = addtionalDetails,
                             DateRequested = Convert.ToDateTime(requestdate),
                             TenantRentPaymentDate = tenantexists.RentPayDay,
@@ -956,7 +958,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             DoorNumber = tenantexists.Appartment_DoorNumber,
                             Status = "PENDING"
                         };
-                     
+
                         var currentDate = DateTime.Now;
 
                         if (newdelayrequest.DateRequested < currentDate)
@@ -1032,7 +1034,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     if (status == "APPROVED")
                     {
-                        var approved_request = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "APPROVED" || u.HouseId == houseid).OrderByDescending(y=>y.DateRequested).ToListAsync();
+                        var approved_request = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "APPROVED" || u.HouseId == houseid).OrderByDescending(y => y.DateRequested).ToListAsync();
 
                         if (approved_request == null)
                         {
@@ -1043,7 +1045,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     }
                     else if (status == "PENDING")
                     {
-                        var pending_request = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "PENDING" || u.HouseId == houseid).OrderByDescending(u=>u.DateRequested).ToListAsync();
+                        var pending_request = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "PENDING" || u.HouseId == houseid).OrderByDescending(u => u.DateRequested).ToListAsync();
                         if (pending_request == null)
                         {
 
@@ -1055,7 +1057,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     {
                         var declined_requests = await scopedcontext.RentDelayRequestTable
                             .Where(u => u.Status == "DECLINED" || u.HouseId == houseid)
-                            .OrderByDescending(c=>c.DateRequested).ToListAsync();
+                            .OrderByDescending(c => c.DateRequested).ToListAsync();
                         if (declined_requests == null)
                         {
 
@@ -1082,9 +1084,9 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var pending_requestfound = await scopedcontext.RentDelayRequestTable.Where(u => u.Status == "PENDING" || u.delay_request_id == requestid).FirstOrDefaultAsync();
                     if (pending_requestfound == null)
-                        {
-                            return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
-                        }
+                    {
+                        return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
+                    }
                     pending_requestfound.Status = "APPROVED";
                     scopedcontext.Update(pending_requestfound);
                     await scopedcontext.SaveChangesAsync();
@@ -1137,7 +1139,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var requests_exists = await scopedcontext.RentDelayRequestTable.
                         Where(y => y.Status == requestStatus && y.HouseId == houseid
-                       ).OrderByDescending(x=>x.DateRequested).ToListAsync();
+                       ).OrderByDescending(x => x.DateRequested).ToListAsync();
                     if (requests_exists == null)
                     {
                         return new BaseResponse { Code = "160", ErrorMessage = "Nothing to show " };
@@ -1164,37 +1166,43 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     foreach (var tenantdata in alltenants)
                     {
                         var houseexists = await scopedcontext.House_Registration.Where(y => y.HouseiD == tenantdata.HouseiD).FirstOrDefaultAsync();
+
+
                         var newmnthpay = new Rent_Monthly_Update
                         {
                             Tenantid = tenantdata.RenteeId,
                             Tenantnames = tenantdata.FirstName + " " + tenantdata.LastName,
                             Tenant_Email = tenantdata.Email,
                             Month = DateTime.Now.ToString("MMMM"),
-                            Year = Convert.ToString(DateTime.Now.Year),
+                            Year = DateTime.Now.Year,
                             RentAmount = tenantdata.House_Rent,
                             HouseName = houseexists.House_Name,
-                            Updated_This_Month=true
+                            Updated_This_Month = true,
+                            DateUpdated = DateTime.Now,
+                            House_ID = tenantdata.HouseiD,
+                            PhoneNumber = tenantdata.Rentee_PhoneNumber
                         };
                         var rent_value_exists = await scopedcontext.Rent_Monthly_Update
-                            .Where(y => y.Tenantid == newmnthpay.Tenantid && y.DateCreated> DateTime.Now.AddDays(-30))
-                            .OrderByDescending(x=>x.DateCreated).LastOrDefaultAsync();
-                        if (rent_value_exists != null)
+                        .Where(y => y.Tenantid == newmnthpay.Tenantid).OrderByDescending(y => y.DateUpdated).FirstOrDefaultAsync();
+
+
+                        if (rent_value_exists == null || rent_value_exists.Balance == 0)
                         {
-                            _logger.LogInformation("Rent details already updaaate for the month");
+                            newmnthpay.Balance = tenantdata.House_Rent;
                         }
                         else
                         {
-                            await scopedcontext.AddAsync(newmnthpay);
-                            await scopedcontext.SaveChangesAsync();
-                            _logger.LogInformation($"saved successfully @ {Convert.ToString(DateTime.Now)} ");
-                           
+                            newmnthpay.Balance = rent_value_exists.Balance + tenantdata.House_Rent;
                         }
+
+                        await scopedcontext.AddAsync(newmnthpay);
+                        await scopedcontext.SaveChangesAsync();
+                        _logger.LogInformation($"saved successfully @ {Convert.ToString(DateTime.Now)} ");
+
                     }
 
-           
-
                 }
-        
+
             }
             catch (Exception ex)
             {
@@ -1224,7 +1232,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
                         existing_tenant.Updated_This_Month = false;
                         scopedcontext.Update(existing_tenant);
-                       await scopedcontext.SaveChangesAsync();
+                        await scopedcontext.SaveChangesAsync();
 
                         _logger.LogInformation("Successfully updated back to false on monthly rent payment");
 
@@ -1240,5 +1248,110 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
 
         }
+
+        public async Task<Payments_Reference_Response> Get_Monthly_Rent_Update(int house_id)
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var start_time = DateTime.Now.ToString("MMMM");
+                    var current_year = DateTime.Now.Year;
+                    var all_monthly_rent_payments = await scopedcontext.Rent_Monthly_Update
+                        .Where(y => y.House_ID == house_id && y.Month == start_time && y.Year == current_year)
+                        .OrderByDescending(u => u.DateUpdated).ToListAsync();
+                    if (all_monthly_rent_payments == null)
+                        return new Payments_Reference_Response { Message = "No payment found" };
+
+                    var balance_left = await scopedcontext.Rent_Monthly_Update
+                        .Where(y => y.House_ID == house_id && y.Month == start_time && y.Year == current_year)
+                        .SumAsync(v => v.Balance);
+
+                    var total_paid = await scopedcontext.Rent_Monthly_Update
+                         .Where(y => y.House_ID == house_id && y.Month == start_time && y.Year == current_year)
+                         .SumAsync(s => s.Paid);
+                    if (all_monthly_rent_payments == null)
+                    {
+                        return new Payments_Reference_Response { Code = "200", Message = "No payments found", Balance_left = balance_left };
+                    }
+
+                    return new Payments_Reference_Response
+                    {
+                        Code = "200",
+                        Message = "Queried successfully",
+                        Body = all_monthly_rent_payments,
+                        Balance_left = balance_left,
+                        Total_paid = total_paid
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new Payments_Reference_Response { Code = "140", Message = ex.Message };
+
+            }
+
+        }
+
+        public async Task<BaseResponse> Vacant_House_update(int house_id, int door_number)
+        {
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    //check unit exists
+                    var house_unit_exists = await scopedcontext.HouseUnitsStatus
+                         .Where(y => y.HouseID == house_id && y.DoorNumber == door_number).FirstOrDefaultAsync();
+
+                    if (house_unit_exists == null)
+                    {
+                        return new BaseResponse { Code = "190", ErrorMessage = "The house does not exist" };
+                    }
+
+                    house_unit_exists.Occupied = false;
+                    scopedcontext.Update(house_unit_exists);
+                    await scopedcontext.SaveChangesAsync();
+                    return new BaseResponse { Code = "200", SuccessMessage = "Successfully updated  the house" };
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse
+                {
+                    Code = "140",
+                    ErrorMessage = ex.Message
+                };
+            }
+        }
+        public async Task<BaseResponse> Get_All_Occupied_House(int house_id)
+        {
+
+            try
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var occupied_houses = await scopedcontext
+                        .HouseUnitsStatus.Where(y => y.HouseID == house_id && y.Occupied)
+                        .OrderByDescending(g=>g.DoorNumber).ToListAsync();
+
+                    if (occupied_houses == null)
+                    {
+                        return new BaseResponse { Code = "180", ErrorMessage = "Houses not found" };
+                    }
+                    return new BaseResponse { Code = "200", SuccessMessage = "Queried successfully", Body = occupied_houses };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "190", ErrorMessage = ex.Message };
+            }
+        }
     }
 }
+   

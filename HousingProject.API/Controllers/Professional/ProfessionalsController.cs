@@ -1,11 +1,13 @@
 ﻿using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.ViewModel;
 using HousingProject.Core.ViewModel.Professionalsvm;
+using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.Interfaces.IProfessionalsServices;
 using HousingProject.Infrastructure.Response;
 using HousingProject.Infrastructure.Response.VotesResponse;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 
@@ -16,15 +18,14 @@ namespace HousingProject.API.Controllers
     [ApiController]
     public class ProfessionalsController : ControllerBase
     {
-
+        private readonly ILoggedIn _loggedIn;
         private readonly IProfessionalsServices _professionalsServices;
-        public ProfessionalsController(IProfessionalsServices professionalsServices)
+        public ProfessionalsController(IProfessionalsServices professionalsServices, ILoggedIn loggedIn)
         {
             _professionalsServices = professionalsServices;
+            _loggedIn=loggedIn;
 
         }
-
-
 
 
         [Authorize]
@@ -100,8 +101,11 @@ namespace HousingProject.API.Controllers
         [Route("Get_All_User_Services")]
         public async Task<BaseResponse> Get_User_Profession(string user_id)
         {
+            var userid = user_id;
 
-            return await _professionalsServices.Get_User_Profession(user_id);
+            var loged_in_user = _loggedIn.LoggedInUser().Result;
+
+            return await _professionalsServices.Get_User_Profession(Convert.ToString(loged_in_user.Id));
         }
 
         [Authorize]

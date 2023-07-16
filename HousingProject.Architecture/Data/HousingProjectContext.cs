@@ -1,5 +1,6 @@
 ﻿using HousingProject.Core.Models.CountiesModel;
 using HousingProject.Core.Models.DelayRequest;
+using HousingProject.Core.Models.Extras;
 using HousingProject.Core.Models.General;
 using HousingProject.Core.Models.Houses;
 using HousingProject.Core.Models.Houses.Flats.AdminContacts;
@@ -9,6 +10,7 @@ using HousingProject.Core.Models.Houses.HouseAggrement;
 using HousingProject.Core.Models.Houses.HouseUnitRegistration;
 using HousingProject.Core.Models.Houses.HouseUsers;
 using HousingProject.Core.Models.ImagesModelsUsed;
+using HousingProject.Core.Models.Mpesa;
 using HousingProject.Core.Models.N_IMAGES;
 using HousingProject.Core.Models.N_IMAGES.profile_Image;
 using HousingProject.Core.Models.People;
@@ -74,11 +76,18 @@ namespace HousingProject.Architecture.Data
         public DbSet<Rent_Monthly_Update> Rent_Monthly_Update { get; set; }
         public DbSet<Image_Models> Image_Models { get; set; }
         public  DbSet<profile_Images> profile_Images { get; set; }
-
         public DbSet<House_Profile_Image> House_Profile_Image { get; set; }
         public DbSet<profiessional_profile_image> profiessional_profile_image { get; set; }
         public DbSet<Add_User_Request> Add_User_Request { get; set; }
         public DbSet<Add_Services> Add_Services { get; set; }
+        public DbSet<Stk_Push_Response_Body> Stk_Push_Response_Body { get; set; }
+        public DbSet<Callback_Body> Callback_Body { get; set; }
+        public DbSet<Save_Callback_Body> Save_Callback_Body { get; set; }
+        public DbSet<Number_Generator> Number_Generator { get; set; }
+
+
+
+
 
     }
 }

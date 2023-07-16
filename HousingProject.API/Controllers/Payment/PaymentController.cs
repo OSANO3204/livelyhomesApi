@@ -1,8 +1,10 @@
-﻿using HousingProject.Core.Models.mpesaauthvm;
+﻿using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.mpesaauthvm;
 using HousingProject.Infrastructure.CRUDServices.MainPaymentServices;
 using HousingProject.Infrastructure.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 
 namespace HousingProject.API.Controllers.Payment
@@ -41,6 +43,29 @@ namespace HousingProject.API.Controllers.Payment
 
         }
 
+        [Route("Get_CallBack_Body")]
+        [HttpPost]
+        public async Task Get_CallBack_Body(JObject requestBody)
+        {
+             await _paymentServices.Get_CallBack_Body(requestBody);
+
+        }
+
+
+        [Route("Add_Confirmation_url")]
+        [HttpPost]
+        public async Task<string> RegisterConfirmationUrl()
+        {
+            return await _paymentServices.RegisterConfirmationUrl();
+
+        }
+
+        [Route("Add_validation_url")]
+        [HttpPost]
+        public async Task<string> RegisterValidationUrl()
+        {
+            return await _paymentServices.RegisterValidationUrl();
+        }
 
     }
 }

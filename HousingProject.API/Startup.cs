@@ -101,7 +101,7 @@ namespace HousingProject.API
                 q.AddJob<Monthly_Rent_Update>(z => z.WithIdentity(monthly_rent_Update_key));
                 q.AddTrigger(y => y.ForJob(monthly_rent_Update_key)
                 .WithIdentity("Monthly_Rent_Update-trigger")
-                .WithCronSchedule("0/1 * * * * ?"));
+                .WithCronSchedule("0 0 0 1 * ? *"));
 
                 //automated rent payday
                 var Back_monthly_update_key = new JobKey("Reset_Updated_this_month");
