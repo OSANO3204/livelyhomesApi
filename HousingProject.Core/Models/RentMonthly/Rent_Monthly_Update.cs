@@ -15,7 +15,7 @@ namespace HousingProject.Core.Models.RentMonthly
         public string Tenantnames { get; set; }
         public string Tenant_Email { get; set; }
         public string Month { get; set; }
-        public string Year { get; set; }
+        public int Year { get; set; }
         public double RentAmount { get; set; }
         public double Balance { get; set; }
         public string HouseName { get; set; }
@@ -27,7 +27,8 @@ namespace HousingProject.Core.Models.RentMonthly
         public DateTime DateCreated { get; set; } = DateTime.Now;
 
         public bool Updated_This_Month { get; set; }
- 
+        public int House_ID { get; set; }
+
 
 
     }

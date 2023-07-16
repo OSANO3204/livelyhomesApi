@@ -5,6 +5,7 @@ using HousingProject.Core.Models.Mpesa;
 using HousingProject.Core.Models.mpesaauthvm;
 using HousingProject.Core.Models.RentMonthly;
 using HousingProject.Core.Models.RentPayment;
+using HousingProject.Core.ViewModel.Payment.C2B_trans;
 using HousingProject.Core.ViewModel.Rentpayment;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
@@ -74,9 +75,9 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
             {
 
                 ResponseType = "completed",
-                ConfirmationURL = "https://webhook.site/eba2eadf-7794-4893-975e-bf1142371919",
-                ValidationURL = "https://webhook.site/eba2eadf-7794-4893-975e-bf1142371919",
-                Shortcode = "600997",
+                ConfirmationURL = "https://webhook.site/279a66dd-093b-45a5-b596-641cb91eedda",
+                ValidationURL = "https://webhook.site/279a66dd-093b-45a5-b596-641cb91eedda",
+                Shortcode = "600986",
             });
 
             var sentbody = new StringContent(
@@ -91,10 +92,9 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
             client.DefaultRequestHeaders.Add($"Authorization", $"Bearer {token}");
             var _url = "/mpesa/c2b/v1/registerurl";
 
-            var response = await client.PostAsync(_url, sentbody);
-
+           var response = await client.PostAsync(_url, sentbody);
+           
             return await response.Content.ReadAsStringAsync();
-
 
         }
 
@@ -144,7 +144,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     var passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
                     var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
                     var encorded_pass = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{shortcode}{passkey}{timestamp}"));
-
+                    var callback_url = "https://webhook.site/279a66dd-093b-45a5-b596-641cb91eedda";
                     var requestBody = new
                     {
                         BusinessShortCode = shortcode,
@@ -155,7 +155,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                         PartyA = phoneNumber,
                         PartyB = shortcode,
                         PhoneNumber = phoneNumber,
-                        CallBackURL = "https://webhook.site/94c3d416-42ba-4919-9cbb-16c7ffda9c63",
+                        CallBackURL = callback_url,
                         AccountReference = trans_Reference,
                         TransactionDesc = transactionDesc
                     };
@@ -378,5 +378,64 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
             }
 
         }
+
+
+        //register urls
+
+        public async Task<string> RegisterValidationUrl()
+        {
+
+            var client = _httpClientFactory.CreateClient("mpesa");
+            var accessToken = Getauthenticationtoken().Result;
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer " + accessToken.access_token);
+              string _url = "/mpesa/stkpush/v1/processrequest";
+
+            var request = new RegisterUrlsRequestvm
+            {
+                ShortCode= "600981",
+                ResponseType= "[Cancelled/Completed]",
+                ValidationUrl = "https://webhook.site/279a66dd-093b-45a5-b596-641cb91eedda", // Replace with your validation URL
+                ConfirmationUrl = "https://webhook.site/279a66dd-093b-45a5-b596-641cb91eedda" // Replace with your confirmation URL
+            };
+
+           // var json = JsonConvert.SerializeObject(request);
+            var convert_json=new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+  
+
+            var response = await client.PostAsync(_url, convert_json); // Replace with the actual register endpoint
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine(responseContent);
+            if (response.IsSuccessStatusCode)
+            {
+                return "successfully registered";
+            }
+
+          
+            return "";
+            // Handle the response as per your requirements
+        }
+
+        public async Task<string> RegisterConfirmationUrl()
+        {
+            var client = _httpClientFactory.CreateClient("mpesa");
+            var accessToken = Getauthenticationtoken().Result;
+            var registerConfirmationUrlEndpoint = "https://api.safaricom.co.ke/mpesa/c2b/v1/registerurl";
+            var registerConfirmationUrlRequest = new HttpRequestMessage(HttpMethod.Post, registerConfirmationUrlEndpoint);
+            registerConfirmationUrlRequest.Headers.Add("Authorization", $"Bearer " + accessToken.access_token);
+            registerConfirmationUrlRequest.Content = new StringContent(
+                "{\"ShortCode\": \"600986\", \"ResponseType\": \"Completed\", \"ConfirmationURL\": \"" + "https://webhook.site/279a66dd-093b-45a5-b596-641cb91eedda" + "\"}",
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var registerConfirmationUrlResponse = await client.SendAsync(registerConfirmationUrlRequest);
+            _logger.LogInformation(" confirmation url response", registerConfirmationUrlResponse);
+
+            return "";
+            // Handle the response as per your requirements
+        }
+
+
     }
 }

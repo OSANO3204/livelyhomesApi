@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230713080819_adding changes in values in monthly rent update")]
+    partial class addingchangesinvaluesinmonthlyrentupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -480,9 +482,6 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<int>("DoorNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("HouseID")
-                        .HasColumnType("int");
-
                     b.Property<string>("HouseName")
                         .HasColumnType("nvarchar(max)");
 
@@ -714,9 +713,6 @@ namespace HousingProject.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Agent_PhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -1218,8 +1214,8 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<bool>("Updated_This_Month")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Year")
-                        .HasColumnType("int");
+                    b.Property<string>("Year")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Monthlyrentid");
 

@@ -12,5 +12,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         Task<string> RegisterURL();
         Task<stk_push_response> STk_Push(string phoneNumber, decimal amount);
         Task Get_CallBack_Body(JObject requestBody);
+        Task<string> RegisterConfirmationUrl();
+        Task<string> RegisterValidationUrl();
     }
 }

@@ -3,6 +3,7 @@ using HousingProject.Core.Models.People.General;
 using HousingProject.Core.ViewModel;
 using HousingProject.Core.ViewModel.Rentee;
 using HousingProject.Core.ViewModel.Rentpayment;
+using HousingProject.Infrastructure.Response.payment_ref;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -41,6 +42,9 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task<string> GetGeneratedref();
         Task MonthlyRentfn();
         Task Reset_Updated_this_month();
+        Task<Payments_Reference_Response> Get_Monthly_Rent_Update(int house_id);
+        Task<BaseResponse> Vacant_House_update(int house_id, int door_number);
+        Task<BaseResponse> Get_All_Occupied_House(int house_id);
 
     }
 }

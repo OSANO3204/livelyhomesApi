@@ -40,5 +40,6 @@ namespace HousingProject.Architecture.IHouseRegistration_Services
         Task<BaseResponse> GetAggreementByTenantId(int tenantid);
         Task<BaseResponse> GetUnoccupiedhouseunits(string housename);
         Task<Housing_Profile_Response> Get_House_Details_By_Id(int house_id);
+        Task<BaseResponse> Change_House_unit_Status(string house_name, int door_number, string unit_status);
     }
 }

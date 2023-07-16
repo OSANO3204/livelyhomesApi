@@ -3,6 +3,7 @@ using HousingProject.Architecture.Response.Base;
 using HousingProject.Core.ViewModel.Rentee;
 using HousingProject.Core.ViewModel.Rentpayment;
 using HousingProject.Infrastructure.Interfaces.ITenantStatementServices;
+using HousingProject.Infrastructure.Response.payment_ref;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -240,9 +241,31 @@ namespace HousingProject.API.Controllers.Rentee
             return await _irenteeServices.RejectRequest(requestid);
         }
 
+        [Authorize]
+        [Route("Get_Monthly_Rent_update")]
+        [HttpPost]
+        public async Task<Payments_Reference_Response> Get_Monthly_Rent_Update(int house_id)
+        {
+            return await _irenteeServices.Get_Monthly_Rent_Update(house_id);
+        }
 
+        [Authorize]
+        [Route("Update_vacant_house")]
+        [HttpPost]
+        public async Task<BaseResponse> Vacant_House_update(int house_id, int door_number)
+        {
+            return await _irenteeServices.Vacant_House_update(house_id, door_number);
 
+        }
 
+        [Authorize]
+        [Route("Get_all_occupied_houses")]
+        [HttpPost]
+        public async Task<BaseResponse> Get_All_Occupied_House(int house_id)
+        {
+
+            return await _irenteeServices.Get_All_Occupied_House(house_id);
+        }
 
     }
 }

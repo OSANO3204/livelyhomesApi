@@ -45,6 +45,7 @@ namespace HousingProject.Core.Models.People.General
         public bool ReminderSent { get; set; } = false;
         public int RemindersentCount { get; set; }
         public int HouseDoorId { get; set; }
+        public bool Active { get; set; }
 
     }
 }

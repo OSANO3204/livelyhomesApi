@@ -104,119 +104,119 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             {
                 var currentuser = LoggedInUser().Result;
                 if (currentuser.Is_CareTaker && currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent)
-                    {
-                        return new BaseResponse { Code = "159", ErrorMessage = "You cannot register a house, your role is a caretaker and a tenant" };
-                    }
+                {
+                    return new BaseResponse { Code = "159", ErrorMessage = "You cannot register a house, your role is a caretaker and a tenant" };
+                }
 
                 if (currentuser.Is_Tenant && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_CareTaker)
-                    {
-                        return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a tenant" };
+                {
+                    return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a tenant" };
 
-                    }
+                }
                 if (currentuser.Is_CareTaker && !currentuser.Is_Landlord && !currentuser.Is_Agent && !currentuser.Is_Tenant)
-                    {
-                        return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a caretaker" };
+                {
+                    return new BaseResponse { Code = "149", ErrorMessage = "You cannot register a house, your role is a caretaker" };
 
-                    }
+                }
 
                 //var currentuser = LoggedInUser().Result;
                 if (!currentuser.Is_Agent && !currentuser.Is_Landlord)
-                    {
+                {
 
-                        return new BaseResponse { Code = "129", ErrorMessage = "You don't  have access to do this" };
-                    }
+                    return new BaseResponse { Code = "129", ErrorMessage = "You don't  have access to do this" };
+                }
 
                 if (newvm.House_Location == "")
-                    {
-                        return new BaseResponse { Code = "110", ErrorMessage = "House location cannot be null" };
-                    }
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "House location cannot be null" };
+                }
                 if (newvm.Total_Units <= 0)
-                    {
-                        return new BaseResponse { Code = "110", ErrorMessage = "House units cannot be less than or equal to zero" };
-                    }
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "House units cannot be less than or equal to zero" };
+                }
                 if (newvm.Owner_Firstname == "")
-                    {
-                        return new BaseResponse { Code = "110", ErrorMessage = "owner first name cannot be empty" };
-                    }
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "owner first name cannot be empty" };
+                }
 
                 if (newvm.Owner_LastName == "")
-                    {
-                        return new BaseResponse { Code = "110", ErrorMessage = "owner last name cannot be empty" };
-                    }
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "owner last name cannot be empty" };
+                }
                 if (newvm.Country == "")
-                    {
-                        return new BaseResponse { Code = "110", ErrorMessage = "County field cannot be empty" };
-                    }
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "County field cannot be empty" };
+                }
                 if (newvm.Estimated_Maximum_Capacity <= 0)
-                    {
-                        return new BaseResponse { Code = "110", ErrorMessage = "Estimated capacity must me higher than zero" };
-                    }
+                {
+                    return new BaseResponse { Code = "110", ErrorMessage = "Estimated capacity must me higher than zero" };
+                }
                 if (newvm.Owner_id_Number <= 0)
-                    {
+                {
 
-                        return new BaseResponse { Code = "110", ErrorMessage = "House owner id cannot be null" };
-                    }
+                    return new BaseResponse { Code = "110", ErrorMessage = "House owner id cannot be null" };
+                }
 
                 var housereg = new House_Registration
-                        {
-                            Owner_Firstname = newvm.Owner_Firstname,
-                            Owner_LastName = newvm.Owner_LastName,
-                            Owner_id_Number = newvm.Owner_id_Number,
-                            House_Name = newvm.House_Name,
-                            Total_Units = newvm.Total_Units,
-                            Area = newvm.Area,
-                            Country = newvm.Country,
-                            House_Location = newvm.House_Location,
-                            Estimated_Maximum_Capacity = newvm.Estimated_Maximum_Capacity,
-                            EmailSent = false,
-                            CreatorEmail = currentuser.Email,
-                            CreatorNames = currentuser.FirstName + " " + currentuser.LasstName,
-                            UserId = currentuser.Id,
+                {
+                    Owner_Firstname = newvm.Owner_Firstname,
+                    Owner_LastName = newvm.Owner_LastName,
+                    Owner_id_Number = newvm.Owner_id_Number,
+                    House_Name = newvm.House_Name,
+                    Total_Units = newvm.Total_Units,
+                    Area = newvm.Area,
+                    Country = newvm.Country,
+                    House_Location = newvm.House_Location,
+                    Estimated_Maximum_Capacity = newvm.Estimated_Maximum_Capacity,
+                    EmailSent = false,
+                    CreatorEmail = currentuser.Email,
+                    CreatorNames = currentuser.FirstName + " " + currentuser.LasstName,
+                    UserId = currentuser.Id,
 
-                        };
+                };
 
                 await _context.House_Registration.AddAsync(housereg);
                 await _context.SaveChangesAsync();
                 var emails = housereg.CreatorEmail;
                 var creatorusername = LoggedInUser().Result;
                 var sendbody = new UserEmailOptions
-                        {
-                            UserName = creatorusername.FirstName,
-                            PayLoad = "sent mail test",
-                            ToEmail = emails
-                        };
+                {
+                    UserName = creatorusername.FirstName,
+                    PayLoad = "sent mail test",
+                    ToEmail = emails
+                };
 
                 var result = await _iemailservices.sendEmailOnHouseRegistration(sendbody);
 
                 if (result.Code == "200")
+                {
+                    int fromzero = 0;
+                    while (newvm.Total_Units > fromzero)
                     {
-                        int fromzero = 0;
-                        while (newvm.Total_Units > fromzero )
-                        {
-                            fromzero++;
+                        fromzero++;
 
-                            var saveunit = new HouseUnitsStatus();
+                        var saveunit = new HouseUnitsStatus();
 
-                            saveunit.DoorNumber = fromzero;
-                            saveunit.HouseName = newvm.House_Name;
-                            saveunit.Occupied = false;
+                        saveunit.DoorNumber = fromzero;
+                        saveunit.HouseName = newvm.House_Name;
+                        saveunit.Occupied = false;
 
-                            await _context.AddAsync(saveunit);
-                            await _context.SaveChangesAsync();
-
-                        }
-
-                   
-                        housereg.EmailSent = true;
-
-                        _context.House_Registration.Update(housereg);
+                        await _context.AddAsync(saveunit);
                         await _context.SaveChangesAsync();
-                        return new BaseResponse
-                        {
-                            Code = "200",
-                            SuccessMessage = "House  registered successfully and email sent  "
-                        };
+
                     }
+
+
+                    housereg.EmailSent = true;
+
+                    _context.House_Registration.Update(housereg);
+                    await _context.SaveChangesAsync();
+                    return new BaseResponse
+                    {
+                        Code = "200",
+                        SuccessMessage = "House  registered successfully and email sent  "
+                    };
+                }
                 return (new BaseResponse { SuccessMessage = "Failed to send ", });
             }
             catch (Exception ex)
@@ -286,15 +286,15 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                 if (vm.AdminEmail == "")
                 {
                     return new BaseResponse
-                            {
-                            Code = "120",
-                            ErrorMessage = "Admin email cannot be empty"
+                    {
+                        Code = "120",
+                        ErrorMessage = "Admin email cannot be empty"
 
-                            };
+                    };
                 }
                 if (vm.Creator == "")
                 {
-                  return new BaseResponse { Code = "120", ErrorMessage = "Email address cannot be empty" };
+                    return new BaseResponse { Code = "120", ErrorMessage = "Email address cannot be empty" };
                 }
 
                 if (vm.AdminPhoneNumber == "")
@@ -575,14 +575,14 @@ namespace HousingProject.Architecture.HouseRegistration_Services
 
 
                     var tenantexist = await scopedcontext.TenantClass.Where(a => a.Email == vm.TenantEmail).FirstOrDefaultAsync();
-                    
+
                     if (tenantexist == null)
                     {
                         return new AggreementResponse("190", "tenant does not exist", null);
                     }
 
-                    var houseexist=   await scopedcontext.House_Registration.Where(a => a.HouseiD == tenantexist.HouseiD).FirstOrDefaultAsync();
-                    
+                    var houseexist = await scopedcontext.House_Registration.Where(a => a.HouseiD == tenantexist.HouseiD).FirstOrDefaultAsync();
+
                     if (houseexist == null)
                     {
                         return new AggreementResponse("160", "house does not exist", null);
@@ -596,7 +596,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         Agent = vm.Agent,
                         AggreeToAggreement = vm.AggreeToAggreement,
                         LeastStartDate = Convert.ToDateTime(vm.LeastStartDate),
-                        LeastEndDateDate =Convert.ToDateTime(vm.LeastEndDateDate),
+                        LeastEndDateDate = Convert.ToDateTime(vm.LeastEndDateDate),
                         RentAmount = vm.RentAmount,
                         MaintainceAndRepairDeposit = vm.MaintainceAndRepairDeposit,
                         RentIncreasePeriod = vm.RentIncreasePeriod,
@@ -610,9 +610,9 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         TenantEmail = tenantexist.Email,
                         AggreementStatus = false,
                         TenantId = tenantexist.RenteeId,
-                        HouseAddress= "House Name: "+ houseexist.House_Name +", House Location: "+houseexist.House_Location+  ",Door Number "+tenantexist.Appartment_DoorNumber,
-                        Landlordphone=tenantexist.Agent_PhoneNumber,
-                        Tenantphone=tenantexist.Rentee_PhoneNumber
+                        HouseAddress = "House Name: " + houseexist.House_Name + ", House Location: " + houseexist.House_Location + ",Door Number " + tenantexist.Appartment_DoorNumber,
+                        Landlordphone = tenantexist.Agent_PhoneNumber,
+                        Tenantphone = tenantexist.Rentee_PhoneNumber
                     };
 
                     //check tenant already has aggrement
@@ -857,7 +857,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                     var aggreementexists = await scopedcontext.Aggrement.Where(h => h.TenantId == tenantid).FirstOrDefaultAsync();
                     if (aggreementexists == null)
                     {
-                        return new BaseResponse { ErrorMessage ="aggreement does not exist"};
+                        return new BaseResponse { ErrorMessage = "aggreement does not exist" };
                     }
 
                     return new BaseResponse { Code = "200", SuccessMessage = "successfully queried ", Body = aggreementexists };
@@ -874,19 +874,19 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             try
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var un_occupied_house_units = await scopedcontext.HouseUnitsStatus.Where(u => u.HouseName == housename && !u.Occupied).ToListAsync();
+                    if (un_occupied_house_units == null)
                     {
-                        var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-                        var un_occupied_house_units = await scopedcontext.HouseUnitsStatus.Where(u => u.HouseName == housename && !u.Occupied ).ToListAsync();
-                        if (un_occupied_house_units == null)
-                        {
-                            return new BaseResponse();
-                        }
-                       return new BaseResponse { Code = "200", SuccessMessage = "Successfully queried", Body = un_occupied_house_units };
+                        return new BaseResponse();
                     }
+                    return new BaseResponse { Code = "200", SuccessMessage = "Successfully queried", Body = un_occupied_house_units };
+                }
             }
             catch (Exception ex)
-                {
-                    return new BaseResponse { Code = "130", ErrorMessage = ex.Message };
+            {
+                return new BaseResponse { Code = "130", ErrorMessage = ex.Message };
             }
         }
 
@@ -902,28 +902,35 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                     var house_exists = await scopecontext.House_Registration.Where(y => y.HouseiD == house_id).FirstOrDefaultAsync();
 
                     if (house_exists == null)
-                        {
-                            return new Housing_Profile_Response { Code = "190", ErrorMessage = "The house does not exists" };
-                        }
+                    {
+                        return new Housing_Profile_Response { Code = "190", ErrorMessage = "The house does not exists" };
+                    }
 
-                    var total_occupeid_units =  scopecontext.HouseUnitsStatus.Where(y => y.Occupied == true && y.HouseName == house_exists.House_Name).Count();                                  
+                    var total_occupeid_units = scopecontext.HouseUnitsStatus.Where(y => y.Occupied == true && y.HouseName == house_exists.House_Name).Count();
                     var un_occpuied_units = scopecontext.HouseUnitsStatus.Where(y => y.Occupied == false && y.HouseName == house_exists.House_Name).Count();
-                    var total_house_units = scopecontext.HouseUnitsStatus.Where( y=>y.HouseName == house_exists.House_Name).Count();
-                    var total_expected_service_fee =await  scopecontext.TenantClass.Where(y => y.HouseiD == house_exists.HouseiD).SumAsync(y => y.ServicesFees);
+                    var total_house_units = scopecontext.HouseUnitsStatus.Where(y => y.HouseName == house_exists.House_Name).Count();
+                    var total_expected_service_fee = await scopecontext.TenantClass.Where(y => y.HouseiD == house_exists.HouseiD).SumAsync(y => y.ServicesFees);
                     var total_monthly_rent_amount = await scopecontext.TenantClass.Where(y => y.HouseiD == house_id).ToListAsync();
 
-                    var total_Tenants =  scopecontext.TenantClass.Where(y=>y.HouseiD==house_id).Count();
-                    var monthly_rent_totals = total_monthly_rent_amount.Sum(y=>y.House_Rent);
+                    var total_Tenants = scopecontext.TenantClass.Where(y => y.HouseiD == house_id).Count();
+                    var monthly_rent_totals = total_monthly_rent_amount.Sum(y => y.House_Rent);
                     var total_montly_expected_amount = total_expected_service_fee + monthly_rent_totals;
 
-                    return new Housing_Profile_Response { Code = "200", Body = house_exists, Occupied_Units = total_occupeid_units, 
-                                                              Un_Occupied_Units = un_occpuied_units, 
-                                                              Total_Rent= monthly_rent_totals, Total_Units= total_house_units 
-                                                              ,Total_Expected_Service= (float) total_expected_service_fee,
-                                                               Total_Amounts=total_montly_expected_amount,Total_Tenants= total_Tenants
+                    return new Housing_Profile_Response
+                    {
+                        Code = "200",
+                        Body = house_exists,
+                        Occupied_Units = total_occupeid_units,
+                        Un_Occupied_Units = un_occpuied_units,
+                        Total_Rent = monthly_rent_totals,
+                        Total_Units = total_house_units
+                                                              ,
+                        Total_Expected_Service = (float)total_expected_service_fee,
+                        Total_Amounts = total_montly_expected_amount,
+                        Total_Tenants = total_Tenants
 
                     };
-                    
+
                 }
 
             }
@@ -933,11 +940,60 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             }
         }
 
+        public async Task<BaseResponse> Change_House_unit_Status(string house_name, int door_number, string unit_status)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopecontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
 
+                    var house_units_exists = await scopecontext.HouseUnitsStatus.Where(y => y.HouseName == house_name && y.DoorNumber == door_number).FirstOrDefaultAsync();
 
+                    if (house_units_exists == null)
+                        return new BaseResponse { Code = "190", ErrorMessage = "An error occured, kindly make sure the details provided are correct ad try again" };
+                    if (unit_status == "Occupied")
+                    {
+
+                        if (house_units_exists.Occupied)
+                        {
+                            return new BaseResponse { Code = "140", ErrorMessage = "The house status is already occupied" };
+                        }
+                        else
+                        {
+                            house_units_exists.Occupied = true;
+                            scopecontext.Update(house_name);
+                            await scopecontext.SaveChangesAsync();
+                            return new BaseResponse { Code = "200", SuccessMessage = "House status updated to ccupied successfully" };
+                        }
+                    }
+                    else if (unit_status == "un_Occupied")
+                    {
+                        if (!house_units_exists.Occupied)
+                        {
+                            return new BaseResponse { Code = "040", ErrorMessage = "The house  is already vacant" };
+                        }
+                        else
+                        {
+                            house_units_exists.Occupied = false;
+                            scopecontext.Update(house_name);
+                            await scopecontext.SaveChangesAsync();
+                            return new BaseResponse { Code = "200", SuccessMessage = "The house unit is now vacant" };
+                        }
+
+                    }
+                    return new BaseResponse();
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
+            }
+        }
 
     }
-
 }
 
 

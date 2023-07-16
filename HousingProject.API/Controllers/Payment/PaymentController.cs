@@ -52,5 +52,20 @@ namespace HousingProject.API.Controllers.Payment
         }
 
 
+        [Route("Add_Confirmation_url")]
+        [HttpPost]
+        public async Task<string> RegisterConfirmationUrl()
+        {
+            return await _paymentServices.RegisterConfirmationUrl();
+
+        }
+
+        [Route("Add_validation_url")]
+        [HttpPost]
+        public async Task<string> RegisterValidationUrl()
+        {
+            return await _paymentServices.RegisterValidationUrl();
+        }
+
     }
 }
