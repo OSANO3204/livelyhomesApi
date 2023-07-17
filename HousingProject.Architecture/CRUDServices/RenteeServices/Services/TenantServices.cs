@@ -89,6 +89,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
         public async Task<BaseResponse> Register_Rentee(Rentee_RegistrationViewModel RenteeVm)
         {
+
             var loggeinuserr = LoggedInUser().Result;
             if (_loggedIn.LoggedInUser().Result.Is_Tenant || !_loggedIn.LoggedInUser().Result.Is_Admin)
             {
@@ -97,6 +98,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
             try
             {
+                using( var scope= _scopeFactory.CreateScope())
+                { 
                 if (!(loggeinuserr.Is_Agent || !loggeinuserr.Is_Landlord))
 
                 {
@@ -132,7 +135,9 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     Is_Tenant = true,
 
                 };
-                var houseexist = await _context.House_Registration.Where(y => y.HouseiD == RenteeVm.HouseiD).FirstOrDefaultAsync();
+                var houseexist = await _context.House_Registration
+                    .Where(y => y.HouseiD == RenteeVm.HouseiD)
+                    .FirstOrDefaultAsync();
 
                 if (houseexist == null)
                 {
@@ -141,7 +146,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 var resp = await _registrationServices.UserRegistration(usermodel);
                 if (resp.Code == "200")
                 {
-                    await Update_unitStatus(RenteeVm.Appartment_DoorNumber, houseexist.House_Name, houseexist.HouseiD);
+                    await Update_unitStatus(RenteeVm.Appartment_DoorNumber,
+                        houseexist.House_Name, houseexist.HouseiD, RenteeVm.Email);
                     var emailbody = new UserEmailOptions
                     {
                         UserName = RenteeVm.FirstName,
@@ -192,6 +198,9 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     SuccessMessage = "Succesfully registered tenant",
 
                 };
+
+
+                    }
             }
             catch (Exception ex)
             {
@@ -201,7 +210,13 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
         public async Task<IEnumerable<TenantClass>> GetAllRenteess()
         {
-            return await _context.TenantClass.OrderByDescending(x => x.DateCreated).OrderByDescending(x => x.DateCreated).ToListAsync();
+            using(var scope = _scopeFactory.CreateScope())
+            {
+                var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                return await scopedcontext.TenantClass.Where(t=>t.Active).OrderByDescending(x => x.DateCreated)
+                    .OrderByDescending(x => x.DateCreated).ToListAsync();
+            }
+           
         }
 
         //get element by id
@@ -765,7 +780,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
             }
         }
-        public async Task Update_unitStatus(int doornumber, string housename, int houseid)
+        public async Task Update_unitStatus(int doornumber, string housename, int houseid,string email)
         {
             try
             {
@@ -1315,7 +1330,6 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     scopedcontext.Update(house_unit_exists);
                     await scopedcontext.SaveChangesAsync();
                     return new BaseResponse { Code = "200", SuccessMessage = "Successfully updated  the house" };
-
                 }
 
             }
