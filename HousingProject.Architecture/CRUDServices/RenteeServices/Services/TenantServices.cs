@@ -376,7 +376,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
         {
 
 
-            var houselist = await _context.TenantClass.Where(x => x.HouseiD == houseid)
+            var houselist = await _context.TenantClass.Where(x => x.HouseiD == houseid  && x.Active)
                 .OrderByDescending(x => x.DateCreated)
                .ToListAsync();
 
@@ -796,6 +796,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     }
                     house_unit_exists.Occupied = true;
                     house_unit_exists.HouseID = houseid;
+                    house_unit_exists.Tenant_Email = email;
 
                     scopedcontet.Update(house_unit_exists);
                     await scopedcontet.SaveChangesAsync();
@@ -1326,10 +1327,26 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         return new BaseResponse { Code = "190", ErrorMessage = "The house does not exist" };
                     }
 
+                    //tenant exists
+
+                    var tenant_exists = await scopedcontext.TenantClass
+                        .Where(y => y.Email == house_unit_exists.Tenant_Email)
+                        .FirstOrDefaultAsync();
+                    if (tenant_exists == null)
+                    {
+                        return new BaseResponse { ErrorMessage = "tenant  email doesnt exists or was changed" };
+                    }
+                    tenant_exists.Active = false;
+                    scopedcontext.Update(tenant_exists);
+                    await scopedcontext.SaveChangesAsync();
+                   
                     house_unit_exists.Occupied = false;
                     scopedcontext.Update(house_unit_exists);
                     await scopedcontext.SaveChangesAsync();
                     return new BaseResponse { Code = "200", SuccessMessage = "Successfully updated  the house" };
+
+
+
                 }
 
             }
