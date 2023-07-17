@@ -267,5 +267,14 @@ namespace HousingProject.API.Controllers.Rentee
             return await _irenteeServices.Get_All_Occupied_House(house_id);
         }
 
+        [Authorize]
+        [Route("InActive_Tenants_By_Houseid")]
+        [HttpPost]
+        public async Task<IEnumerable> Get_InActtive_Tenant_By_Houseid(int houseid)
+        {
+
+            return await _irenteeServices.Get_InActtive_Tenant_By_Houseid(houseid);
+        }
+
     }
 }

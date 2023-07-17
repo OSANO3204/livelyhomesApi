@@ -102,9 +102,10 @@ namespace HousingProject.API
                 q.AddTrigger(y => y.ForJob(monthly_rent_Update_key)
                 .WithIdentity("Monthly_Rent_Update-trigger")
                 .WithCronSchedule("0 0 0 1 * ? *"));
+               // .WithCronSchedule("0/1 * * * * ?"));
 
-                //automated rent payday
-                var Back_monthly_update_key = new JobKey("Reset_Updated_this_month");
+            //automated rent payday
+            var Back_monthly_update_key = new JobKey("Reset_Updated_this_month");
                 q.AddJob<Back_monthly_update>(z => z.WithIdentity(Back_monthly_update_key));
                 q.AddTrigger(y => y.ForJob(Back_monthly_update_key)
                 .WithIdentity("Back_monthly_update-trigger")
@@ -114,7 +115,7 @@ namespace HousingProject.API
             services.AddHttpClient("mpesa", m =>
             {
                 m.BaseAddress =
-new System.Uri("https://sandbox.safaricom.co.ke"
+               new System.Uri("https://sandbox.safaricom.co.ke"
 
 );
             });
