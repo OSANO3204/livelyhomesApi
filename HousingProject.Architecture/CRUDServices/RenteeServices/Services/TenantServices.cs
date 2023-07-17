@@ -1178,11 +1178,12 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-                    var alltenants = await scopedcontext.TenantClass.ToListAsync();
+                    var alltenants = await scopedcontext.TenantClass.Where(y=>y.Active).ToListAsync();
                     foreach (var tenantdata in alltenants)
                     {
-                        var houseexists = await scopedcontext.House_Registration.Where(y => y.HouseiD == tenantdata.HouseiD).FirstOrDefaultAsync();
-
+                        var houseexists = await scopedcontext.House_Registration
+                            .Where(y => y.HouseiD == tenantdata.HouseiD)
+                            .FirstOrDefaultAsync();
 
                         var newmnthpay = new Rent_Monthly_Update
                         {
@@ -1199,8 +1200,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             PhoneNumber = tenantdata.Rentee_PhoneNumber
                         };
                         var rent_value_exists = await scopedcontext.Rent_Monthly_Update
-                        .Where(y => y.Tenantid == newmnthpay.Tenantid).OrderByDescending(y => y.DateUpdated).FirstOrDefaultAsync();
-
+                        .Where(y => y.Tenantid == newmnthpay.Tenantid)
+                        .OrderByDescending(y => y.DateUpdated).FirstOrDefaultAsync();
 
                         if (rent_value_exists == null || rent_value_exists.Balance == 0)
                         {
@@ -1210,7 +1211,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         {
                             newmnthpay.Balance = rent_value_exists.Balance + tenantdata.House_Rent;
                         }
-
+                        
                         await scopedcontext.AddAsync(newmnthpay);
                         await scopedcontext.SaveChangesAsync();
                         _logger.LogInformation($"saved successfully @ {Convert.ToString(DateTime.Now)} ");
@@ -1382,6 +1383,17 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             {
                 return new BaseResponse { Code = "190", ErrorMessage = ex.Message };
             }
+        }
+        public async Task<IEnumerable> Get_InActtive_Tenant_By_Houseid(int houseid)
+        {
+
+
+            var houselist = await _context.TenantClass.Where(x => x.HouseiD == houseid && !x.Active)
+                .OrderByDescending(x => x.DateCreated)
+               .ToListAsync();
+
+            return houselist;
+
         }
     }
 }
