@@ -242,7 +242,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     var body_object = stk_body.Body.stkCallback;
                     var new_callback = new Save_Callback_Body
                     {
-
                         MerchantRequestID = body_object.MerchantRequestID,
                         CheckoutRequestID = body_object.CheckoutRequestID,
                         ResultCode = body_object.ResultCode,
