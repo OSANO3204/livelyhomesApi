@@ -780,6 +780,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
             }
         }
+
         public async Task Update_unitStatus(int doornumber, string housename, int houseid,string email)
         {
             try
@@ -797,7 +798,6 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     house_unit_exists.Occupied = true;
                     house_unit_exists.HouseID = houseid;
                     house_unit_exists.Tenant_Email = email;
-
                     scopedcontet.Update(house_unit_exists);
                     await scopedcontet.SaveChangesAsync();
                     _logger.LogInformation("_successully updated house status ");
@@ -1272,6 +1272,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             {
                 using (var scope = _scopeFactory.CreateScope())
                 {
+
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var start_time = DateTime.Now.ToString("MMMM");
                     var current_year = DateTime.Now.Year;
@@ -1318,18 +1319,14 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
                     //check unit exists
                     var house_unit_exists = await scopedcontext.HouseUnitsStatus
                          .Where(y => y.HouseID == house_id && y.DoorNumber == door_number).FirstOrDefaultAsync();
-
                     if (house_unit_exists == null)
                     {
                         return new BaseResponse { Code = "190", ErrorMessage = "The house does not exist" };
                     }
-
                     //tenant exists
-
                     var tenant_exists = await scopedcontext.TenantClass
                         .Where(y => y.Email == house_unit_exists.Tenant_Email)
                         .FirstOrDefaultAsync();
@@ -1337,19 +1334,16 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     {
                         return new BaseResponse { ErrorMessage = "tenant  email doesnt exists or was changed" };
                     }
+                    tenant_exists.Date_Deactivated = DateTime.Now;
                     tenant_exists.Active = false;
                     scopedcontext.Update(tenant_exists);
-                    await scopedcontext.SaveChangesAsync();
-                   
+                    await scopedcontext.SaveChangesAsync();    
                     house_unit_exists.Occupied = false;
                     scopedcontext.Update(house_unit_exists);
                     await scopedcontext.SaveChangesAsync();
-                    return new BaseResponse { Code = "200", SuccessMessage = "Successfully updated  the house" };
-
-
-
+                    return new BaseResponse { Code = "200", 
+                        SuccessMessage = "Successfully updated  the house" };
                 }
-
             }
             catch (Exception ex)
             {
@@ -1388,12 +1382,131 @@ namespace HousingProject.Architecture.Services.Rentee.Services
         {
 
 
-            var houselist = await _context.TenantClass.Where(x => x.HouseiD == houseid && !x.Active)
+               var houselist = await _context.TenantClass.Where(x => x.HouseiD == houseid && !x.Active)
                 .OrderByDescending(x => x.DateCreated)
                .ToListAsync();
+               return houselist;
+        }
 
-            return houselist;
+        public async Task<Payments_Reference_Response> Search_Payment_Tables(int house_id, string search_query)
+        {
+            try
+            {              
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    if (search_query != null)
+                    {
+                        var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                        var searched_payments = await scopedcontext.Rent_Monthly_Update.Where
+                            (u => EF.Functions.Like(u.HouseName, $"%{search_query}%") ||
+                            EF.Functions.Like(u.Internal_ReferenceNumber, $"%{search_query}%") ||
+                            EF.Functions.Like(u.Month, $"%{search_query}%") ||
+                            EF.Functions.Like(u.Tenantnames, $"%{search_query}%")
+                            || EF.Functions.Like(u.Provider_Reference, $"%{search_query}%")
+                            || EF.Functions.Like(u.Tenant_Email, $"%{search_query}%")
+                            ).Where(y=>y.House_ID==house_id).ToListAsync();
 
+
+                        var total_balance_amount = await scopedcontext.Rent_Monthly_Update.Where
+                         (u => EF.Functions.Like(u.HouseName, $"%{search_query}%") ||
+                         EF.Functions.Like(u.Internal_ReferenceNumber, $"%{search_query}%") ||
+                         EF.Functions.Like(u.Month, $"%{search_query}%") ||
+                         EF.Functions.Like(u.Tenantnames, $"%{search_query}%")
+                         || EF.Functions.Like(u.Provider_Reference, $"%{search_query}%")
+                         || EF.Functions.Like(u.Tenant_Email, $"%{search_query}%")
+                         ).Where(y => y.House_ID == house_id).SumAsync(v => v.Balance);
+
+
+                        var  total_paid_amount = await scopedcontext.Rent_Monthly_Update.Where
+                           (u => EF.Functions.Like(u.HouseName, $"%{search_query}%") ||
+                           EF.Functions.Like(u.Internal_ReferenceNumber, $"%{search_query}%") ||
+                           EF.Functions.Like(u.Month, $"%{search_query}%") ||
+                           EF.Functions.Like(u.Tenantnames, $"%{search_query}%")
+                           || EF.Functions.Like(u.Provider_Reference, $"%{search_query}%")
+                           || EF.Functions.Like(u.Tenant_Email, $"%{search_query}%")
+                           ).Where(y => y.House_ID == house_id).SumAsync(s => s.Paid);
+
+                        if (searched_payments == null)
+                            return new Payments_Reference_Response { Code = "190", Message = "Nothing found" };
+                        return new Payments_Reference_Response { Code = "200", 
+                            Message = "Successfully queried", Body = searched_payments 
+                            , Balance_left=total_balance_amount, Total_paid=total_paid_amount};
+                    }
+                    else
+                    {
+                        var response = await Get_Monthly_Rent_Update(house_id);
+                        if (response.Body == null)
+                        {
+                            return new Payments_Reference_Response { Code = response.Code,
+                                Message = response.Message ,Balance_left=response.Balance_left,Total_paid=response.Total_paid};
+                        }
+                        else
+                        {
+                            return new Payments_Reference_Response { Code = response.Code, 
+                                Message = response.Message, Body = response.Body, };
+                        }
+                    }
+
+
+                }
+                 
+
+            }
+            catch (Exception ex)
+            {
+
+                return new Payments_Reference_Response { Code = "180", Message = ex.Message};
+            }
+        }
+
+      public async Task<Payments_Reference_Response> Get_Tenants_With_Balances(int house_id)
+        {
+
+            try
+            {
+                using(var scope= _scopeFactory.CreateScope())
+                {
+
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var start_time = DateTime.Now.ToString("MMMM");
+                    var current_year = DateTime.Now.Year;
+                    var all_monthly_rent_payments = await scopedcontext.Rent_Monthly_Update
+                        .Where(y => y.House_ID == house_id && y.Month == start_time && y.Year == current_year 
+                        && y.Balance>0)
+                        .OrderByDescending(u => u.DateUpdated).ToListAsync();
+                    if (all_monthly_rent_payments == null)
+                        return new Payments_Reference_Response { Message = "No payment found" };
+
+                    var balance_left = await scopedcontext.Rent_Monthly_Update
+                        .Where(y => y.House_ID == house_id && y.Month == start_time && y.Year == current_year
+                         && y.Balance > 0)
+                        .SumAsync(v => v.Balance);
+
+                    var total_paid = await scopedcontext.Rent_Monthly_Update
+                         .Where(y => y.House_ID == house_id && y.Month == start_time && y.Year == current_year
+                          && y.Balance > 0)
+                         .SumAsync(s => s.Paid);
+                    if (all_monthly_rent_payments == null)
+                    {
+                        return new Payments_Reference_Response { Code = "200", Message = "No payments found", Balance_left = balance_left };
+                    }
+
+                    return new Payments_Reference_Response
+                    {
+                        Code = "200",
+                        Message = "Queried successfully",
+                        Body = all_monthly_rent_payments,
+                        Balance_left = balance_left,
+                        Total_paid = total_paid
+                    };
+
+                }
+
+            }
+            catch(Exception ex)
+            {
+                return new Payments_Reference_Response { Code = "190", Message = ex.Message };
+            }
         }
     }
 }

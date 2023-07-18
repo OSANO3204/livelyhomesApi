@@ -276,5 +276,22 @@ namespace HousingProject.API.Controllers.Rentee
             return await _irenteeServices.Get_InActtive_Tenant_By_Houseid(houseid);
         }
 
+        [Authorize]
+        [Route("search_payments")]
+        [HttpPost]
+        public async Task<Payments_Reference_Response> Search_Payment_Tables(int house_id, string search_query)
+        {
+            return await _irenteeServices.Search_Payment_Tables(house_id,search_query);
+        }
+
+
+        [Authorize]
+        [Route("house_units_with_balances")]
+        [HttpPost]
+        public async Task<Payments_Reference_Response> Get_Tenants_With_Balances(int house_id)
+        {
+            return await _irenteeServices.Get_Tenants_With_Balances(house_id);
+        }
+
     }
 }
