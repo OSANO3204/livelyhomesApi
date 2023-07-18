@@ -46,6 +46,8 @@ namespace HousingProject.Architecture.Interfaces.IRenteeServices
         Task<BaseResponse> Vacant_House_update(int house_id, int door_number);
         Task<BaseResponse> Get_All_Occupied_House(int house_id);
         Task<IEnumerable> Get_InActtive_Tenant_By_Houseid(int houseid);
+        Task<Payments_Reference_Response> Search_Payment_Tables(int house_id, string search_query);
+       Task<Payments_Reference_Response> Get_Tenants_With_Balances(int house_id);
 
     }
 }

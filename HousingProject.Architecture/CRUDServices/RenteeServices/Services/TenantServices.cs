@@ -1388,7 +1388,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                return houselist;
         }
 
-        public async Task<BaseResponse> Search_Payment_Tables(int house_id, string search_query)
+        public async Task<Payments_Reference_Response> Search_Payment_Tables(int house_id, string search_query)
         {
             try
             {              
@@ -1406,25 +1406,44 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             || EF.Functions.Like(u.Tenant_Email, $"%{search_query}%")
                             ).Where(y=>y.House_ID==house_id).ToListAsync();
 
+
+                        var total_balance_amount = await scopedcontext.Rent_Monthly_Update.Where
+                         (u => EF.Functions.Like(u.HouseName, $"%{search_query}%") ||
+                         EF.Functions.Like(u.Internal_ReferenceNumber, $"%{search_query}%") ||
+                         EF.Functions.Like(u.Month, $"%{search_query}%") ||
+                         EF.Functions.Like(u.Tenantnames, $"%{search_query}%")
+                         || EF.Functions.Like(u.Provider_Reference, $"%{search_query}%")
+                         || EF.Functions.Like(u.Tenant_Email, $"%{search_query}%")
+                         ).Where(y => y.House_ID == house_id).SumAsync(v => v.Balance);
+
+
+                        var  total_paid_amount = await scopedcontext.Rent_Monthly_Update.Where
+                           (u => EF.Functions.Like(u.HouseName, $"%{search_query}%") ||
+                           EF.Functions.Like(u.Internal_ReferenceNumber, $"%{search_query}%") ||
+                           EF.Functions.Like(u.Month, $"%{search_query}%") ||
+                           EF.Functions.Like(u.Tenantnames, $"%{search_query}%")
+                           || EF.Functions.Like(u.Provider_Reference, $"%{search_query}%")
+                           || EF.Functions.Like(u.Tenant_Email, $"%{search_query}%")
+                           ).Where(y => y.House_ID == house_id).SumAsync(s => s.Paid);
+
                         if (searched_payments == null)
-                            return new BaseResponse { Code = "190", ErrorMessage = "Nothing found" };
-
-                        return new BaseResponse { Code = "200", SuccessMessage = "Successfully queried", Body = searched_payments };
-
+                            return new Payments_Reference_Response { Code = "190", Message = "Nothing found" };
+                        return new Payments_Reference_Response { Code = "200", 
+                            Message = "Successfully queried", Body = searched_payments 
+                            , Balance_left=total_balance_amount, Total_paid=total_paid_amount};
                     }
                     else
                     {
-
                         var response = await Get_Monthly_Rent_Update(house_id);
-
                         if (response.Body == null)
                         {
-
-                            return new BaseResponse { Code = response.Code, ErrorMessage = response.Message };
+                            return new Payments_Reference_Response { Code = response.Code,
+                                Message = response.Message ,Balance_left=response.Balance_left,Total_paid=response.Total_paid};
                         }
                         else
                         {
-                            return new BaseResponse { Code = response.Code, ErrorMessage = response.Message, Body = response.Body };
+                            return new Payments_Reference_Response { Code = response.Code, 
+                                Message = response.Message, Body = response.Body, };
                         }
                     }
 
@@ -1436,11 +1455,59 @@ namespace HousingProject.Architecture.Services.Rentee.Services
             catch (Exception ex)
             {
 
-                return new BaseResponse { Code = "180", ErrorMessage = ex.Message};
+                return new Payments_Reference_Response { Code = "180", Message = ex.Message};
             }
         }
 
-      
+      public async Task<Payments_Reference_Response> Get_Tenants_With_Balances(int house_id)
+        {
+
+            try
+            {
+                using(var scope= _scopeFactory.CreateScope())
+                {
+
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var start_time = DateTime.Now.ToString("MMMM");
+                    var current_year = DateTime.Now.Year;
+                    var all_monthly_rent_payments = await scopedcontext.Rent_Monthly_Update
+                        .Where(y => y.House_ID == house_id && y.Month == start_time && y.Year == current_year 
+                        && y.Balance>0)
+                        .OrderByDescending(u => u.DateUpdated).ToListAsync();
+                    if (all_monthly_rent_payments == null)
+                        return new Payments_Reference_Response { Message = "No payment found" };
+
+                    var balance_left = await scopedcontext.Rent_Monthly_Update
+                        .Where(y => y.House_ID == house_id && y.Month == start_time && y.Year == current_year
+                         && y.Balance > 0)
+                        .SumAsync(v => v.Balance);
+
+                    var total_paid = await scopedcontext.Rent_Monthly_Update
+                         .Where(y => y.House_ID == house_id && y.Month == start_time && y.Year == current_year
+                          && y.Balance > 0)
+                         .SumAsync(s => s.Paid);
+                    if (all_monthly_rent_payments == null)
+                    {
+                        return new Payments_Reference_Response { Code = "200", Message = "No payments found", Balance_left = balance_left };
+                    }
+
+                    return new Payments_Reference_Response
+                    {
+                        Code = "200",
+                        Message = "Queried successfully",
+                        Body = all_monthly_rent_payments,
+                        Balance_left = balance_left,
+                        Total_paid = total_paid
+                    };
+
+                }
+
+            }
+            catch(Exception ex)
+            {
+                return new Payments_Reference_Response { Code = "190", Message = ex.Message };
+            }
+        }
     }
 }
    
