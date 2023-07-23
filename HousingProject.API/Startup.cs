@@ -35,6 +35,7 @@ using HousingProject.Infrastructure.Interfaces.IProfessionalsServices;
 using HousingProject.Infrastructure.Interfaces.ITenantStatementServices;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
 using HousingProject.Infrastructure.JobServices;
+using HousingProject.Infrastructure.JobServices.Payment_Receipts;
 using HousingProject.Infrastructure.JobServices.tenantjobs;
 using HousingProject.Infrastructure.SuperServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -102,14 +103,23 @@ namespace HousingProject.API
                 q.AddTrigger(y => y.ForJob(monthly_rent_Update_key)
                 .WithIdentity("Monthly_Rent_Update-trigger")
                 .WithCronSchedule("0 0 0 1 * ? *"));
-               // .WithCronSchedule("0/1 * * * * ?"));
+                // .WithCronSchedule("0/1 * * * * ?"));
 
-            //automated rent payday
-            var Back_monthly_update_key = new JobKey("Reset_Updated_this_month");
+                //automated payment  receipt sender
+                var send_payment_receipts_key = new JobKey("Payment_Receipt_Job");
+                q.AddJob<Payment_Receipt_Job>(z => z.WithIdentity(send_payment_receipts_key));
+                q.AddTrigger(y => y.ForJob(send_payment_receipts_key)
+                .WithIdentity("Payment_Receipt_Job-trigger")
+                //.WithCronSchedule("0 0 0 1 * ? *"));
+                 .WithCronSchedule("0 0/1 * 1/1 * ? *"));
+
+                //automated rent payday
+                var Back_monthly_update_key = new JobKey("Reset_Updated_this_month");
                 q.AddJob<Back_monthly_update>(z => z.WithIdentity(Back_monthly_update_key));
                 q.AddTrigger(y => y.ForJob(Back_monthly_update_key)
                 .WithIdentity("Back_monthly_update-trigger")
-                .WithCronSchedule("0/2 * * * * ?"));
+                 // .WithCronSchedule("0/2 * * * * ?"));
+                 .WithCronSchedule("0 0/1 * 1/1 * ? *"));
             });
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             services.AddHttpClient("mpesa", m =>

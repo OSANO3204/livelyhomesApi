@@ -67,5 +67,9 @@ namespace HousingProject.API.Controllers.Payment
             return await _paymentServices.RegisterValidationUrl();
         }
 
+        public Task SendReceipts()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230720210731_adding changes on Rent Money update model")]
+    partial class addingchangesonRentMoneyupdatemodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1286,9 +1288,6 @@ namespace HousingProject.Infrastructure.Migrations
 
                     b.Property<string>("ProviderReference")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("ReceiptSent")
-                        .HasColumnType("bit");
 
                     b.Property<decimal>("RentAmount")
                         .HasColumnType("decimal(18,2)");

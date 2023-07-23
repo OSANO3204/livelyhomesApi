@@ -22,5 +22,6 @@ namespace HousingProject.Architecture.Interfaces.IEmail
         Task SendMessageReply(message_replybody options);
         Task<BaseResponse> notificationOnRentPaymeentDay(AutomaticMessaging options);
         Task<BaseResponse> EmailOnSuccessfulLogin(UserEmailOptions emailbody);
+        Task<BaseResponse> Email_successfull_payment(Payment_receipt_Email_Body emailbody);
     }
 }

@@ -1216,6 +1216,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         await scopedcontext.SaveChangesAsync();
                         _logger.LogInformation($"saved successfully @ {Convert.ToString(DateTime.Now)} ");
 
+                        
                     }
 
                 }
@@ -1443,7 +1444,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         else
                         {
                             return new Payments_Reference_Response { Code = response.Code, 
-                                Message = response.Message, Body = response.Body, };
+                                Message = response.Message,
+                                Body = response.Body,Balance_left=response.Balance_left, Total_paid=response.Total_paid };
                         }
                     }
 

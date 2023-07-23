@@ -1,5 +1,7 @@
 ﻿using HousingProject.Architecture.Data;
+using HousingProject.Architecture.Interfaces.IEmail;
 using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.Email;
 using HousingProject.Core.Models.Extras;
 using HousingProject.Core.Models.Mpesa;
 using HousingProject.Core.Models.mpesaauthvm;
@@ -33,14 +35,15 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         private readonly ILoggedIn _logged_in;
         private const string DarajaEndpoint = "https://api.safaricom.co.ke";
         private readonly IUserExtraServices _userExtraServices;
-
+        private readonly IEmailServices _emailservices;
         private ILogger<PaymentServices> _logger;
+
         public PaymentServices(IHttpClientFactory httpClientFactory,
             IServiceScopeFactory serviceScopeFactory,
               ILogger<PaymentServices> logger,
               ILoggedIn logged_in,
-
-            IUserExtraServices userExtraServices
+              IEmailServices emailservices,
+        IUserExtraServices userExtraServices
             )
         {
             _httpClientFactory = httpClientFactory;
@@ -48,6 +51,8 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
             _logger = logger;
             _userExtraServices = userExtraServices;
             _logged_in = logged_in;
+            _emailservices = emailservices;
+
         }
 
         public async Task<mpesaAuthenticationvm> Getauthenticationtoken()
@@ -358,7 +363,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var tenant_payment_exists = await scopedcontext.Rent_Monthly_Update
                         .Where(y => y.Tenantid == vm.Tenantid).OrderByDescending(y => y.DateCreated).FirstOrDefaultAsync();
-
                     tenant_payment_exists.Paid = tenant_payment_exists.Paid + vm.Paid;
                     tenant_payment_exists.Provider_Reference = vm.Provider_Reference;
                     tenant_payment_exists.Balance = tenant_payment_exists.Balance-vm.Paid;
@@ -366,7 +370,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     scopedcontext.Update(tenant_payment_exists);
                     await scopedcontext.SaveChangesAsync();
                     _logger.LogInformation("__successfully updated rent amount");
-
                 }
             }
             catch (Exception ex)
@@ -435,6 +438,87 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
             // Handle the response as per your requirements
         }
 
+        public async Task SendReceipts()
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    _logger.LogInformation("_______________________Starting receipt sender __________________|||_____");
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var all_rent_payments = await scopedcontext.Rent_Monthly_Update.Where(y => y.ReceiptSent !=true).ToListAsync();
+                    if (all_rent_payments == null)
+                    {
+                        _logger.LogInformation("No ttansaction found");
+                    }
+                    foreach (var rent_payment in all_rent_payments)
+                    {
+                        var latest_payment = await scopedcontext.PayRent.
+                         Where(y => y.TenantId == rent_payment.Tenantid && !y.ReceiptSent).OrderByDescending(y => y.CreatedOn)
+                         .LastOrDefaultAsync();
+                        if (latest_payment == null)
+                        {
+                            _logger.LogInformation("the transaction receipt is already sent ");
+                        }
+                        else
+                        {
+                            var tenant_details = await scopedcontext.TenantClass
+                                .Where(y => y.RenteeId == rent_payment.Tenantid).FirstOrDefaultAsync();
+                            ///latest_payment ? "":
+                            if (tenant_details == null)
+                                {
+                                    _logger.LogInformation("tenant does not exist");
+                                }
+                            var house_details = await scopedcontext.House_Registration
+                                .Where(y => y.HouseiD == rent_payment.House_ID)
+                                .OrderByDescending(y=>y.DateCreated).LastOrDefaultAsync(); 
+                            if (tenant_details == null)
+                                {
+                                    _logger.LogInformation("tenant does not exist");
+                                }
+                            var pay_rent_dtails = await scopedcontext.PayRent.
+                                Where(y => y.TenantId == rent_payment.Tenantid).FirstOrDefaultAsync();
+                            if (pay_rent_dtails == null)
+                            {
+                                _logger.LogInformation("Rent payment updated");
+                            }
+                            var email_body = new Payment_receipt_Email_Body
+                                 {
+                                    ToEmail = tenant_details.Email,
+                                    UserName = tenant_details.FirstName,
+                                    TenantNames = tenant_details.FirstName+ " "+ tenant_details.LastName,
+                                    Balance = rent_payment.Balance,
+                                    Total_Paid = rent_payment.Paid,
+                                    Tenant_Phone = tenant_details.Rentee_PhoneNumber,
+                                    HouseName = house_details.House_Name,
+                                    DoorNumber = tenant_details.Appartment_DoorNumber,
+                                    HouseLocation = house_details.House_Name + "," + house_details.House_Location,
+                                    Caretaker_Phone = tenant_details.BuildingCareTaker_PhoneNumber,
+                                    Rent_Amount=(double)latest_payment.RentAmount                                  
+                                 };
+                           var response=   await _emailservices.Email_successfull_payment(email_body);
+                            if (response.Code == "200")
+                            {
+                                rent_payment.ReceiptSent = true;
+                                scopedcontext.Update(rent_payment);
+                                await scopedcontext.SaveChangesAsync();
+                                _logger.LogInformation("updated successfully");
+
+                                pay_rent_dtails.ReceiptSent = true;
+                                scopedcontext.Update(pay_rent_dtails);
+                                await scopedcontext.SaveChangesAsync();
+                               
+                            }
+                
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation("ERROR FOUND :" + ex.Message);
+            }
+        }
 
     }
 }

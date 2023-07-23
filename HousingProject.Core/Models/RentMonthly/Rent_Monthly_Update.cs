@@ -28,8 +28,7 @@ namespace HousingProject.Core.Models.RentMonthly
 
         public bool Updated_This_Month { get; set; }
         public int House_ID { get; set; }
-
-
+        public bool ReceiptSent { get; set; }
 
     }
 }

@@ -12,7 +12,6 @@ C:\Users\brian.otieno.SLAFRICA\source\repos\HousingProject\HousingProject.Core\o
 C:\Users\brian.otieno.SLAFRICA\source\repos\HousingProject\HousingProject.Core\bin\Debug\net5.0\ref\HousingProject.Core.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\bin\Debug\net5.0\HousingProject.Core.deps.json
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\bin\Debug\net5.0\HousingProject.Core.dll
-D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\bin\Debug\net5.0\ref\HousingProject.Core.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\bin\Debug\net5.0\HousingProject.Core.pdb
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.GeneratedMSBuildEditorConfig.editorconfig
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.AssemblyInfoInputs.cache
@@ -22,3 +21,4 @@ D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\Hous
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\ref\HousingProject.Core.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.pdb
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.csproj.AssemblyReference.cache
+D:\HousingProject\LOGIC\HousingProject\HousingProject.Core\bin\Debug\net5.0\ref\HousingProject.Core.dll
