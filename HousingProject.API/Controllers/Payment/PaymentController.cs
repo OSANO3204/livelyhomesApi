@@ -67,5 +67,21 @@ namespace HousingProject.API.Controllers.Payment
             return await _paymentServices.RegisterValidationUrl();
         }
 
+
+        [Route("send_receipts")]
+        [HttpPost]
+        public Task SendReceipts()
+        {
+            throw new System.NotImplementedException();
+        }
+
+
+        [Route("Paginated_Transactions")]
+        [HttpPost]
+        public async Task<BaseResponse> GetPaginatedTransactions(int pageNumber)
+        {
+
+            return await _paymentServices.GetPaginatedTransactions(pageNumber);
+        }
     }
 }

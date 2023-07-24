@@ -17,5 +17,6 @@ namespace HousingProject.Core.Models.RentPayment
         public int HouseID { get; set; }
         public string Merchant_Request_ID { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.Now;
+        public bool ReceiptSent { get; set; }
     }
 }

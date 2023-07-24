@@ -14,5 +14,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         Task Get_CallBack_Body(JObject requestBody);
         Task<string> RegisterConfirmationUrl();
         Task<string> RegisterValidationUrl();
+        Task SendReceipts();
+        Task<BaseResponse> GetPaginatedTransactions(int pageNumber);
     }
 }

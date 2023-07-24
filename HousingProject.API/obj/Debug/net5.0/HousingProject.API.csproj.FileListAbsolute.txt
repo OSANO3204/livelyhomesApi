@@ -92,7 +92,6 @@ D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\Housi
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\HousingProject.API.runtimeconfig.json
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\HousingProject.API.runtimeconfig.dev.json
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\HousingProject.API.dll
-D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\ref\HousingProject.API.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\HousingProject.API.pdb
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\AutoMapper.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
@@ -199,7 +198,6 @@ D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\Housi
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\HousingProject.API.MvcApplicationPartsAssemblyInfo.cs
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\HousingProject.API.MvcApplicationPartsAssemblyInfo.cache
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\staticwebassets\HousingProject.API.StaticWebAssets.Manifest.cache
-D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\staticwebassets\HousingProject.API.StaticWebAssets.xml
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\scopedcss\bundle\HousingProject.API.styles.css
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\HousingProject.API.RazorTargetAssemblyInfo.cache
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\HousingProject.API.csproj.CopyComplete
@@ -207,3 +205,5 @@ D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\Housi
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\ref\HousingProject.API.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\HousingProject.API.pdb
 D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\HousingProject.API.genruntimeconfig.cache
+D:\HousingProject\LOGIC\HousingProject\HousingProject.API\bin\Debug\net5.0\ref\HousingProject.API.dll
+D:\HousingProject\LOGIC\HousingProject\HousingProject.API\obj\Debug\net5.0\staticwebassets\HousingProject.API.StaticWebAssets.xml

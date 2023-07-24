@@ -20,7 +20,6 @@ D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Infrastructure.runtimeconfig.json
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Infrastructure.runtimeconfig.dev.json
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Infrastructure.dll
-D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\ref\HousingProject.Infrastructure.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Infrastructure.pdb
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Core.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\HousingProject.Core.pdb
@@ -34,3 +33,4 @@ D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\ref\HousingProject.Infrastructure.dll
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.pdb
 D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\obj\Debug\net5.0\HousingProject.Infrastructure.genruntimeconfig.cache
+D:\HousingProject\LOGIC\HousingProject\HousingProject.Architecture\bin\Debug\net5.0\ref\HousingProject.Infrastructure.dll

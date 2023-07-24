@@ -250,5 +250,47 @@ namespace HousingProject.Architecture.CRUDServices.Email
                 return new BaseResponse { Code = "250", SuccessMessage = "Email not sent" };
             }
         }
+
+      
+      
+      
+     
+
+
+        public async Task<BaseResponse> Email_successfull_payment(Payment_receipt_Email_Body emailbody)
+        {
+            var file = @"Templates/Email/receipt_On_Payment.html";
+            StreamReader str = new StreamReader(file);
+            string MailText = await str.ReadToEndAsync();
+            str.Close();
+            var currentyear = DateTime.Now.Year;
+            MailText = MailText
+                 //.Replace("body", emailbody.PayLoad)
+                 .Replace("user_name", emailbody.UserName)
+                 .Replace("sentOn", Convert.ToString(DateTime.Now))
+                 .Replace("tenant_names", emailbody.TenantNames)
+                  .Replace("tenant_phone", emailbody.Tenant_Phone)
+                  .Replace("Balance",Convert.ToString(emailbody.Balance))
+                  .Replace("house_name", emailbody.HouseName)
+                  .Replace("DoorNumber", Convert.ToString(emailbody.DoorNumber))
+                  .Replace("House_Location", emailbody.HouseLocation)
+                  .Replace("caretaker_contact", emailbody.Caretaker_Phone)
+                   .Replace("currentyear", Convert.ToString(currentyear))
+                    .Replace("rent_amount", Convert.ToString(emailbody.Rent_Amount));
+
+            var response = await SendEmail(MailText, "Dear Sir/Madam", emailbody.ToEmail);
+            if (response.Code == "200")
+            {
+                _logger.LogInformation("sent mailsuccessfully");
+                return new BaseResponse { Code = "200", SuccessMessage = "Email successfully sent" };
+            }
+            else
+            {
+                _logger.LogInformation(response.ErrorMessage);
+               return new BaseResponse { Code = "120", SuccessMessage = "Email not sent" };
+            }
+        }
+
+        //public async Task<BaseResponse> Tenant_Payment_History(string tenant_phone, string tenant_mail, string startdate, stringend )
     }
 }
