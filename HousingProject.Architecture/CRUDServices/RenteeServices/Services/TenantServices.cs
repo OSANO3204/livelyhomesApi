@@ -798,6 +798,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                     house_unit_exists.Occupied = true;
                     house_unit_exists.HouseID = houseid;
                     house_unit_exists.Tenant_Email = email;
+                    house_unit_exists.DateOccupied = DateTime.Now;
                     scopedcontet.Update(house_unit_exists);
                     await scopedcontet.SaveChangesAsync();
                     _logger.LogInformation("_successully updated house status ");

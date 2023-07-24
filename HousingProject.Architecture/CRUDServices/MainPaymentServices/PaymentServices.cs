@@ -8,6 +8,7 @@ using HousingProject.Core.Models.mpesaauthvm;
 using HousingProject.Core.Models.RentMonthly;
 using HousingProject.Core.Models.RentPayment;
 using HousingProject.Core.ViewModel.Payment.C2B_trans;
+using HousingProject.Core.ViewModel.payment_history;
 using HousingProject.Core.ViewModel.Rentpayment;
 using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
@@ -149,7 +150,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     var passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
                     var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
                     var encorded_pass = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{shortcode}{passkey}{timestamp}"));
-                    var callback_url = "https://webhook.site/279a66dd-093b-45a5-b596-641cb91eedda";
+                    var callback_url = "https://webhook.site/a3cbe8cd-07a5-4aca-bfd0-351bb360c1cc";
                     var requestBody = new
                     {
                         BusinessShortCode = shortcode,
@@ -519,6 +520,53 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                 _logger.LogInformation("ERROR FOUND :" + ex.Message);
             }
         }
+        public async Task<BaseResponse> GetPaginatedTransactions(int pageNumber)
+        {
+            try
+            {
+
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    int pageSize = 50;
+
+
+                    int recordsToSkip = (pageNumber - 1) * pageSize;
+
+
+                    var transactions =await  scopedcontext.Rent_Monthly_Update
+                        .OrderBy(t => t.DateCreated)
+                        .Skip(recordsToSkip)
+                        .Take(pageSize)
+                        .ToListAsync();
+
+                    return new BaseResponse { Code = "200", Body = transactions };
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse { Code = "180", ErrorMessage = ex.Message };
+            }
+
+        }
 
     }
+
+    //public async Task<BaseResponse>  PaymentHistory(tenant_payment_history vm)
+    //{
+
+    //    try
+    //    {
+
+    //    }
+    //    catch(Exception ex)
+    //    {
+
+    //        return new BaseResponse { Code = "190", ErrorMessage = ex.Message };
+    //    }
+    //}
+
+   
 }

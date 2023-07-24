@@ -15,5 +15,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         Task<string> RegisterConfirmationUrl();
         Task<string> RegisterValidationUrl();
         Task SendReceipts();
+        Task<BaseResponse> GetPaginatedTransactions(int pageNumber);
     }
 }
