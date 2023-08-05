@@ -10659,11 +10659,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.API\\HousingProject.API.csproj",
+      "projectUniqueName": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.API\\HousingProject.API.csproj",
       "projectName": "HousingProject.API",
-      "projectPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.API\\HousingProject.API.csproj",
+      "projectPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.API\\HousingProject.API.csproj",
       "packagesPath": "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\",
-      "outputPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.API\\obj\\",
+      "outputPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -10684,11 +10684,11 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj": {
-              "projectPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj"
+            "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj": {
+              "projectPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj"
             },
-            "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj": {
-              "projectPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj"
+            "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj": {
+              "projectPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj"
             }
           }
         }

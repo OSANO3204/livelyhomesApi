@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "YkHXmwm5fuCFMJ38W5LNFcIKWI/BFzx/SUK1JQ64LCYtDRzfYaesfvRHpsNVTKVZ0YA/4yIL8yBSUAAl4fO7+A==",
+  "dgSpecHash": "rPsH+EGfUUsUAY9uNTIrvA/QuHWp7C7q9Kb7vMkdJ2fD9ggGuGoYxB45iTdbGjDcdMx2YyJGB65lHp9MDnEhHA==",
   "success": true,
-  "projectFilePath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.API\\HousingProject.API.csproj",
+  "projectFilePath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.API\\HousingProject.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.0\\automapper.extensions.microsoft.dependencyinjection.12.0.0.nupkg.sha512",

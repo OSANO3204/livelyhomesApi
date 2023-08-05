@@ -1,0 +1,19 @@
+#!/bin/bash
+VERSION=$1
+PORT=2023
+NAME=livelyhomes_api
+TAG=$NAME:$VERSION
+REPO=brian1998
+IMAGE=$REPO/$TAG
+
+docker pull $IMAGE
+docker stop $NAME
+docker rm $NAME
+
+docker run -d -p $PORT:80 \
+-e TZ=Africa/Nairobi \
+-e ConnectionStrings='DevConnections=Server=livelyhomes,1435;Database=HouseManagerDb;User=sa;Password=P2p5nhJ2gdUAFJbp' \
+--restart unless-stopped \
+--name $NAME $IMAGE
+
+docker logs -f $NAME

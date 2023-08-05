@@ -9749,11 +9749,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj",
+      "projectUniqueName": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj",
       "projectName": "HousingProject.Infrastructure",
-      "projectPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj",
+      "projectPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj",
       "packagesPath": "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\",
-      "outputPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Architecture\\obj\\",
+      "outputPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Architecture\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -9774,8 +9774,8 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj": {
-              "projectPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj"
+            "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj": {
+              "projectPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj"
             }
           }
         }

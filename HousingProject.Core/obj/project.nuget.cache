@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Mv4Ox2Btmhpy2wsMSv7AtJ0p6VBkb1C6OHnZDw7XnQyErvTmzlBxJCpf2XW4zY8hEiDkwF9Ei5vW3VkwzW6EOA==",
+  "dgSpecHash": "ubsZZs8meLAvnCheedFHPlSRW7glMbvW8MKPEmZtqdH4K0i46LEAVISMGD5Vj4rb4DVAdvVi5rVXXyy+1PtfDg==",
   "success": true,
-  "projectFilePath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj",
+  "projectFilePath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\microsoft.aspnetcore.authentication.core\\2.2.0\\microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512",

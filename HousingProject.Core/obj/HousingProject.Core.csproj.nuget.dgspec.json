@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj": {}
+    "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj": {}
   },
   "projects": {
-    "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj": {
+    "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj",
+        "projectUniqueName": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj",
         "projectName": "HousingProject.Core",
-        "projectPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj",
+        "projectPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj",
         "packagesPath": "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\",
-        "outputPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\obj\\",
+        "outputPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
