@@ -9,7 +9,7 @@ namespace HousingProject.Core.ViewModel.Payment
   public   class paymentCodesvm
     {
         public int HouseID { get; set; }
-        public int Stk_shortCode { get; set; }
+        public string Stk_shortCode { get; set; }
         public string CallbackUrl { get; set; }
     }
 }

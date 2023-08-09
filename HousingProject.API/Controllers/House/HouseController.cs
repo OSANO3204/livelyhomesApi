@@ -277,5 +277,14 @@ namespace HousingProject.API.Controllers.House
 
         }
 
+        [Authorize]
+        [Route("Getting_all_houses")]
+        [HttpGet]
+        public async Task<BaseResponse> Getting_AllHouses()
+        {
+            return await _house_registrationservices.Getting_AllHouses();
+        }
+
+
     }
 }

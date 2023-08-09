@@ -4,14 +4,16 @@ using HousingProject.Architecture.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HousingProject.Infrastructure.Migrations
 {
     [DbContext(typeof(HousingProjectContext))]
-    partial class HousingProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230809081322_Adding  payment set up add field 1")]
+    partial class Addingpaymentsetupaddfield1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1395,8 +1397,8 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<bool>("Setup_Done")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Stk_shortCode")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Stk_shortCode")
+                        .HasColumnType("int");
 
                     b.Property<bool>("UseDefault")
                         .HasColumnType("bit");
