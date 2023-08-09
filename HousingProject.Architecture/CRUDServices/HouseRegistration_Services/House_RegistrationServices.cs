@@ -191,9 +191,8 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                     ToEmail = emails
                 };
 
-                var result = await _iemailservices.sendEmailOnHouseRegistration(sendbody);
-                 if (result.Code == "200")
-                    {
+          await _iemailservices.sendEmailOnHouseRegistration(sendbody);
+                
                       int fromzero = 0;
                       while (newvm.Total_Units > fromzero)
                         {
@@ -213,8 +212,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         Code = "200",
                         SuccessMessage = "House  registered successfully "
                     };
-                }
-                return (new BaseResponse { SuccessMessage = "Failed to send ", });
+              
             }
             catch (Exception ex)
             {

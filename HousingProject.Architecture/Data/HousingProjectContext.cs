@@ -84,6 +84,8 @@ namespace HousingProject.Architecture.Data
         public DbSet<Callback_Body> Callback_Body { get; set; }
         public DbSet<Save_Callback_Body> Save_Callback_Body { get; set; }
         public DbSet<Number_Generator> Number_Generator { get; set; }
+        public DbSet<paymentCodes> paymentCodes { get; set; }
+
 
 
 

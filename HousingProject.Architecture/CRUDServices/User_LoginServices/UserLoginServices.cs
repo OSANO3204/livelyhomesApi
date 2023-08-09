@@ -191,7 +191,7 @@ namespace HousingProject.Architecture.Services.User_Login
                         PayLoad = $"Hi there {userexists.FirstName}, you successfully logged into Lively Homes at {Convert.ToString(loggedintime)}"
                     };
 
-                    await  _iemailservvices.EmailOnSuccessfulLogin(emailbody);
+                  await _iemailservvices.EmailOnSuccessfulLogin(emailbody);
                     return new authenticationResponses
                     {
                         Code = "200",
@@ -257,26 +257,14 @@ namespace HousingProject.Architecture.Services.User_Login
                     ToEmail = loggedinuser.Email
                 };
 
-                var resp = await _iemailservvices.OnContusMessageSubmission(sendbody);
+                 await _iemailservvices.OnContusMessageSubmission(sendbody);
 
-                if (resp.Code == "200")
-                {
-
+              
                     return new BaseResponse { Code = "200", SuccessMessage = "Received sucessfully, " +
                         "  Lively home" +
                         $"  will contact you shortly  through your email {loggedinuser.Email} " };
-                }
+                
 
-                else
-                {
-                    return new BaseResponse
-                    {
-
-                        Code = "104",
-                        SuccessMessage = "Message  sent but email failed to your inbox, make sure you are not blocking emails"
-                    };
-
-                }
             }
             catch (Exception ex)
             {
