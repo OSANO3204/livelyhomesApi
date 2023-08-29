@@ -15,6 +15,7 @@ using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
 using HousingProject.Infrastructure.Response;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -39,13 +40,16 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         private readonly IUserExtraServices _userExtraServices;
         private readonly IEmailServices _emailservices;
         private ILogger<PaymentServices> _logger;
+        private readonly string _callbackurl;
+        private IConfiguration _configuration;
 
         public PaymentServices(IHttpClientFactory httpClientFactory,
             IServiceScopeFactory serviceScopeFactory,
               ILogger<PaymentServices> logger,
               ILoggedIn logged_in,
               IEmailServices emailservices,
-        IUserExtraServices userExtraServices
+          IUserExtraServices userExtraServices,
+          IConfiguration configuration
             )
         {
             _httpClientFactory = httpClientFactory;
@@ -54,15 +58,16 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
             _userExtraServices = userExtraServices;
             _logged_in = logged_in;
             _emailservices = emailservices;
-
+            _configuration = configuration;
+            _callbackurl = configuration["Callbacl_Url"];
         }
 
         public async Task<mpesaAuthenticationvm> Getauthenticationtoken()
         {
 
             var client = _httpClientFactory.CreateClient("mpesa");
-            string username = "ozma4Oaf44ZPkkU6JvMqDpo9VNOb50Oz";
-            string password = "ok0vxpMbWCQT6baC";
+            string username = "bkOXFnzBSKl0knB4cQ83eBkb5GGA20JU";
+            string password = "fAJmMeilHCNmaAiU";
             string auth = $"{username}:{password}";
             byte[] authBytes = Encoding.ASCII.GetBytes(auth);
             string base64Auth = Convert.ToBase64String(authBytes);
@@ -151,7 +156,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     var passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
                     var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
                     var encorded_pass = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{shortcode}{passkey}{timestamp}"));
-                    var callback_url = "https://webhook.site/a3cbe8cd-07a5-4aca-bfd0-351bb360c1cc";
+                    var callback_url = _callbackurl;
                     var requestBody = new
                     {
                         BusinessShortCode = shortcode,

@@ -1,0 +1,202 @@
+
+
+
+    <title>Standalone Vue Application</title>
+
+
+    <div id="app">
+        <form class="">
+            <meta charset=""> 
+    <div id="app" class="top_class">
+      <div class="class_below_top"> 
+        <div style="margin-top:20px;">
+      <div class="" style="margin-top:30px;">
+      <h1 style="font-size:50px;
+                 font-family:70px;Arial,
+                 Helvetica,sans-serif;">Exchange  Rate</h1>
+          </div>
+        <div class="" style="margin-top:60px;">
+        <h3 tyle="margin-top:10px;">  1 Rupee  = Receving Country</h3>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:20px; width:96%; 
+                  margin-left:2%;">
+     <div class="" style="display:flex;border:1px solid black;
+                          height:60px;">
+     <input type="number" min="0" step="0.01" style="border:none;margin-top:10px;outline: none;">
+       
+        <select style="border-top:none;border-right:none;
+                                              border-bottom:none;margin-top:8px;">
+            <option value="KES">INDIA   </option>
+        </select>
+        </div>
+        <div class="" style="display:flex;border:1px solid; 
+                             height:60px;margin-top:30px;">
+          
+        <input type="number" min="0" step="0.01" style="border:none;margin-top:10px;
+                      outline: none;">
+       
+        <select id="countryDropdown" style="border-top:none;
+                                   border-right:none;
+                                   border-   bottom:none;
+                                  margin-top:8px;">
+          
+            <option></option> 
+           
+        </select>
+        </div>
+
+     <div class="" style="margin-top:8px;">
+            <p style="align:center;">Exchange Rates may vary 
+              slighly at time of order</p>
+               
+        </div>
+        <div class="" style="margin-top:50px;">
+        <input type="submit" style="height:70px;width:80%;  
+                                   color:white;border:none; border-radius:10px;background:orange;font-size:25px;" value="Calculate" @click="calculateReceiverAmount">
+        </div>
+
+</div>
+    </div>
+
+     
+ </form>
+    </div>
+
+    <!-- Vue.js CDN -->
+    
+
+    <!-- Vue application script -->
+    
+
+
+
+
+<style>
+  body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 70%;
+          height:40px;         
+        }
+      select{
+         width: 30%;
+          height:40px;
+      }     
+       .top_class{
+        background-color:white;
+        height:600px;width:70%;
+        border-radius:20px;        
+      }   
+      .class_below_top
+      {
+        height:200px;
+        color:white;     
+        background-color:rgb(22, 10, 52);
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+      }
+</style><script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script><script>
+        // Vue instance
+        new Vue({
+            el: '#app',
+            data: {
+              return{
+                message: 'Hello, Vue!
+            }
+            },
+                method:{
+                    async calculateReceiverAmount() {
+  //ent.preventDefault();
+  setLoading(false);
+
+  if (!receivingCountry?.id || !receivingCountry?.currencyID) {
+    setLoading(false);
+    return toast.warning('Complete the input first');
+  }
+
+  const url = "https://uatcustomerapi.upesi.co.ke/api/Transaction/GetReceiverAmount";
+  const data = {
+    fromCountryID: ugScreen ? 78 : 212,
+    fromCurrencyID: ugScreen ? 38 : 92,
+    toCountryID: receivingCountry.id,
+    toCurrencyID: receivingCountry.currencyID,
+    amount: Number(parseFloat(amount.replace(/,/g, ''))),
+  };
+
+  const request = new XMLHttpRequest();
+  request.open('POST', url, true);
+  request.setRequestHeader('Content-Type', 'application/json');
+
+  request.onload = function () {
+    if (request.status >= 200 && request.status < 400) {
+      const response = JSON.parse(request.responseText);
+      setEXRateCalculated(true);
+      setReceivingAmount(response.recieverAmount);
+      setExchangeRate(response.exchangeRate);
+    } else {
+      setEXRateCalculated(false);
+      setReceivingAmount(0.0);
+      setExchangeRate(0.0);
+      toast.error('An error occurred while fetching data.');
+    }
+    setLoading(false);
+  };
+
+  request.onerror = function () {
+    setEXRateCalculated(false);
+    setReceivingAmount(0.0);
+    setExchangeRate(0.0);
+    setLoading(false);
+    toast.error('An error occurred while fetching data.');
+  };
+
+  request.send(JSON.stringify(data));
+}
+  
+   async fetchCountriesAndPopulateDropdown() {
+          const apiUrl = 'https://uatcustomerapi.upesi.co.ke/api/Utility/GetOperationalCountries/78';
+          const xhr = new XMLHttpRequest();
+
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                const data = JSON.parse(xhr.responseText);
+                populateDropdown(data);
+              } else {
+                console.error('Error fetching countries:', xhr.status);
+              }
+            }
+          };
+
+          xhr.open('GET', apiUrl, true);
+          xhr.send();
+        }
+
+        async populateDropdown(countries) {
+          const countryDropdown = document.getElementById('countryDropdown');
+          countries.forEach((country) => {
+            const option = document.createElement('option');
+            option.value = country.code;
+            option.textContent = country.name;
+            countryDropdown.appendChild(option);
+          });
+        }
+                },
+                  created(){
+                    this.fetchCountriesAndPopulateDropdown();
+                  }
+          
+        });
+    </script>
+	
+	
+	 toCountryID: this.fromCountryId,
+          toCurrencyID: this.fromCountrySelected,

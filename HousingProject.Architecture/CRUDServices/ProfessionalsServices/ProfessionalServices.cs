@@ -326,6 +326,12 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                 {
 
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var loggeinuserEmail = _loggedIn.LoggedInUser().Result.Email;
+
+                    var worker_object = await scopedcontext.RegisterProfessional.Where(y => y.JobNumber == vm.Job_Number).FirstOrDefaultAsync();
+
+                    if (worker_object == null)
+                    { return new BaseResponse { Code = "worker doesnt exists" }; }
 
                     var new_request = new Add_User_Request
                     {
@@ -334,7 +340,11 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                         Job_Number = vm.Job_Number,
                         Worker_Email = vm.worker_Email,
                         Phone_Number=vm.Phone_Number,
-                        Names=vm.Names
+                        Names=vm.Names,
+                        RequesterEmail= loggeinuserEmail,
+                        Worker_phone=worker_object.PhoneNumber
+
+
                     };
 
                     await scopedcontext.AddAsync(new_request);
@@ -545,7 +555,6 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                         await scopedcontext.SaveChangesAsync();
                         _logger.LogInformation("Number added for the first time");
                         return new_number.Generated_Number;
-
                     }
                     else
                     {
@@ -568,6 +577,34 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             }
         }
 
+        public async Task<BaseResponse> My_Repair_Requests()
+        {
+
+            var usermail = _loggedIn.LoggedInUser().Result.Email; 
+
+            try
+            {
+                using(var scope = _servicescopefactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    var all_my_repair_requests = await scopedcontext.Add_User_Request
+                        .Where(y => y.RequesterEmail == usermail).OrderByDescending(y=>y.CreatedOn).ToListAsync();
+
+                    if (all_my_repair_requests == null)
+                    {
+                        return new BaseResponse { Code = "190", ErrorMessage = "nothing to show" };
+                    }
+
+                    return new BaseResponse { Code = "200", SuccessMessage="SUCCESSFULLY QUERIED" , Body=all_my_repair_requests};
+
+                }
+            }
+            catch(Exception ex)
+            {
+                return new BaseResponse { Code = "120", ErrorMessage = ex.Message };
+            }
+        }
 
 
 

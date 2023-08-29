@@ -12,10 +12,12 @@ namespace HousingProject.Core.Models.Professionals
         [Key]
         public int request_id { get; set; }
         public string Job_Number { get; set; }
+        public string Worker_phone { get; set; }
         public string Reason { get; set; }
         public string Description { get; set; }
         public string Worker_Email { get; set; }
         public string Phone_Number { get; set; }
+        public string RequesterEmail { get; set; }
         public string Names { get; set; }
         public  bool Is_Closed { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.Now;

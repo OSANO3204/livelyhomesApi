@@ -1289,7 +1289,9 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         Message = "Queried successfully",
                         Body = all_monthly_rent_payments,
                         Balance_left = balance_left,
-                        Total_paid = total_paid
+                        Total_paid = total_paid,
+                        Current_month=start_time,
+                        Current_year=current_year
                     };
                 }
             }

@@ -26,6 +26,7 @@ D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\bin\Debug\net5.0\H
 D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\bin\Debug\net5.0\HousingProject.Core.dll
 D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\bin\Debug\net5.0\ref\HousingProject.Core.dll
 D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\bin\Debug\net5.0\HousingProject.Core.pdb
+D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.csproj.AssemblyReference.cache
 D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.GeneratedMSBuildEditorConfig.editorconfig
 D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.AssemblyInfoInputs.cache
 D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.AssemblyInfo.cs
@@ -33,4 +34,3 @@ D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\obj\Debug\net5.0\H
 D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.dll
 D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\obj\Debug\net5.0\ref\HousingProject.Core.dll
 D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.pdb
-D:\HousingProject\HP_LOGIC\livelyhomesApi\HousingProject.Core\obj\Debug\net5.0\HousingProject.Core.csproj.AssemblyReference.cache

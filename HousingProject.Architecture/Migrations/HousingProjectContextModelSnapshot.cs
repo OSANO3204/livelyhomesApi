@@ -1035,7 +1035,13 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<string>("Reason")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RequesterEmail")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Worker_Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Worker_phone")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("request_id");

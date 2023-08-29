@@ -24,8 +24,7 @@ namespace HousingProject.Infrastructure.Interfaces.IProfessionalsServices
         Task<BaseResponse> Close_Request(int request_id);
         Task<BaseResponse> Add_Services(string service_added, string job_number);
         Task<BaseResponse> Get_Services_By_Job_Number(string job_number);
-
-
+        Task<BaseResponse> My_Repair_Requests();
 
     }
 }

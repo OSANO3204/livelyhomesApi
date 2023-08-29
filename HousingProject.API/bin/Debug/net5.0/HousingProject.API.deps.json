@@ -48,6 +48,7 @@
           "Microsoft.EntityFrameworkCore.Design": "5.0.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "5.0.0",
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.11.1",
+          "Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets": "1.1.0",
           "MySql.Data": "8.0.32.1",
           "Quartz.Extensions.DependencyInjection": "3.5.0",
           "Quartz.Extensions.Hosting": "3.5.0",
@@ -1411,6 +1412,11 @@
         }
       },
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets/1.11.1": {},
+      "Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets/1.1.0": {
+        "dependencies": {
+          "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.11.1"
+        }
+      },
       "Microsoft.Win32.Primitives/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "3.1.0",
@@ -5055,6 +5061,13 @@
       "sha512": "sha512-1jHxWlSi6/ryWODk6SUjsZPHk/BdsucxqhIi1szEzwc84e8nvZWF45qRXcT2gWPISJ3Ybbyg2LsNG6yX8r7VuA==",
       "path": "microsoft.visualstudio.azure.containers.tools.targets/1.11.1",
       "hashPath": "microsoft.visualstudio.azure.containers.tools.targets.1.11.1.nupkg.sha512"
+    },
+    "Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-e8UX59gP87Atju23R93cdqPwk8CW2zdmxOkfTtycjO7cxRmlF2D3OHOZMJDrccpsCwPrj9vTJPTBrqQMR97gRg==",
+      "path": "microsoft.visualstudio.azure.kubernetes.tools.targets/1.1.0",
+      "hashPath": "microsoft.visualstudio.azure.kubernetes.tools.targets.1.1.0.nupkg.sha512"
     },
     "Microsoft.Win32.Primitives/4.3.0": {
       "type": "package",
