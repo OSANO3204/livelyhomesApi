@@ -22,6 +22,7 @@ using HousingProject.Core.Models.RentMonthly;
 using HousingProject.Core.Models.RentPayment;
 using HousingProject.Core.Models.Reply;
 using HousingProject.Core.Models.WorkIdModel;
+using HousingProject.Infrastructure.CRUDServices.PricingPlans;
 using HousingProject.Infrastructure.ExtraFunctions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -85,6 +86,8 @@ namespace HousingProject.Architecture.Data
         public DbSet<Save_Callback_Body> Save_Callback_Body { get; set; }
         public DbSet<Number_Generator> Number_Generator { get; set; }
         public DbSet<paymentCodes> paymentCodes { get; set; }
+        public DbSet<AlreadyRated> AlreadyRated { get; set; }
+        public DbSet<PricingPlans> PricingPlans { get; set; }
 
 
 

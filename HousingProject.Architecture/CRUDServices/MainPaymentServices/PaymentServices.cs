@@ -120,13 +120,8 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var _user = _logged_in.LoggedInUser().Result;
                     var tenant_exists = await scopedcontext.TenantClass.Where(y => y.Email == _user.Email).FirstOrDefaultAsync();
-
-
                     var house_exists = await scopedcontext.House_Registration.Where(y => y.HouseiD == tenant_exists.HouseiD).FirstOrDefaultAsync();
-
-
                     var tenant_payment_ref = "LH_" + house_exists.House_Name + "_" + tenant_exists.FirstName.Trim() + "_" + tenant_exists.Appartment_DoorNumber;
-
                     return tenant_payment_ref;
                 }
                 catch (Exception ex)
@@ -136,16 +131,13 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                 }
             }
 
-
         }
         public async Task<stk_push_response> STk_Push(string phoneNumber, decimal amount)
         {
-
             try
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     // var trans_Reference = GetGeneratedref().Result;
                     var trans_Reference = Get_Tenant_Payment_Ref().Result;
@@ -177,7 +169,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     string _url = "/mpesa/stkpush/v1/processrequest";
                     var response = await client.PostAsync(_url, content);
                     var responseContent = await response.Content.ReadAsStringAsync();
-
                     Console.WriteLine(responseContent);
                     var json_resp_body = JsonConvert.DeserializeObject<Stk_Push_Response_Body>(responseContent);
                     var new_response_body = new Stk_Push_Response_Body

@@ -262,12 +262,42 @@ namespace HousingProject.Architecture.CRUDServices.Email
            
         }
 
-      
-
-        Task IEmailServices.EmailOnNewUserRegistrations(UserEmailOptions options)
+        public async Task mail_To_Technician_On_Request(email_to_technician emailbody)
         {
-            throw new NotImplementedException();
+            var file = _env.WebRootPath + Path.DirectorySeparatorChar.ToString() + "Templates" + Path.DirectorySeparatorChar.ToString()
+                + "Email" + Path.DirectorySeparatorChar.ToString() + "email_on_request_to_technician.html";
+            StreamReader str = new StreamReader(file);
+            string MailText = await str.ReadToEndAsync();
+            str.Close();
+            var currentyear = DateTime.Now.Year;
+            var currentDate = DateTime.Now;
+            MailText = MailText
+                //.Replace("body", emailbody.PayLoad)
+                .Replace("user_name", emailbody.TechnicianNames)
+                .Replace("names", emailbody.TechnicianNames)
+                .Replace("Payload", "A  new repair request  that requires your attention has  been made, kindly log in to  Lively home to attend to it")
+                .Replace("currentdate", Convert.ToString(currentDate));             
+            await SendEmail(MailText, "Dear Sir/Madam", emailbody.ToEmail);
         }
+
+        public async Task mail_To_Requester_On_Request(email_to_technician emailbody)
+        {
+            var file = _env.WebRootPath + Path.DirectorySeparatorChar.ToString() + "Templates" + Path.DirectorySeparatorChar.ToString()
+                + "Email" + Path.DirectorySeparatorChar.ToString() + "email_to_requester.html";
+            StreamReader str = new StreamReader(file);
+            string MailText = await str.ReadToEndAsync();
+            str.Close();
+            var currentyear = DateTime.Now.Year;
+            var currentDate = DateTime.Now;
+            MailText = MailText
+                //.Replace("body", emailbody.PayLoad)
+                .Replace("user_name", emailbody.TechnicianNames)
+                .Replace("names", emailbody.TechnicianNames)               
+                .Replace("currentdate", Convert.ToString(currentDate));
+            await SendEmail(MailText, "Dear Sir/Madam", emailbody.ToEmail);
+        }
+
+     
 
         //public async Task<BaseResponse> Tenant_Payment_History(string tenant_phone, string tenant_mail, string startdate, stringend )
     }
