@@ -14,7 +14,9 @@ namespace HousingProject.Infrastructure.Response.payment_ref
         public double Total_paid { get; set; }
         public object Body { get; set; }
         public string Current_month { get; set; }
+        public int Current_year { get; set; }
         public int vacant_houses { get; set; }
+
 
     }
 }

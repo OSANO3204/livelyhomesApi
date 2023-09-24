@@ -171,7 +171,13 @@ namespace HousingProject.API.Controllers
 
 
 
-
+        [Authorize]
+        [HttpPost]
+        [Route("Get_All_my_Requests")]
+        public async Task<BaseResponse> My_Repair_Requests()
+        {
+            return await _professionalsServices.My_Repair_Requests();
+        }
 
 
 

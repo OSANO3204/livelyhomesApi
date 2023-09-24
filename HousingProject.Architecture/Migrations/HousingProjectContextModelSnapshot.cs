@@ -266,6 +266,9 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("payment_setup")
+                        .HasColumnType("bit");
+
                     b.HasKey("HouseiD");
 
                     b.HasIndex("CreatedById");
@@ -1032,7 +1035,13 @@ namespace HousingProject.Infrastructure.Migrations
                     b.Property<string>("Reason")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RequesterEmail")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Worker_Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Worker_phone")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("request_id");
@@ -1365,6 +1374,42 @@ namespace HousingProject.Infrastructure.Migrations
                     b.HasKey("stk_body_id");
 
                     b.ToTable("Stk_Push_Response_Body");
+                });
+
+            modelBuilder.Entity("HousingProject.Core.Models.RentPayment.paymentCodes", b =>
+                {
+                    b.Property<int>("paymentCodeid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("CallbackUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("HouseID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HouseName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Setup_Done")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Stk_shortCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("UseDefault")
+                        .HasColumnType("bit");
+
+                    b.HasKey("paymentCodeid");
+
+                    b.ToTable("paymentCodes");
                 });
 
             modelBuilder.Entity("HousingProject.Core.Models.Reply.replyModel", b =>

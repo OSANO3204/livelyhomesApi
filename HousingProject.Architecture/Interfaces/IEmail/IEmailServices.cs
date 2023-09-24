@@ -11,17 +11,19 @@ namespace HousingProject.Architecture.Interfaces.IEmail
 {
     public interface IEmailServices
     {
-        Task<BaseResponse> SendEmail(string mailText, string subject, string recipient);
-        Task<BaseResponse> sendEmailOnHouseRegistration(UserEmailOptions options);
-        Task<BaseResponse> EmailOnNewUserRegistrations(UserEmailOptions options);
-        Task<BaseResponse> newtenantemail(UserEmailOptions options);
-        Task<BaseResponse> OnContusMessageSubmission(UserEmailOptions options);
-        Task<BaseResponse> SentdirectlytonewTenant(UserEmailOptions options);
-        Task<BaseResponse> EmailingAutomatically(UserEmailOptions options);
-        Task<BaseResponse> SendTenantEmailReminderOnRentPayment(TenantReminderEmail options);
+        Task SendEmail(string mailText, string subject, string recipient);
+        Task sendEmailOnHouseRegistration(UserEmailOptions options);
+        Task EmailOnNewUserRegistrations(UserEmailOptions options);
+        Task newtenantemail(UserEmailOptions options);
+        Task OnContusMessageSubmission(UserEmailOptions options);
+        Task SentdirectlytonewTenant(UserEmailOptions options);
+        Task EmailingAutomatically(UserEmailOptions options);
+        Task SendTenantEmailReminderOnRentPayment(TenantReminderEmail options);
         Task SendMessageReply(message_replybody options);
-        Task<BaseResponse> notificationOnRentPaymeentDay(AutomaticMessaging options);
-        Task<BaseResponse> EmailOnSuccessfulLogin(UserEmailOptions emailbody);
-        Task<BaseResponse> Email_successfull_payment(Payment_receipt_Email_Body emailbody);
+        Task notificationOnRentPaymeentDay(AutomaticMessaging options);
+        Task EmailOnSuccessfulLogin(UserEmailOptions emailbody);
+        Task Email_successfull_payment(Payment_receipt_Email_Body emailbody);
+        Task mail_To_Technician_On_Request(email_to_technician emailbody);
+        Task mail_To_Requester_On_Request(email_to_technician emailbody);
     }
 }

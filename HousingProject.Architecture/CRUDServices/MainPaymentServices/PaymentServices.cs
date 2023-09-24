@@ -7,6 +7,7 @@ using HousingProject.Core.Models.Mpesa;
 using HousingProject.Core.Models.mpesaauthvm;
 using HousingProject.Core.Models.RentMonthly;
 using HousingProject.Core.Models.RentPayment;
+using HousingProject.Core.ViewModel.Payment;
 using HousingProject.Core.ViewModel.Payment.C2B_trans;
 using HousingProject.Core.ViewModel.payment_history;
 using HousingProject.Core.ViewModel.Rentpayment;
@@ -14,6 +15,7 @@ using HousingProject.Infrastructure.ExtraFunctions.LoggedInUser;
 using HousingProject.Infrastructure.Interfaces.IUserExtraServices;
 using HousingProject.Infrastructure.Response;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -38,13 +40,16 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
         private readonly IUserExtraServices _userExtraServices;
         private readonly IEmailServices _emailservices;
         private ILogger<PaymentServices> _logger;
+        private readonly string _callbackurl;
+        private IConfiguration _configuration;
 
         public PaymentServices(IHttpClientFactory httpClientFactory,
             IServiceScopeFactory serviceScopeFactory,
               ILogger<PaymentServices> logger,
               ILoggedIn logged_in,
               IEmailServices emailservices,
-        IUserExtraServices userExtraServices
+          IUserExtraServices userExtraServices,
+          IConfiguration configuration
             )
         {
             _httpClientFactory = httpClientFactory;
@@ -53,15 +58,16 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
             _userExtraServices = userExtraServices;
             _logged_in = logged_in;
             _emailservices = emailservices;
-
+            _configuration = configuration;
+            _callbackurl = configuration["Callbacl_Url"];
         }
 
         public async Task<mpesaAuthenticationvm> Getauthenticationtoken()
         {
 
             var client = _httpClientFactory.CreateClient("mpesa");
-            string username = "ozma4Oaf44ZPkkU6JvMqDpo9VNOb50Oz";
-            string password = "ok0vxpMbWCQT6baC";
+            string username = "bkOXFnzBSKl0knB4cQ83eBkb5GGA20JU";
+            string password = "fAJmMeilHCNmaAiU";
             string auth = $"{username}:{password}";
             byte[] authBytes = Encoding.ASCII.GetBytes(auth);
             string base64Auth = Convert.ToBase64String(authBytes);
@@ -114,13 +120,8 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var _user = _logged_in.LoggedInUser().Result;
                     var tenant_exists = await scopedcontext.TenantClass.Where(y => y.Email == _user.Email).FirstOrDefaultAsync();
-
-
                     var house_exists = await scopedcontext.House_Registration.Where(y => y.HouseiD == tenant_exists.HouseiD).FirstOrDefaultAsync();
-
-
                     var tenant_payment_ref = "LH_" + house_exists.House_Name + "_" + tenant_exists.FirstName.Trim() + "_" + tenant_exists.Appartment_DoorNumber;
-
                     return tenant_payment_ref;
                 }
                 catch (Exception ex)
@@ -130,16 +131,13 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                 }
             }
 
-
         }
         public async Task<stk_push_response> STk_Push(string phoneNumber, decimal amount)
         {
-
             try
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     // var trans_Reference = GetGeneratedref().Result;
                     var trans_Reference = Get_Tenant_Payment_Ref().Result;
@@ -150,7 +148,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     var passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
                     var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
                     var encorded_pass = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{shortcode}{passkey}{timestamp}"));
-                    var callback_url = "https://webhook.site/a3cbe8cd-07a5-4aca-bfd0-351bb360c1cc";
+                    var callback_url = _callbackurl;
                     var requestBody = new
                     {
                         BusinessShortCode = shortcode,
@@ -171,7 +169,6 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                     string _url = "/mpesa/stkpush/v1/processrequest";
                     var response = await client.PostAsync(_url, content);
                     var responseContent = await response.Content.ReadAsStringAsync();
-
                     Console.WriteLine(responseContent);
                     var json_resp_body = JsonConvert.DeserializeObject<Stk_Push_Response_Body>(responseContent);
                     var new_response_body = new Stk_Push_Response_Body
@@ -497,9 +494,8 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                                     Caretaker_Phone = tenant_details.BuildingCareTaker_PhoneNumber,
                                     Rent_Amount=(double)latest_payment.RentAmount                                  
                                  };
-                           var response=   await _emailservices.Email_successfull_payment(email_body);
-                            if (response.Code == "200")
-                            {
+                         await _emailservices.Email_successfull_payment(email_body);
+                           
                                 rent_payment.ReceiptSent = true;
                                 scopedcontext.Update(rent_payment);
                                 await scopedcontext.SaveChangesAsync();
@@ -508,8 +504,7 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
                                 pay_rent_dtails.ReceiptSent = true;
                                 scopedcontext.Update(pay_rent_dtails);
                                 await scopedcontext.SaveChangesAsync();
-                               
-                            }
+                       
                 
                         }
                     }
@@ -552,7 +547,134 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
 
         }
 
-    }
+        public async Task<BaseResponse> SetUp_Payment(paymentCodesvm vm)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var user = _logged_in.LoggedInUser().Result;
+                    var house_exists = await scopedcontext.House_Registration.Where(y=>y.HouseiD==vm.HouseID).FirstOrDefaultAsync();
+
+                    if (house_exists == null)
+                    {
+                        return new BaseResponse { Code = "190", ErrorMessage = "House does not exist " };
+                    }
+
+                    var new_payment_set_up = new paymentCodes
+                    {
+                        HouseID = vm.HouseID,
+                        HouseName = house_exists.House_Name,
+                        Stk_shortCode = vm.Stk_shortCode,
+                        CallbackUrl = vm.CallbackUrl,
+                        CreatedBy = user.Email,
+                        UseDefault = false,
+                        Setup_Done=true
+                    };
+                    house_exists.payment_setup = true;
+                    scopedcontext.Update(house_exists);
+                    await scopedcontext.SaveChangesAsync();
+
+                    await scopedcontext.AddAsync(new_payment_set_up);
+                    await scopedcontext.SaveChangesAsync();
+                    return new BaseResponse { 
+                        Code = "200",
+                        SuccessMessage = "Payment set up completed  successfully ",
+                        Body = new_payment_set_up };
+                        }
+
+                         }
+                   catch (Exception ex)
+                      {
+
+                     return new BaseResponse { Code = "190", ErrorMessage = ex.Message, Body = ex.StackTrace };
+                      }
+        }
+
+
+        public async Task<BaseResponse> update_payment_setup(paymentCodesvm vm)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var user = _logged_in.LoggedInUser().Result;
+                    var payment_Setup_exitst = await scopedcontext.paymentCodes.Where(y => y.HouseID == vm.HouseID).FirstOrDefaultAsync();
+
+                    if (payment_Setup_exitst == null)
+                    {
+
+                        return new BaseResponse { Code="190", ErrorMessage="Could not save changes"};
+                    }
+                    var house_exists = await scopedcontext.House_Registration.Where(y => y.HouseiD == vm.HouseID).FirstOrDefaultAsync();
+
+                    if (house_exists == null)
+                    {
+                        return new BaseResponse { Code = "190", ErrorMessage = "House does not exist " };
+                    }
+
+                    payment_Setup_exitst.Stk_shortCode = vm.Stk_shortCode;
+                    scopedcontext.Update(payment_Setup_exitst);
+                    await scopedcontext.SaveChangesAsync();
+
+                    return new BaseResponse { Code = "200", SuccessMessage = "Payment set up updated  successfully ", Body = payment_Setup_exitst };
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse { Code = "190", ErrorMessage = ex.Message, Body = ex.StackTrace };
+            }
+        }
+
+        public async Task<BaseResponse> GetPaymentInfByHouseid(int houseid)
+        {
+            try
+            {
+                using (var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    var payment_data = await scopedcontext.paymentCodes.Where(y => y.HouseID == houseid).FirstOrDefaultAsync();
+
+                    if (payment_data == null)
+                    {
+                        return new BaseResponse { Code = "450", ErrorMessage = "Nothing  to show " };
+                    }
+
+                    return new BaseResponse { Code = "200", SuccessMessage = "sucessfully queried", Body = payment_data };
+                 }
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse { Code = "190", ErrorMessage = ex.Message };
+            }
+        }
+
+        //public async Task<BaseResponse> GetPymentDetails(int houseid)
+        //{
+        //    try
+        //    {
+        //        using(var scope= _serviceScopeFactory.CreateScope())
+        //        {
+        //            var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+            //            var
+            //        }
+            //    }
+            //    catch(Exception ex)
+            //    {
+            //        return new BaseResponse { Code = "190", ErrorMessage = ex.Message };
+            //    }
+            //}
+
+
+        }
+
 
     //public async Task<BaseResponse>  PaymentHistory(tenant_payment_history vm)
     //{
@@ -568,5 +690,5 @@ namespace HousingProject.Infrastructure.CRUDServices.MainPaymentServices
     //    }
     //}
 
-   
+
 }

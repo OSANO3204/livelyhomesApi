@@ -550,18 +550,11 @@ namespace HousingProject.Architecture.Services.Rentee.Services
 
                     };
 
-                    var response = await _iemailservvices.SendTenantEmailReminderOnRentPayment(emailbody);
-                    if (response.Code == "200")
-                    {
+                        await _iemailservvices.SendTenantEmailReminderOnRentPayment(emailbody);
+                 
                         await ReminderSentEntry(tenantExists.RenteeId);
                         return new BaseResponse { Code = "200", SuccessMessage = "Reminder sent to tenant successfully " };
-                    }
-
-                    else
-                    {
-                        return new BaseResponse { Code = "480", ErrorMessage = "Reminder not sent please try again" };
-
-                    }
+                   
 
                 }
 
@@ -669,10 +662,8 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                             //    Meessage = $"Hi Judas Iscariot ,just a kind reminder," +
                             //        $"Kindly be reminded that your rent paydate is {string.Format("{0:dd/MM/yyyy}", DateTime.Now)}"
                             //};
-                            var resp = await _iemailservvices.notificationOnRentPaymeentDay(sendmail);
-
-                            if (resp.Code == "200")
-                            {
+                          await _iemailservvices.notificationOnRentPaymeentDay(sendmail);
+                        
                                 singletenant.ReminderSent = true;
                                 var sendcount = await scopedcontext.TenantClass.Where(t => t.RenteeId == singletenant.RenteeId).FirstOrDefaultAsync();
                                 sendcount.RemindersentCount = +1;
@@ -681,11 +672,7 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                                 await scopedcontext.SaveChangesAsync();
                                 _logger.LogInformation($" Email sent to ___ {sendmail.TenantNmes}, " +
                                 $"{sendmail.ToEmail} ___ at ____ {string.Format("{0:dd/MM/yyyy}", DateTime.Now)}________");
-                            }
-                            else
-                            {
-                                _logger.LogInformation("Email not sent to tenant");
-                            }
+                          
                         }
                         else
                         {
@@ -1302,7 +1289,9 @@ namespace HousingProject.Architecture.Services.Rentee.Services
                         Message = "Queried successfully",
                         Body = all_monthly_rent_payments,
                         Balance_left = balance_left,
-                        Total_paid = total_paid
+                        Total_paid = total_paid,
+                        Current_month=start_time,
+                        Current_year=current_year
                     };
                 }
             }

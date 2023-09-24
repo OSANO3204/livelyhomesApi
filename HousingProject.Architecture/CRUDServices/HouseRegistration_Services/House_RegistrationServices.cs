@@ -191,9 +191,8 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                     ToEmail = emails
                 };
 
-                var result = await _iemailservices.sendEmailOnHouseRegistration(sendbody);
-                 if (result.Code == "200")
-                    {
+          await _iemailservices.sendEmailOnHouseRegistration(sendbody);
+                
                       int fromzero = 0;
                       while (newvm.Total_Units > fromzero)
                         {
@@ -213,8 +212,7 @@ namespace HousingProject.Architecture.HouseRegistration_Services
                         Code = "200",
                         SuccessMessage = "House  registered successfully "
                     };
-                }
-                return (new BaseResponse { SuccessMessage = "Failed to send ", });
+              
             }
             catch (Exception ex)
             {
@@ -976,6 +974,29 @@ namespace HousingProject.Architecture.HouseRegistration_Services
             {
 
                 return new BaseResponse { Code = "140", ErrorMessage = ex.Message };
+            }
+        }
+        public async Task<BaseResponse> Getting_AllHouses()
+        {
+
+            try
+            {
+              using(var scope= _serviceScopeFactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    var allHouses = await scopedcontext.House_Registration.ToListAsync();
+                    if(allHouses== null)
+                    {
+
+                        return new BaseResponse { Code = "784", ErrorMessage = "No houses to show " };
+                    }
+                    return new BaseResponse { Code = "200", SuccessMessage = "Queried successfully", Body = allHouses };
+                }
+            }
+            catch(Exception ex)
+            {
+                return new BaseResponse { Code = "480", ErrorMessage = ex.Message };
             }
         }
 

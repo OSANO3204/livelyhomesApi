@@ -40,7 +40,7 @@ namespace HousingProject.Core.Models.Houses.Flats.House_Registration
         public string  CreatorNames { get; set; }
         public string  CreatorEmail { get; set; }
 
-
+        public bool payment_setup { get; set; }
 
 
     }

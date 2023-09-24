@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Quote Comparison</title>
+</head>
+<body>
+    <div id="app">
+        <h1>Insurance Quote Comparison</h1>
+        <div>
+            <label for="age">Age:</label>
+            <input type="number" id="age" v-model="userAge">
+        </div>
+        <div>
+            <label for="coverage">Coverage Amount:</label>
+            <input type="number" id="coverage" v-model="coverageAmount">
+        </div>
+        <button @click="getQuotes">Get Quotes</button>
+
+        <div v-if="quotes.length > 0">
+            <h2>Quotes:</h2>
+            <ul>
+                <li v-for="quote in quotes">{{ quote.name }}: ${{ quote.price }}</li>
+            </ul>
+            <h2>Most Affordable:</h2>
+            <p>{{ mostAffordableAgency.name }}: ${{ mostAffordableAgency.price }}</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                userAge: 30,
+                coverageAmount: 100000,
+                quotes: [],
+                mostAffordableAgency: {}
+            },
+            methods: {
+                getQuotes() {
+                    // Simulated quotes from insurance agencies (replace with real data)
+                    const agencies = [
+                        { name: 'Agency A', price: Math.random() * 1000 },
+                        { name: 'Agency B', price: Math.random() * 1000 },
+                        { name: 'Agency C', price: Math.random() * 1000 },
+                        { name: 'Agency D', price: Math.random() * 1000 },
+                        { name: 'Agency E', price: Math.random() * 1000 },
+                    ];
+
+                    // Calculate the most affordable agency
+                    agencies.sort((a, b) => a.price - b.price);
+                    this.mostAffordableAgency = agencies[0];
+
+                    // Set the quotes
+                    this.quotes = agencies;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

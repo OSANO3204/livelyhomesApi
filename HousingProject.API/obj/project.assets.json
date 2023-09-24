@@ -1319,6 +1319,16 @@
           "build/Microsoft.VisualStudio.Azure.Containers.Tools.Targets.targets": {}
         }
       },
+      "Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets/1.1.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": "1.1.1"
+        },
+        "build": {
+          "build/Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets.props": {},
+          "build/Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets.targets": {}
+        }
+      },
       "Microsoft.Win32.Primitives/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -5365,6 +5375,24 @@
         "tools/zh-Hant/Microsoft.VisualStudio.Containers.Tools.Common.resources.dll",
         "tools/zh-Hant/Microsoft.VisualStudio.Containers.Tools.Shared.resources.dll",
         "tools/zh-Hant/Microsoft.VisualStudio.Containers.Tools.Tasks.resources.dll"
+      ]
+    },
+    "Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets/1.1.0": {
+      "sha512": "e8UX59gP87Atju23R93cdqPwk8CW2zdmxOkfTtycjO7cxRmlF2D3OHOZMJDrccpsCwPrj9vTJPTBrqQMR97gRg==",
+      "type": "package",
+      "path": "microsoft.visualstudio.azure.kubernetes.tools.targets/1.1.0",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "EULA.md",
+        "build/Helm.props",
+        "build/Helm.targets",
+        "build/Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets.props",
+        "build/Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets.targets",
+        "microsoft.visualstudio.azure.kubernetes.tools.targets.1.1.0.nupkg.sha512",
+        "microsoft.visualstudio.azure.kubernetes.tools.targets.nuspec",
+        "tools/Microsoft.VisualStudio.Kubernetes.Tools.Tasks.dll"
       ]
     },
     "Microsoft.Win32.Primitives/4.3.0": {
@@ -10643,6 +10671,7 @@
       "Microsoft.EntityFrameworkCore.Design >= 5.0.0",
       "Microsoft.EntityFrameworkCore.SqlServer >= 5.0.0",
       "Microsoft.VisualStudio.Azure.Containers.Tools.Targets >= 1.11.1",
+      "Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets >= 1.1.0",
       "MySql.Data >= 8.0.32.1",
       "Quartz.Extensions.DependencyInjection >= 3.5.0",
       "Quartz.Extensions.Hosting >= 3.5.0",
@@ -10659,11 +10688,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.API\\HousingProject.API.csproj",
+      "projectUniqueName": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.API\\HousingProject.API.csproj",
       "projectName": "HousingProject.API",
-      "projectPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.API\\HousingProject.API.csproj",
+      "projectPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.API\\HousingProject.API.csproj",
       "packagesPath": "C:\\Users\\brian.otieno.SLAFRICA\\.nuget\\packages\\",
-      "outputPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.API\\obj\\",
+      "outputPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.API\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -10684,11 +10713,11 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "projectReferences": {
-            "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj": {
-              "projectPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj"
+            "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj": {
+              "projectPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Architecture\\HousingProject.Infrastructure.csproj"
             },
-            "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj": {
-              "projectPath": "D:\\HousingProject\\LOGIC\\HousingProject\\HousingProject.Core\\HousingProject.Core.csproj"
+            "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj": {
+              "projectPath": "D:\\HousingProject\\HP_LOGIC\\livelyhomesApi\\HousingProject.Core\\HousingProject.Core.csproj"
             }
           }
         }
@@ -10756,6 +10785,10 @@
           "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
             "target": "Package",
             "version": "[1.11.1, )"
+          },
+          "Microsoft.VisualStudio.Azure.Kubernetes.Tools.Targets": {
+            "target": "Package",
+            "version": "[1.1.0, )"
           },
           "MySql.Data": {
             "target": "Package",

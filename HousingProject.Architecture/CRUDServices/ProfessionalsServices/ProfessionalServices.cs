@@ -1,5 +1,7 @@
 ﻿using HousingProject.Architecture.Data;
+using HousingProject.Architecture.Interfaces.IEmail;
 using HousingProject.Architecture.Response.Base;
+using HousingProject.Core.Models.Email;
 using HousingProject.Core.Models.Extras;
 using HousingProject.Core.Models.Professionals;
 using HousingProject.Core.ViewModel;
@@ -26,13 +28,15 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
         private readonly IGenerateIdService _generateIdService;
         private readonly ILoggedIn _logged_in_user;
         private readonly ILogger<ProfessionalServices> _logger;
+        private readonly IEmailServices _emailservices;
         public ProfessionalServices(
             ILoggedIn loggedIn,
             HousingProjectContext context,
             IGenerateIdService generateIdService,
             IServiceScopeFactory servicescopefactory,
             ILoggedIn logged_in_user,
-            ILogger<ProfessionalServices> logger
+            ILogger<ProfessionalServices> logger,
+            IEmailServices emailservices
             )
         {
             _loggedIn = loggedIn;
@@ -41,6 +45,7 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             _servicescopefactory = servicescopefactory;
             _logged_in_user = logged_in_user;
             _logger = logger;
+            _emailservices = emailservices;
         }
 
         public async Task<BaseResponse> Createprofessonal(Professionalsvm vm)
@@ -175,8 +180,15 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             {
                 using (var scope = _servicescopefactory.CreateScope())
                 {
+
+                    var user = _loggedIn.LoggedInUser().Result;
                     //check if user exists
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+                    var rateexists = await scopedcontext.AlreadyRated.Where(y => y.Email == user.Email).FirstOrDefaultAsync();
+                    if (rateexists != null)
+                    {
+                        return new VotesResponse("290", "DONE", 0, 0, 0, 0);
+                    }
                     var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.ProfessionalId == userid).FirstOrDefaultAsync();
                     if (professionalexists == null)
                     {
@@ -189,6 +201,16 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
 
                     var rateupdate = Math.Round((double)((professionalexists.Upvotes / professionalexists.TotalVotes) * 5), 1);
                     scopedcontext.Update(professionalexists);
+                    await scopedcontext.SaveChangesAsync();
+
+                    var updaterater = new AlreadyRated
+                    {
+                        Email = user.Email,
+                        NotRated = false,
+                        Message = true,
+                        TechincianID = professionalexists.JobNumber
+                    };
+                    await scopedcontext.AddAsync(updaterater);
                     await scopedcontext.SaveChangesAsync();
                     return new VotesResponse("200", "User upvotes  queried successfully", professionalexists.TotalVotes, professionalexists.Upvotes, professionalexists.Downvotes, rateupdate);
                 }
@@ -207,9 +229,19 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             {
                 using (var scope = _servicescopefactory.CreateScope())
                 {
+                    var user = _loggedIn.LoggedInUser().Result;
+
+                  
                     //check if user exists
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-                    var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.ProfessionalId == userid).FirstOrDefaultAsync();
+                    var rateexists = await scopedcontext.AlreadyRated.Where(y => y.Email == user.Email).FirstOrDefaultAsync();
+
+                    if (rateexists != null)
+                    {
+
+                        return new VotesResponse("290", "DONE", 0, 0, 0, 0);
+                    }
+                  var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.ProfessionalId == userid).FirstOrDefaultAsync();
                     if (professionalexists == null)
                     {
                         return new VotesResponse("140", "User does not exist", 0, 0, 0, 0);
@@ -220,6 +252,17 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                     professionalexists.TotalVotes += 1;
                     var rateupdate = Math.Round((double)((professionalexists.Upvotes / professionalexists.TotalVotes) * 5), 1);
                     scopedcontext.Update(professionalexists);
+                    await scopedcontext.SaveChangesAsync();
+
+                    var updaterater = new AlreadyRated
+                    {
+                      Email=user.Email,
+                      NotRated=false,
+                      Message= true,
+                      TechincianID=professionalexists.JobNumber
+
+                    };
+                    await scopedcontext.AddAsync(updaterater);
                     await scopedcontext.SaveChangesAsync();
                     return new VotesResponse("200", "User downvotes   updated successfully", professionalexists.TotalVotes, professionalexists.Upvotes, professionalexists.Downvotes, rateupdate);
                 }
@@ -234,10 +277,15 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
         {
             using (var scope = _servicescopefactory.CreateScope())
             {
+                
                 double rateupdate = 0;
+               
+
                 //check if user exists
                 var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                 var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.ProfessionalId == userid).FirstOrDefaultAsync();
+
+                  
                 if (professionalexists == null)
                 {
                     return new VotesResponse("140", "User does not exist", 0, 0, 0, 0);
@@ -254,11 +302,9 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
         public async Task<BaseResponse> Get_User_Profession(string user_id)
         {
             try
-            {
-               
-                using (var scope = _servicescopefactory.CreateScope())
+            {            
+               using (var scope = _servicescopefactory.CreateScope())
                 {
-
                     var user = _loggedIn.LoggedInUser().Result;
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var professionalexists = await scopedcontext.RegisterProfessional.Where(y => y.User_Id == user_id ).OrderByDescending(y=>y.DateCreated).ToListAsync();
@@ -268,30 +314,25 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                     };
                     return new BaseResponse { Code = "200", SuccessMessage = "Queried successfully" , Body=professionalexists};
                 }
-
             }
             catch (Exception ex)
             {
                 return new BaseResponse { Code = "180", ErrorMessage = ex.Message };
             }
-
         }
 
         public async Task<professional_profile_Response>  Get_technician_profile_with_job( string job_number)
         {
 
             try
-            {
-                 
+            {                
                 using (var scope = _servicescopefactory.CreateScope()) {
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
                     var profile_body = await scopedcontext.RegisterProfessional
                         .Where(y => y.JobNumber == job_number).FirstOrDefaultAsync();
 
-
                     if (profile_body == null)
                     {
-
                         return new professional_profile_Response { Code = "170", ErrorMessage = "Object not found" };
                     }
 
@@ -305,8 +346,6 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                         SuccessMessage = "Queried successfully",
                         Body = profile_body,
                         Rating = rating,
-
-
                     };
                 }
             }
@@ -316,17 +355,18 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             }
         }
 
-
         public async Task<BaseResponse> AddingRequest_to_Worker(add_request__vm vm)
         {
-
             try
             {
                 using (var scope = _servicescopefactory.CreateScope())
                 {
-
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
+                    var loggeinuser = _loggedIn.LoggedInUser().Result;
+                    var loggeinuserEmail = _loggedIn.LoggedInUser().Result.Email;
+                    var worker_object = await scopedcontext.RegisterProfessional.Where(y => y.JobNumber == vm.Job_Number).FirstOrDefaultAsync();
+                    if (worker_object == null)
+                    { return new BaseResponse { Code = "worker doesnt exists" }; }
                     var new_request = new Add_User_Request
                     {
                         Description = vm.Description,
@@ -334,30 +374,40 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                         Job_Number = vm.Job_Number,
                         Worker_Email = vm.worker_Email,
                         Phone_Number=vm.Phone_Number,
-                        Names=vm.Names
+                        Names=vm.Names,
+                        RequesterEmail= loggeinuserEmail,
+                        Worker_phone=worker_object.PhoneNumber
                     };
 
                     await scopedcontext.AddAsync(new_request);
                     await scopedcontext.SaveChangesAsync();
+                    var emailbody = new email_to_technician()
+                    {
+                        UserName = loggeinuser.FirstName,
+                        TechnicianNames = worker_object.FirstName + " " + worker_object.LastName,
+                        ToEmail = worker_object.Email
+                    };
+                    await _emailservices.mail_To_Technician_On_Request(emailbody);
+                    var email_to_requester = new email_to_technician()
+                    {
+                        UserName = loggeinuser.FirstName,
+                        TechnicianNames = loggeinuser.FirstName + " " + loggeinuser.LasstName,
+                        ToEmail = loggeinuserEmail
+                    };
+                    await _emailservices.mail_To_Requester_On_Request(email_to_requester);
                     return new BaseResponse
                     {
                         Code = "200",
                         SuccessMessage = "Your request is sent successfully , " +
                         "the agent will contact you shortly"
                     };
-
                 }
-
-
             }
             catch (Exception ex)
             {
-
                 return new BaseResponse { Code = "340", ErrorMessage = ex.Message };
             }
         }
-
-
             public async Task<BaseResponse> Get_Technician_Requests(string worker_email)
             {
 
@@ -365,15 +415,12 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                 {
                     using (var scope = _servicescopefactory.CreateScope())
                     {
-
                         var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
                     var allrequests = await scopedcontext.Add_User_Request.Where(y => y.Worker_Email == worker_email).OrderByDescending(y=>y.CreatedOn).ToListAsync();
                     if (allrequests == null)
                     {
                         return new BaseResponse { Code = "170", ErrorMessage = "No requests  found" };
                     }
-
                       
                         return new BaseResponse
                         {
@@ -381,14 +428,10 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                             SuccessMessage = "Queried successfully",
                             Body=allrequests
                         };
-
                     }
-
-
                 }
                 catch (Exception ex)
                 {
-
                     return new BaseResponse { Code = "340", ErrorMessage = ex.Message };
                 }
             }
@@ -401,15 +444,12 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             {
                 using (var scope = _servicescopefactory.CreateScope())
                 {
-
                     var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
-
                     var allrequests = await scopedcontext.Add_User_Request.Where(y => y.Job_Number == job_number).OrderByDescending(y=>y.CreatedOn).ToListAsync();
                     if (allrequests == null)
                     {
                         return new BaseResponse { Code = "170", ErrorMessage = "No requests  found" };
                     }
-
                     return new BaseResponse
                     {
                         Code = "200",
@@ -545,7 +585,6 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
                         await scopedcontext.SaveChangesAsync();
                         _logger.LogInformation("Number added for the first time");
                         return new_number.Generated_Number;
-
                     }
                     else
                     {
@@ -568,6 +607,34 @@ namespace HousingProject.Infrastructure.CRUDServices.ProfessionalsServices
             }
         }
 
+        public async Task<BaseResponse> My_Repair_Requests()
+        {
+
+            var usermail = _loggedIn.LoggedInUser().Result.Email; 
+
+            try
+            {
+                using(var scope = _servicescopefactory.CreateScope())
+                {
+                    var scopedcontext = scope.ServiceProvider.GetRequiredService<HousingProjectContext>();
+
+                    var all_my_repair_requests = await scopedcontext.Add_User_Request
+                        .Where(y => y.RequesterEmail == usermail).OrderByDescending(y=>y.CreatedOn).ToListAsync();
+
+                    if (all_my_repair_requests == null)
+                    {
+                        return new BaseResponse { Code = "190", ErrorMessage = "nothing to show" };
+                    }
+
+                    return new BaseResponse { Code = "200", SuccessMessage="SUCCESSFULLY QUERIED" , Body=all_my_repair_requests};
+
+                }
+            }
+            catch(Exception ex)
+            {
+                return new BaseResponse { Code = "120", ErrorMessage = ex.Message };
+            }
+        }
 
 
 
