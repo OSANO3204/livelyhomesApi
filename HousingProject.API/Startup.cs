@@ -259,7 +259,7 @@ namespace HousingProject.API
             app.UseRouting();
             app.UseCors(builder =>
             {
-                builder.AllowAnyOrigin()
+                builder.AllowAnyOrigin() 
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             });
